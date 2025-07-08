@@ -1,0 +1,195 @@
+
+
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:go_router/go_router.dart';
+import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
+import 'package:loan112_app/Constant/ImageConstant/ImageConstants.dart';
+import 'package:loan112_app/Routes/app_router_name.dart';
+import 'package:loan112_app/Utils/snackbarMassage.dart';
+import 'package:loan112_app/Widget/common_system_ui.dart';
+import '../../Constant/FontConstant/FontConstant.dart';
+import '../../Cubit/auth_cubit/AuthCubit.dart';
+import '../../Cubit/auth_cubit/AuthState.dart';
+import '../../Widget/app_bar.dart';
+import '../../Widget/common_button.dart';
+import '../../Widget/common_textField.dart';
+
+class LogInPage extends StatefulWidget {
+  const LogInPage({super.key});
+
+  @override
+  State<LogInPage> createState() => _LogInPageState();
+}
+
+class _LogInPageState extends State<LogInPage> {
+  bool termAndCondition = false;
+
+
+  TextEditingController mobileController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    mobileController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Loan112SystemUi(
+      child: Scaffold(
+          body: BlocListener<AuthCubit, AuthState>(
+            listenWhen: (prev,current){
+              return prev != current;
+            },
+            listener: (BuildContext context, state) {
+              if(state is AuthLoading){
+                EasyLoading.show(status: "Please Wait");
+              }else if(state is AuthSuccess){
+                EasyLoading.dismiss();
+                context.push(AppRouterName.verifyOtp,extra: mobileController.text.trim()).then((val){
+                  mobileController = TextEditingController();
+                });
+              }else if(state is AuthError){
+                EasyLoading.dismiss();
+                openSnackBar(context, state.message);
+              }
+            },
+            child: Stack(
+              children: [
+                /// Background image
+                Positioned.fill(
+                  child: Image.asset(
+                    ImageConstants.logInScreenBackGround,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+
+                /// Form + Button
+                SafeArea(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        /// Scrollable form content
+                        Expanded(
+                          child: SingleChildScrollView(
+                            padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(left: 10.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Image.asset(
+                                        ImageConstants.loan112AppNameIcon,
+                                        height: 76,
+                                        width: 76,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: 48.0),
+                                Image.asset(
+                                  ImageConstants.logInPageIcon,
+                                  width: 200,
+                                  height: 143,
+                                ),
+                                SizedBox(height: 40),
+                                Text(
+                                  "To Register / Login your Account",
+                                  style: TextStyle(
+                                    fontSize: FontConstants.f20,
+                                    fontWeight: FontConstants.w800,
+                                    fontFamily: FontConstants.fontFamily,
+                                    color: ColorConstant.blackTextColor,
+                                  ),
+                                ),
+                                SizedBox(height: 43),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Please enter your Mobile number",
+                                      style: TextStyle(
+                                        color: ColorConstant.greyTextColor,
+                                        fontSize: FontConstants.f16,
+                                        fontFamily: FontConstants.fontFamily,
+                                        fontWeight: FontConstants.w600,
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Expanded(
+                                          child: CommonTextField(
+                                            controller: mobileController,
+                                            hintText: "Enter your Mobile number",
+                                            maxLength: 10,
+                                            keyboardType: TextInputType.phone,
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter.digitsOnly,
+                                            ],
+                                            validator: (value) {
+                                              if (value == null || value.isEmpty) {
+                                                return 'Mobile number cannot be empty';
+                                              }
+                                              if (!RegExp(r'^[6-9][0-9]{9}$')
+                                                  .hasMatch(value)) {
+                                                return 'Enter valid 10-digit number';
+                                              }
+                                              return null;
+                                            },
+                                            onChanged: (val) {
+                                              print("Value is Changing");
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 20), // space before button
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        /// Button pinned at bottom
+                        Padding(
+                          padding: EdgeInsets.all(FontConstants.horizontalPadding),
+                          child: Loan112Button(
+                            onPressed: () {
+                              if(_formKey.currentState!.validate()){
+                                final phone = mobileController.text.trim();
+                                if (phone.isNotEmpty) {
+                                  context.read<AuthCubit>().sendOtp(phone);
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text("Enter phone number")),
+                                  );
+                                }
+                                //context.push(AppRouterName.verifyOtp);
+                              }
+                            },
+                            text: "LOGIN",
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )
+      ),
+    );
+  }
+
+}
