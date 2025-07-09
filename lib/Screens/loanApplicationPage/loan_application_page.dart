@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
+import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Widget/app_bar.dart';
 import 'package:loan112_app/Widget/circular_progress.dart';
 import '../../Constant/ColorConst/ColorConstant.dart';
@@ -115,10 +116,22 @@ class _LoanApplicationPage extends State<LoanApplicationPage>{
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              StepItem(
-                                title: steps[index],
-                                isCompleted: isCompleted,
-                                isCurrent: isCurrent,
+                              InkWell(
+                                onTap:(){
+                                  print("Clicked");
+                                  if(steps[index].toLowerCase().contains('eligibility')){
+                                    context.push(AppRouterName.checkEligibilityPage);
+                                  }else if(steps[index].toLowerCase().contains('statement')){
+                                    context.push(AppRouterName.bankStatement);
+                                  }else {
+                                    context.push(AppRouterName.aaDarKYCScreen);
+                                  }
+                                },
+                                child: StepItem(
+                                  title: steps[index],
+                                  isCompleted: isCompleted,
+                                  isCurrent: isCurrent,
+                                ),
                               ),
                               // add line below except for last item
                               if (index != steps.length - 1)
