@@ -27,6 +27,15 @@ class AppRouterName{
   static var permissionPage = '/permission';
   static var dashboardPage = '/dashboardPage';
   static var loanApplicationPage = '/loanApplicationPage';
-
+  static var checkEligibilityPage = '/checkEligibility';
+  static var eligibilityStatus = '/eligibilityStatus';
+  static var bankStatement = '/bankStatement';
+  static var onlineBankStatement = '/onlineBankStatement';
+  static var onlineBankStatementMessage = '/onlineBankStatementMessage';
+  static var aaDarKYCScreen = "/aaDarKYCScreen";
+  static var eKycMessageScreen = '/eKycMessageScreen';
+  static var offlineBankStatement = '/offlineBankStatement';
+  static var selfieScreenPath = '/selfieScreen';
+  static var selfieUploadedPage = '/selfieUploadedPage';
 
 }

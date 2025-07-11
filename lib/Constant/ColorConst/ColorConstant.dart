@@ -13,5 +13,6 @@ class ColorConstant{
   static const Color dashboardTextColor = Color(0xff1d202c);
   static const Color appScreenBackgroundColor = Color(0xffEBF5FF);
   static const Color drawerHeaderColor = Color(0xffD1EAFF);
+  static const Color greenColor = Color(0xff10B059);
 
 }

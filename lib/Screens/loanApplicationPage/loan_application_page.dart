@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
+import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Widget/app_bar.dart';
 import 'package:loan112_app/Widget/circular_progress.dart';
 import '../../Constant/ColorConst/ColorConstant.dart';
 import '../../Constant/ImageConstant/ImageConstants.dart';
 import '../../Widget/common_step.dart';
+import 'loanApplicationOptions/selfieVerification/selfie_verification.dart';
 
 class LoanApplicationPage extends StatefulWidget{
   const LoanApplicationPage({super.key});
@@ -16,7 +18,7 @@ class LoanApplicationPage extends StatefulWidget{
 
 class _LoanApplicationPage extends State<LoanApplicationPage>{
 
-  final int currentStep = 7;
+  final int currentStep = 0;
 
   final List<String> steps = [
     "Check Eligibility",
@@ -24,7 +26,6 @@ class _LoanApplicationPage extends State<LoanApplicationPage>{
     "Selfie Verification",
     "Fetch Bank Statement",
     "Get Loan Offer",
-    "Employment Details",
     "Utility bills",
     "Add References",
     "Banking Details"
@@ -115,10 +116,23 @@ class _LoanApplicationPage extends State<LoanApplicationPage>{
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              StepItem(
-                                title: steps[index],
-                                isCompleted: isCompleted,
-                                isCurrent: isCurrent,
+                              InkWell(
+                                onTap:(){
+                                  if(steps[index].toLowerCase().contains('eligibility')){
+                                    context.push(AppRouterName.checkEligibilityPage);
+                                  }else if(steps[index].toLowerCase().contains('statement')){
+                                    context.push(AppRouterName.bankStatement);
+                                  }else if(steps[index].toLowerCase().contains('ekyc')){
+                                    context.push(AppRouterName.aaDarKYCScreen);
+                                  }else if(steps[index].toLowerCase().contains('selfie')){
+                                  context.push(AppRouterName.selfieScreenPath);
+                                  }
+                                },
+                                child: StepItem(
+                                  title: steps[index],
+                                  isCompleted: isCompleted,
+                                  isCurrent: isCurrent,
+                                ),
                               ),
                               // add line below except for last item
                               if (index != steps.length - 1)
@@ -134,6 +148,10 @@ class _LoanApplicationPage extends State<LoanApplicationPage>{
                                         : Colors.grey.shade300, // pending line color
                                   ),
                                 ),
+                              if(index == steps.length-1)
+                                SizedBox(
+                                  height: 20,
+                                )
                             ],
                           );
                         },
@@ -154,3 +172,4 @@ class _LoanApplicationPage extends State<LoanApplicationPage>{
 
 
 }
+

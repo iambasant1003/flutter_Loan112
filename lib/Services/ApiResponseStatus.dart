@@ -1,5 +1,7 @@
 
 
+import 'package:loan112_app/Utils/Debugprint.dart';
+
 import '../Model/error_model.dart';
 
 enum ApiResponseStatus {
@@ -11,7 +13,7 @@ enum ApiResponseStatus {
 }
 
 class ApiResponse<T> {
-  final ErrorModal? error;
+  final T? error;
   final ApiResponseStatus? status;
   final T? data;
 
@@ -21,12 +23,13 @@ class ApiResponse<T> {
     return ApiResponse(ApiResponseStatus.success, data: data);
   }
 
-  factory ApiResponse.error(ApiResponseStatus status, {ErrorModal? error}) {
+  factory ApiResponse.error(ApiResponseStatus status, {T? error}) {
     return ApiResponse(status, error: error);
   }
 }
 
 ApiResponseStatus mapStatusCode(int statusCode) {
+  DebugPrint.prt("StatusCode In ApiResponse $statusCode");
   switch (statusCode) {
     case 200:
       return ApiResponseStatus.success;

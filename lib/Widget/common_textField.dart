@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import '../Constant/ColorConst/ColorConstant.dart';
-
 
 class CommonTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -15,6 +13,18 @@ class CommonTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
 
+  /// Fully customizable trailing widget
+  final Widget? trailingWidget;
+
+  /// Optional click callback if you want the trailingWidget to be wrapped in a clickable
+  final VoidCallback? trailingClick;
+
+  /// Optional readOnly flag for fields like DOB
+  final bool readOnly;
+
+  /// Optional obscureText flag for password fields
+  final bool obscureText;
+
   const CommonTextField({
     Key? key,
     required this.controller,
@@ -25,7 +35,11 @@ class CommonTextField extends StatelessWidget {
     this.onEditingComplete,
     this.maxLength,
     this.keyboardType,
-    this.inputFormatters
+    this.inputFormatters,
+    this.trailingWidget,
+    this.trailingClick,
+    this.readOnly = false,
+    this.obscureText = false, // 👈 added with default false
   }) : super(key: key);
 
   @override
@@ -38,7 +52,7 @@ class CommonTextField extends StatelessWidget {
       borderRadius: borderRadius,
       borderSide: BorderSide(
         color: color,
-        width: 1.0, // 👈 consistent thickness
+        width: 1.0,
       ),
     );
 
@@ -49,6 +63,8 @@ class CommonTextField extends StatelessWidget {
       onEditingComplete: onEditingComplete,
       keyboardType: keyboardType,
       inputFormatters: inputFormatters,
+      readOnly: readOnly,
+      obscureText: obscureText, // 👈 use the new property
       style: const TextStyle(
         fontFamily: 'Manrope',
         fontWeight: FontWeight.w500,
@@ -78,6 +94,16 @@ class CommonTextField extends StatelessWidget {
         focusedBorder: border(normalBorderColor),
         errorBorder: border(errorBorderColor),
         focusedErrorBorder: border(errorBorderColor),
+        suffixIcon: trailingWidget != null
+            ? GestureDetector(
+          onTap: trailingClick ?? () {},
+          behavior: HitTestBehavior.translucent,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: trailingWidget,
+          ),
+        )
+            : null,
       ),
     );
   }
