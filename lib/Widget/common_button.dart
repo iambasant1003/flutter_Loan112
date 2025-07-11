@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../Constant/ColorConst/ColorConstant.dart';
 
 class Loan112Button extends StatelessWidget {
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final String text;
   final double borderRadius;
 
@@ -16,7 +16,7 @@ class Loan112Button extends StatelessWidget {
 
   const Loan112Button({
     Key? key,
-    required this.onPressed,
+    this.onPressed,
     required this.text,
     this.borderRadius = 50.0,
     this.fontFamily = 'Manrope',

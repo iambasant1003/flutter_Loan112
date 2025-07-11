@@ -35,5 +35,7 @@ class AppRouterName{
   static var aaDarKYCScreen = "/aaDarKYCScreen";
   static var eKycMessageScreen = '/eKycMessageScreen';
   static var offlineBankStatement = '/offlineBankStatement';
+  static var selfieScreenPath = '/selfieScreen';
+  static var selfieUploadedPage = '/selfieUploadedPage';
 
 }

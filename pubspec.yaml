@@ -44,7 +44,15 @@ dependencies:
   flutter_easyloading:
   shared_preferences:
   widgets_easier: ^0.0.10
-
+  file_picker: ^8.0.0
+  syncfusion_flutter_pdf: ^24.2.5
+  camera: ^0.10.5+9
+  path_provider: ^2.1.2
+  path: ^1.8.3
+  #image_cropper: ^1.5.0
+  flutter_image_compress:
+  intl:
+  permission_handler:
 
 dev_dependencies:
   flutter_test:

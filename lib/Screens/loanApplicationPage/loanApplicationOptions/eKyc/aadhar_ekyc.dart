@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
+import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:loan112_app/Widget/app_bar.dart';
 import 'package:loan112_app/Widget/common_button.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -185,7 +186,11 @@ class _AadharKycScreen extends State<AadharKycScreen>{
                 children: [
                   Loan112Button(
                       onPressed: (){
-                        context.push(AppRouterName.eKycMessageScreen);
+                        if(adarOTPController.text.trim() != "" && adarOTPController.text.trim().length == 4){
+                          context.push(AppRouterName.eKycMessageScreen);
+                        }else{
+                          openSnackBar(context, "Please Enter last 4 digit of your aadhar number");
+                        }
                       },
                       text: "Get Started"
                   ),

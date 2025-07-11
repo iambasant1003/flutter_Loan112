@@ -28,5 +28,9 @@ class ImageConstants {
   static const String adarIcon = "assets/images/aadhar_logo.png";
   static const String digiLockerIcon = "assets/images/digilocker_image.png";
   static const String selectBankStatementCardBackground = "assets/images/bank_statement_bg.jpeg";
+  static const String bankStatementUploadIcon = "assets/icons/bankstatement_upload_icon.png";
+  static const String pdfIcon = "assets/icons/pdf_icon.png";
+  static const String crossActionIcon = "assets/icons/action_icon.png";
+  static const String selfieImageIcon = "assets/images/selfie_image.png";
 
 }

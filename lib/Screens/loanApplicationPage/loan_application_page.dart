@@ -7,6 +7,7 @@ import 'package:loan112_app/Widget/circular_progress.dart';
 import '../../Constant/ColorConst/ColorConstant.dart';
 import '../../Constant/ImageConstant/ImageConstants.dart';
 import '../../Widget/common_step.dart';
+import 'loanApplicationOptions/selfieVerification/selfie_verification.dart';
 
 class LoanApplicationPage extends StatefulWidget{
   const LoanApplicationPage({super.key});
@@ -17,7 +18,7 @@ class LoanApplicationPage extends StatefulWidget{
 
 class _LoanApplicationPage extends State<LoanApplicationPage>{
 
-  final int currentStep = 7;
+  final int currentStep = 0;
 
   final List<String> steps = [
     "Check Eligibility",
@@ -25,7 +26,6 @@ class _LoanApplicationPage extends State<LoanApplicationPage>{
     "Selfie Verification",
     "Fetch Bank Statement",
     "Get Loan Offer",
-    "Employment Details",
     "Utility bills",
     "Add References",
     "Banking Details"
@@ -124,6 +124,8 @@ class _LoanApplicationPage extends State<LoanApplicationPage>{
                                     context.push(AppRouterName.bankStatement);
                                   }else if(steps[index].toLowerCase().contains('ekyc')){
                                     context.push(AppRouterName.aaDarKYCScreen);
+                                  }else if(steps[index].toLowerCase().contains('selfie')){
+                                  context.push(AppRouterName.selfieScreenPath);
                                   }
                                 },
                                 child: StepItem(
@@ -170,3 +172,4 @@ class _LoanApplicationPage extends State<LoanApplicationPage>{
 
 
 }
+

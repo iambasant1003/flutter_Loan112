@@ -42,10 +42,12 @@ class _DashBoardHome extends State<DashBoardHome>{
                   SizedBox(
                     height: 37,
                   ),
-                  Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      personalLoanApplyWidget(context),
+                  SizedBox(
+                    height: 225,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        personalLoanApplyWidget(context),
                       Positioned(
                         top: -2,
                         left: 0,
@@ -75,18 +77,23 @@ class _DashBoardHome extends State<DashBoardHome>{
                           ),
                         ),
                       ),
-                      Positioned(
-                          bottom: -25,
-                          left: 100,
-                          right: 100,
-                          child: Loan112Button(
-                              onPressed: (){
+                        //This 2nd Positioned Contains Button
+                        Positioned(
+                            bottom: -25,
+                            left: 100,
+                            right: 100,
+                            child: GestureDetector(
+                              onTap: (){
                                 context.push(AppRouterName.loanApplicationPage);
                               },
-                              text: "Let's Start"
-                          )
-                      )
-                    ],
+                              child: Loan112Button(
+                                  onPressed: null,
+                                  text: "Let's Start"
+                              ),
+                            )
+                        )
+                      ],
+                    ),
                   ),
                   SizedBox(
                     height: 40.0,

@@ -7,6 +7,8 @@ import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/b
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/bankStatement/onlinebankStatement/online_banking_message.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/checkEligibility/check_eligibility.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/checkEligibility/eligibility_status.dart';
+import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/selfieVerification/selfie_uploaded.dart';
+import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/selfieVerification/selfie_verification.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loan_application_page.dart';
 import '../Screens/auth/permission_page.dart';
 import '../Screens/auth/splash.dart';
@@ -34,6 +36,11 @@ final GoRouter appRouter = GoRouter(
     GoRoute(path: AppRouterName.onlineBankStatementMessage,builder: (context,state)=> OnlineBankingMessageScreen()),
     GoRoute(path: AppRouterName.aaDarKYCScreen,builder: (context,state)=> AadharKycScreen()),
     GoRoute(path: AppRouterName.eKycMessageScreen,builder: (context,state) => EkycMessageScreen()),
-    GoRoute(path: AppRouterName.offlineBankStatement,builder: (context,state) => FetchOfflineBankStatement())
+    GoRoute(path: AppRouterName.offlineBankStatement,builder: (context,state) => FetchOfflineBankStatement()),
+    GoRoute(path: AppRouterName.selfieScreenPath,builder: (context,state) => SelfieCameraPage()),
+    GoRoute(path: AppRouterName.selfieUploadedPage,builder: (context,state){
+      final pathOfImage = state.extra as String;
+      return SelfieUploadedPage(imagePath: pathOfImage);
+    })
   ],
 );
