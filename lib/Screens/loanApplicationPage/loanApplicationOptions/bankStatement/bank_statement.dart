@@ -45,7 +45,7 @@ class _BankStatementScreen extends State<BankStatementScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 24),
+              SizedBox(height: 16),
               SingleChildScrollView(
                 child: Padding(
                   padding: EdgeInsets.symmetric(
@@ -92,7 +92,7 @@ class _BankStatementScreen extends State<BankStatementScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "Account Aggregator(Recommended)",
+                                  "Account Aggregator (Recommended)",
                                   style: TextStyle(
                                     fontSize: FontConstants.f16,
                                     fontWeight: FontConstants.w600,
@@ -166,7 +166,11 @@ class _BankStatementScreen extends State<BankStatementScreen> {
                           width: 170,
                           child: Loan112Button(
                             onPressed: () {
-                              context.push(AppRouterName.onlineBankStatement);
+                              if(isOnlineSelected){
+                                context.push(AppRouterName.onlineBankStatement);
+                              }else{
+                                context.push(AppRouterName.offlineBankStatement);
+                              }
                             },
                             text: "CONTINUE",
                           ),

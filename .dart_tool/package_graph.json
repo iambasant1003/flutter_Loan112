@@ -17,7 +17,8 @@
         "http",
         "pin_code_fields",
         "shared_preferences",
-        "smooth_page_indicator"
+        "smooth_page_indicator",
+        "widgets_easier"
       ],
       "devDependencies": [
         "flutter_lints",
@@ -75,6 +76,16 @@
         "test_api",
         "vector_math",
         "vm_service"
+      ]
+    },
+    {
+      "name": "widgets_easier",
+      "version": "0.0.10",
+      "dependencies": [
+        "flutter",
+        "flutter_easy_animations",
+        "flutter_svg",
+        "gap"
       ]
     },
     {
@@ -404,6 +415,20 @@
         "stream_channel",
         "string_scanner",
         "term_glyph"
+      ]
+    },
+    {
+      "name": "gap",
+      "version": "3.0.1",
+      "dependencies": [
+        "flutter"
+      ]
+    },
+    {
+      "name": "flutter_easy_animations",
+      "version": "0.0.2",
+      "dependencies": [
+        "flutter"
       ]
     },
     {

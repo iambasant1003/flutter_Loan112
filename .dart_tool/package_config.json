@@ -104,6 +104,12 @@
       "languageVersion": "2.14"
     },
     {
+      "name": "flutter_easy_animations",
+      "rootUri": "file:///home/basant/.pub-cache/hosted/pub.dev/flutter_easy_animations-0.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "flutter_easyloading",
       "rootUri": "file:///home/basant/.pub-cache/hosted/pub.dev/flutter_easyloading-3.0.5",
       "packageUri": "lib/",
@@ -150,6 +156,12 @@
       "rootUri": "file:///home/basant/development/flutter/packages/flutter_web_plugins",
       "packageUri": "lib/",
       "languageVersion": "3.7"
+    },
+    {
+      "name": "gap",
+      "rootUri": "file:///home/basant/.pub-cache/hosted/pub.dev/gap-3.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
     },
     {
       "name": "go_router",
@@ -438,6 +450,12 @@
       "rootUri": "file:///home/basant/.pub-cache/hosted/pub.dev/web-1.1.1",
       "packageUri": "lib/",
       "languageVersion": "3.4"
+    },
+    {
+      "name": "widgets_easier",
+      "rootUri": "file:///home/basant/.pub-cache/hosted/pub.dev/widgets_easier-0.0.10",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
     },
     {
       "name": "xdg_directories",

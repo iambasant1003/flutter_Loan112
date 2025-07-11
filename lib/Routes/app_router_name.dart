@@ -31,6 +31,9 @@ class AppRouterName{
   static var eligibilityStatus = '/eligibilityStatus';
   static var bankStatement = '/bankStatement';
   static var onlineBankStatement = '/onlineBankStatement';
+  static var onlineBankStatementMessage = '/onlineBankStatementMessage';
   static var aaDarKYCScreen = "/aaDarKYCScreen";
+  static var eKycMessageScreen = '/eKycMessageScreen';
+  static var offlineBankStatement = '/offlineBankStatement';
 
 }

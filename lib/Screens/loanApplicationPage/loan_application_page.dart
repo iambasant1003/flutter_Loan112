@@ -118,12 +118,11 @@ class _LoanApplicationPage extends State<LoanApplicationPage>{
                             children: [
                               InkWell(
                                 onTap:(){
-                                  print("Clicked");
                                   if(steps[index].toLowerCase().contains('eligibility')){
                                     context.push(AppRouterName.checkEligibilityPage);
                                   }else if(steps[index].toLowerCase().contains('statement')){
                                     context.push(AppRouterName.bankStatement);
-                                  }else {
+                                  }else if(steps[index].toLowerCase().contains('ekyc')){
                                     context.push(AppRouterName.aaDarKYCScreen);
                                   }
                                 },
@@ -147,6 +146,10 @@ class _LoanApplicationPage extends State<LoanApplicationPage>{
                                         : Colors.grey.shade300, // pending line color
                                   ),
                                 ),
+                              if(index == steps.length-1)
+                                SizedBox(
+                                  height: 20,
+                                )
                             ],
                           );
                         },

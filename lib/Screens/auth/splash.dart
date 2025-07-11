@@ -40,7 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
     var isPermissionGiven = await MySharedPreferences.getPermissionStatus();
     var dashBoardData = await MySharedPreferences.getUserSessionData();
     DebugPrint.prt("Is permission Given $isPermissionGiven");
-    DebugPrint.prt("Dashbaord Data ${dashBoardData.runtimeType}");
+    DebugPrint.prt("Dashbaord Data ${dashBoardData}");
     Future.delayed(const Duration(seconds: 3), ()  {
       if(dashBoardData != "" && dashBoardData != null){
         VerifyOTPModel verifyOTPModel = VerifyOTPModel.fromJson(jsonDecode(dashBoardData));

@@ -98,7 +98,7 @@ class _CheckEligibility extends State<CheckEligibility>{
                         SizedBox(height: 24.0),
 
                         labelTypeWidget("Select Employment Type"),
-                        SizedBox(height: 24.0),
+                        SizedBox(height: 6.0),
 
                         employmentTypeSelector(
                           selectedType: employmentType,
@@ -120,7 +120,7 @@ class _CheckEligibility extends State<CheckEligibility>{
                         SizedBox(height: 12.0),
 
                         labelTypeWidget("Mode of Income Received"),
-                        SizedBox(height: 24.0),
+                        SizedBox(height: 6.0),
 
                         modeOfIncomeTypeSelector(
                           selectedType: modeOfIncome,
@@ -130,6 +130,7 @@ class _CheckEligibility extends State<CheckEligibility>{
                             });
                           },
                         ),
+
                         SizedBox(height: 12.0),
 
                         labelTypeWidget("Date of Birth"),
@@ -310,21 +311,15 @@ class _CheckEligibility extends State<CheckEligibility>{
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         _buildOption(
-          label: 'Bank',
-          isSelected: selectedType == 'Bank',
-          onTap: () => onChanged('Bank'),
+          label: 'Male',
+          isSelected: selectedType == 'Male',
+          onTap: () => onChanged('Male'),
         ),
         const SizedBox(width: 24),
         _buildOption(
-          label: 'Cheque',
-          isSelected: selectedType == 'Cheque',
-          onTap: () => onChanged('Cheque'),
-        ),
-        const SizedBox(width: 24),
-        _buildOption(
-          label: 'Cash',
-          isSelected: selectedType == 'Cash',
-          onTap: () => onChanged('Cash'),
+          label: 'Female',
+          isSelected: selectedType == 'Female',
+          onTap: () => onChanged('Female'),
         ),
       ],
     );

@@ -43,6 +43,7 @@ dependencies:
   flutter_bloc:
   flutter_easyloading:
   shared_preferences:
+  widgets_easier: ^0.0.10
 
 
 dev_dependencies:
