@@ -32,7 +32,8 @@ class _SplashScreenState extends State<SplashScreen> {
     );
 
     Future.delayed(Duration.zero, () {
-      _initAsync(context);
+     // _initAsync(context);
+      context.go(AppRouterName.dashboardPage);
     });
   }
 

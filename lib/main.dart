@@ -10,16 +10,18 @@ import 'package:loan112_app/BlocProvider/bloc_provider.dart';
 import 'Constant/ColorConst/ColorConstant.dart';
 import 'Constant/ConstText/ConstText.dart';
 import 'Routes/app_router.dart';
+import 'Utils/AppConfig.dart';
 
 
-Future<void> main() async{
-  WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: ColorConstant.appThemeColor));
-  runApp(MyApp());
-}
+
+
 
 class MyApp extends StatefulWidget {
+
+  final String environment;
+
+  const MyApp({super.key, required this.environment});
+
   @override
   State<StatefulWidget> createState() => MyAppState();
 }
@@ -31,6 +33,8 @@ class MyAppState extends State<MyApp> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    // Initialize your config class
+    AppConfig.init(widget.environment);
     configLoading();
   }
 
