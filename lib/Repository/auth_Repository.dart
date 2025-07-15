@@ -9,6 +9,8 @@ import '../Services/http_client.dart';
 import '../Utils/Debugprint.dart';
 
 class AuthRepository {
+  final ApiClass apiClass;
+  AuthRepository(this.apiClass);
 
 
   ApiResponseStatus mapApiResponseStatus(String responseBody) {
@@ -26,10 +28,10 @@ class AuthRepository {
 
   Future<ApiResponse<SendOTPModel>> sendOTPApiCallFunction(Map<String, dynamic> data) async {
     try {
-      final response = await ApiClass.post(sendOTP, data, isHeader: false);
-      DebugPrint.prt("API Response AreaWise Data ${response.body}");
-      final ApiResponseStatus status = mapApiResponseStatus(response.body);
-      final Map<String, dynamic> responseData = jsonDecode(response.body);
+      final response = await apiClass.post(sendOTP, data, isHeader: false);
+      DebugPrint.prt("API Response AreaWise Data ${response.data}");
+      final ApiResponseStatus status = mapApiResponseStatus(response.data);
+      final Map<String, dynamic> responseData = jsonDecode(response.data);
       if (status == ApiResponseStatus.success) {
         final data = SendOTPModel.fromJson(responseData);
         DebugPrint.prt("ResponseData In success $responseData");
@@ -45,10 +47,10 @@ class AuthRepository {
 
   Future<ApiResponse<VerifyOTPModel>> verifyOTPApiCallFunction(Map<String, dynamic> data) async {
     try {
-      final response = await ApiClass.post(verifyOTP, data, isHeader: false);
-      DebugPrint.prt("API Response AreaWise Data ${response.body},${response.statusCode}");
-      final ApiResponseStatus status = mapApiResponseStatus(response.body);
-      final Map<String, dynamic> responseData = jsonDecode(response.body);
+      final response = await apiClass.post(verifyOTP, data, isHeader: false);
+      DebugPrint.prt("API Response AreaWise Data ${response.data},${response.statusCode}");
+      final ApiResponseStatus status = mapApiResponseStatus(response.data);
+      final Map<String, dynamic> responseData = jsonDecode(response.data);
       if (status == ApiResponseStatus.success) {
         final data = VerifyOTPModel.fromJson(responseData);
         DebugPrint.prt("ResponseData In success $responseData");

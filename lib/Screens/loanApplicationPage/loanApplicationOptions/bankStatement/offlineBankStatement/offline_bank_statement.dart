@@ -107,10 +107,6 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
   }
 
 
-
-
-
-
   @override
   Widget build(BuildContext context) {
     return Stack(

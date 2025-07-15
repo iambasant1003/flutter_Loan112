@@ -126,6 +126,14 @@ class _LoanApplicationPage extends State<LoanApplicationPage>{
                                     context.push(AppRouterName.aaDarKYCScreen);
                                   }else if(steps[index].toLowerCase().contains('selfie')){
                                   context.push(AppRouterName.selfieScreenPath);
+                                  }else if(steps[index].toLowerCase().contains("offer")){
+                                    context.push(AppRouterName.loanOfferPage);
+                                  }else if(steps[index].toLowerCase().contains('reference')){
+                                    context.push(AppRouterName.addReference);
+                                  }else if(steps[index].toLowerCase().contains('utility')){
+                                    context.push(AppRouterName.utilityBillScreen);
+                                  }else if(steps[index].toLowerCase().contains('bank')){
+                                    context.push(AppRouterName.bankDetailsScreen);
                                   }
                                 },
                                 child: StepItem(

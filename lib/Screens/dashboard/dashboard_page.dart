@@ -1,7 +1,10 @@
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
+import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Screens/dashboard/dashboard_home.dart';
+import 'package:loan112_app/Screens/dashboard/dashboard_status.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
 import 'package:loan112_app/Widget/app_bar.dart';
 import 'package:loan112_app/Widget/circular_progress.dart';
@@ -135,9 +138,10 @@ class _DashBoardPage extends State<DashBoardPage>{
                 ),
                 InkWell(
                   onTap: (){
-                    setState(() {
-                      selectedIndex =1;
-                    });
+                    // setState(() {
+                    //   selectedIndex =1;
+                    // });
+                    context.push(AppRouterName.dashBoardStatus);
                   },
                   child: Column(
                     children: [

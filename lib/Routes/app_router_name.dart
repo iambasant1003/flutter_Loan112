@@ -37,5 +37,9 @@ class AppRouterName{
   static var offlineBankStatement = '/offlineBankStatement';
   static var selfieScreenPath = '/selfieScreen';
   static var selfieUploadedPage = '/selfieUploadedPage';
-
+  static var loanOfferPage = "/loanOfferPage";
+  static var addReference = "/addReference";
+  static var utilityBillScreen = "/utilityBillScreen";
+  static var bankDetailsScreen = "/bankDetailsScreen";
+  static var dashBoardStatus = "/dashBoardStatus";
 }

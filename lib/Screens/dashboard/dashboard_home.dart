@@ -48,7 +48,7 @@ class _DashBoardHome extends State<DashBoardHome>{
                       clipBehavior: Clip.none,
                       children: [
                         personalLoanApplyWidget(context),
-                      Positioned(
+                        Positioned(
                         top: -2,
                         left: 0,
                         right: 0,
@@ -79,7 +79,7 @@ class _DashBoardHome extends State<DashBoardHome>{
                       ),
                         //This 2nd Positioned Contains Button
                         Positioned(
-                            bottom: -25,
+                            bottom: -10,
                             left: 100,
                             right: 100,
                             child: GestureDetector(

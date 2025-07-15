@@ -32,5 +32,13 @@ class ImageConstants {
   static const String pdfIcon = "assets/icons/pdf_icon.png";
   static const String crossActionIcon = "assets/icons/action_icon.png";
   static const String selfieImageIcon = "assets/images/selfie_image.png";
+  static const String interestIcon = "assets/icons/interest_icon.png";
+  static const String lonProcessIcon = "assets/icons/processing_icon.png";
+  static const String bottomDashLine = "assets/images/bottom_dashedline.jpeg";
+  static const String applicationESign = "assets/icons/application_e_sign.png";
+  static const String applicationReview = "assets/icons/application_review.png";
+  static const String applicationSanction = "assets/icons/application_sanction.png";
+  static const String applicationSubmitted = "assets/icons/application_submitted.png";
+  static const String applicationDisbursement = "assets/icons/disbursement_icon.png";
 
 }

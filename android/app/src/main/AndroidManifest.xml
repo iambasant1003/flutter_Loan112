@@ -8,7 +8,7 @@
     <application
         android:allowBackup="false"
         android:fullBackupContent="false"
-        android:label="loan112_app"
+        android:label="@string/app_name"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

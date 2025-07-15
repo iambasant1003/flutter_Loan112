@@ -2,13 +2,18 @@ import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Screens/auth/login_page.dart';
 import 'package:loan112_app/Screens/auth/verify_otp.dart';
 import 'package:loan112_app/Screens/dashboard/dashboard_page.dart';
+import 'package:loan112_app/Screens/dashboard/dashboard_status.dart';
+import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/addReferance/add_reference.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/bankStatement/bank_statement.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/bankStatement/onlinebankStatement/online_bank_statement.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/bankStatement/onlinebankStatement/online_banking_message.dart';
+import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/bankingDetails/banking_details.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/checkEligibility/check_eligibility.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/checkEligibility/eligibility_status.dart';
+import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/loanOffer/loan_offer.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/selfieVerification/selfie_uploaded.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/selfieVerification/selfie_verification.dart';
+import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/utilityBills/utility_bills.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loan_application_page.dart';
 import '../Screens/auth/permission_page.dart';
 import '../Screens/auth/splash.dart';
@@ -41,6 +46,13 @@ final GoRouter appRouter = GoRouter(
     GoRoute(path: AppRouterName.selfieUploadedPage,builder: (context,state){
       final pathOfImage = state.extra as String;
       return SelfieUploadedPage(imagePath: pathOfImage);
-    })
+    }),
+    GoRoute(path: AppRouterName.loanOfferPage,builder: (context,state){
+      return LoanOfferScreen();
+    }),
+    GoRoute(path: AppRouterName.addReference,builder: (context,state) => AddReferenceScreen()),
+    GoRoute(path: AppRouterName.utilityBillScreen,builder: (context,state) => UtilityBillScreen()),
+    GoRoute(path: AppRouterName.bankDetailsScreen,builder: (context,state) => BankingDetailScreen()),
+    GoRoute(path: AppRouterName.dashBoardStatus,builder: (context,state) => DashboardStatusScreen()),
   ],
 );
