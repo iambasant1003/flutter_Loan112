@@ -55,6 +55,12 @@ dependencies:
   permission_handler:
   dropdown_button2:
   get_it:
+  connectivity_plus:
+  geolocator:
+  device_info_plus:
+  share_plus: ^11.0.0
+  url_launcher:
+  webview_flutter: ^4.4.2
 
 dev_dependencies:
   flutter_test:

@@ -2,7 +2,6 @@
 
 import 'package:loan112_app/Utils/Debugprint.dart';
 
-import '../Model/error_model.dart';
 
 enum ApiResponseStatus {
   success,
@@ -10,6 +9,7 @@ enum ApiResponseStatus {
   unauthorized,
   notFound,
   serverError,
+  declined
 }
 
 class ApiResponse<T> {
@@ -35,11 +35,30 @@ ApiResponseStatus mapStatusCode(int statusCode) {
       return ApiResponseStatus.success;
     case 400:
       return ApiResponseStatus.badRequest;
+    case 402:
+      return ApiResponseStatus.declined;
     case 403:
       return ApiResponseStatus.unauthorized;
     case 404:
       return ApiResponseStatus.notFound;
     case 500:
+      return ApiResponseStatus.serverError;
+    default:
+      throw Exception('Unknown status code: $statusCode');
+  }
+}
+
+ApiResponseStatus mapStatusCodePhp(int statusCode){
+  switch (statusCode) {
+    case 1:
+      return ApiResponseStatus.success;
+    case 2:
+      return ApiResponseStatus.badRequest;
+    case 3:
+      return ApiResponseStatus.unauthorized;
+    case 4:
+      return ApiResponseStatus.unauthorized;
+    case 5:
       return ApiResponseStatus.serverError;
     default:
       throw Exception('Unknown status code: $statusCode');

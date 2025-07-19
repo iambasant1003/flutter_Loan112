@@ -1,9 +1,17 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
+import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
+import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
+import 'package:loan112_app/Model/VerifyOTPModel.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
+import 'package:loan112_app/Utils/MysharePrefenceClass.dart';
+import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:loan112_app/Widget/app_bar.dart';
 import 'package:loan112_app/Widget/common_button.dart';
 import 'package:loan112_app/Widget/common_textField.dart';
@@ -23,9 +31,11 @@ class _CheckEligibility extends State<CheckEligibility>{
 
 
 
-  String employmentType = "Salaried";
-  String gender = "Male";
+  int employmentType = 1;
+  int gender = 1;
   bool submitted = false;
+  String stateId = "";
+  String cityId = "";
 
   TextEditingController netMonthlyIncome = TextEditingController();
   TextEditingController dateOfBirth = TextEditingController();
@@ -34,6 +44,7 @@ class _CheckEligibility extends State<CheckEligibility>{
   TextEditingController cityController = TextEditingController();
   TextEditingController panController = TextEditingController();
   TextEditingController emailController = TextEditingController();
+  TextEditingController companyNameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -45,6 +56,7 @@ class _CheckEligibility extends State<CheckEligibility>{
     cityController.dispose();
     panController.dispose();
     emailController.dispose();
+    companyNameController.dispose();
     super.dispose();
   }
 
@@ -52,213 +64,260 @@ class _CheckEligibility extends State<CheckEligibility>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          /// Background image
-          Positioned.fill(
-            child: Image.asset(
-              ImageConstants.logInScreenBackGround,
-              fit: BoxFit.cover,
-            ),
-          ),
-
-          SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Loan112AppBar(
-                  customLeading: InkWell(
-                    onTap: (){
-                      context.pop();
-                    },
-                    child: Icon(Icons.arrow_back_ios, color: ColorConstant.blackTextColor),
-                  ),
+      body: BlocListener<LoanApplicationCubit,LoanApplicationState>(
+          listener: (context,state){
+            if(state is LoanApplicationLoading){
+              EasyLoading.show(status: "Please Wait...");
+            }else if(state is CreateLeadSuccess){
+              EasyLoading.dismiss();
+              MySharedPreferences.setLeadId(state.createLeadModel.data?.leadId?? "");
+              context.replace(AppRouterName.eligibilityStatus,extra: state.createLeadModel);
+            }else if(state is GetPinCodeDetailsSuccess){
+              EasyLoading.dismiss();
+              stateController.text = state.pinCodeDetailsModel.data?.stateName ?? "";
+              cityController.text = state.pinCodeDetailsModel.data?.cityName ?? "";
+              stateId = state.pinCodeDetailsModel.data?.stateId.toString() ?? "";
+              cityId =  "110";
+            } else if(state is CreateLeadError){
+              EasyLoading.dismiss();
+              if(
+              state.createLeadModel.message == "You are not eligible" &&
+              state.createLeadModel.statusCode == 402 && state.createLeadModel.success == false
+              ){
+                context.replace(AppRouterName.eligibilityStatus,extra: state.createLeadModel);
+              }
+            } else if(state is LoanApplicationError){
+              openSnackBar(context, state.message);
+            }
+          },
+          child: Stack(
+            children: [
+              /// Background image
+              Positioned.fill(
+                child: Image.asset(
+                  ImageConstants.logInScreenBackGround,
+                  fit: BoxFit.cover,
                 ),
-                SizedBox(height: 8.0),
+              ),
 
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Check Your Eligibility",
-                        style: TextStyle(
-                          fontSize: FontConstants.f20,
-                          fontWeight: FontConstants.w800,
-                          fontFamily: FontConstants.fontFamily,
-                          color: ColorConstant.blackTextColor,
-                        ),
+              SafeArea(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Loan112AppBar(
+                      customLeading: InkWell(
+                        onTap: (){
+                          context.pop();
+                        },
+                        child: Icon(Icons.arrow_back_ios, color: ColorConstant.blackTextColor),
                       ),
-                      SizedBox(height: 16.0),
+                    ),
+                    SizedBox(height: 8.0),
 
-                      Text(
-                        "Ensure to provide correct information!",
-                        style: TextStyle(
-                          fontSize: FontConstants.f14,
-                          fontWeight: FontConstants.w600,
-                          fontFamily: FontConstants.fontFamily,
-                          color: ColorConstant.greyTextColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                SizedBox(height: 8.0),
-
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
-                    child: Form(
-                      key: _formKey,
-                      autovalidateMode: submitted?AutovalidateMode.onUserInteraction:AutovalidateMode.disabled,
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(height: 24.0),
-
-                          labelTypeWidget("Select Employment Type"),
-                          SizedBox(height: 6.0),
-
-                          employmentTypeSelector(
-                            selectedType: employmentType,
-                            onChanged: (val) {
-                              setState(() {
-                                employmentType = val;
-                              });
-                            },
-                          ),
-                          SizedBox(height: 24.0),
-
-                          labelTypeWidget("Net Monthly Income"),
-                          SizedBox(height: 6.0),
-
-                          CommonTextField(
-                            controller: netMonthlyIncome,
-                            hintText: "Enter your net monthly income*",
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            validator: (val){
-                              if(val!.trim().isEmpty){
-                                return "Please enter your net monthly income";
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: 12.0),
-
-                          labelTypeWidget("Select Gender Type"),
-                          SizedBox(height: 6.0),
-
-                          modeOfIncomeTypeSelector(
-                            selectedType: gender,
-                            onChanged: (val) {
-                              setState(() {
-                                gender = val;
-                              });
-                            },
-                          ),
-
-                          SizedBox(height: 12.0),
-
-                          labelTypeWidget("Date of Birth"),
-                          SizedBox(height: 6.0),
-
-                          CommonTextField(
-                            controller: dateOfBirth,
-                            hintText: "Select your Date of Birth*",
-                            readOnly: true,  // make it readonly, we only pick from calendar
-                            trailingWidget: GestureDetector(
-                              onTap: () => _pickDateOfBirth(context),
-                              child: Icon(Icons.calendar_month, color: ColorConstant.greyTextColor, size: 20),
+                          Text(
+                            "Check Your Eligibility",
+                            style: TextStyle(
+                              fontSize: FontConstants.f20,
+                              fontWeight: FontConstants.w800,
+                              fontFamily: FontConstants.fontFamily,
+                              color: ColorConstant.blackTextColor,
                             ),
-                            validator: (val) => validateDateOfBirth(val),
                           ),
-                          SizedBox(height: 12.0),
+                          SizedBox(height: 16.0),
 
-                          labelTypeWidget("Pin code"),
-                          SizedBox(height: 6.0),
-
-                          CommonTextField(
-                            controller: pinCodeController,
-                            hintText: "Enter Pin code",
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            validator: (val)=> validateIndianPinCode(val)
+                          Text(
+                            "Ensure to provide correct information!",
+                            style: TextStyle(
+                              fontSize: FontConstants.f14,
+                              fontWeight: FontConstants.w600,
+                              fontFamily: FontConstants.fontFamily,
+                              color: ColorConstant.greyTextColor,
+                            ),
                           ),
-                          SizedBox(height: 12.0),
-
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    labelTypeWidget("State"),
-                                    SizedBox(height: 6.0),
-                                    CommonTextField(
-                                      controller: stateController,
-                                      hintText: "Enter your State",
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(width: 6.0),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    labelTypeWidget("City"),
-                                    SizedBox(height: 6.0),
-                                    CommonTextField(
-                                      controller: cityController,
-                                      hintText: "Enter your City",
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 12.0),
-
-                          labelTypeWidget("PAN Number"),
-                          SizedBox(height: 6.0),
-
-                          CommonTextField(
-                            controller: panController,
-                            hintText: 'Enter PAN Number',
-                            keyboardType: TextInputType.text,
-                            inputFormatters: [
-                              LengthLimitingTextInputFormatter(10),
-                              UpperCaseTextFormatter(),
-                            ],
-                            validator: validatePanCard,
-                          ),
-                          SizedBox(height: 12.0),
-
-                          labelTypeWidget("Personal Email"),
-                          SizedBox(height: 6.0),
-
-                          CommonTextField(
-                            controller: emailController,
-                            hintText: "Enter your Email",
-                            validator: (val) => validateEmail(val)
-                          ),
-                          SizedBox(height: 24.0),
                         ],
                       ),
                     ),
-                  ),
+
+                    SizedBox(height: 8.0),
+
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
+                        child: Form(
+                          key: _formKey,
+                          autovalidateMode: submitted?AutovalidateMode.onUserInteraction:AutovalidateMode.disabled,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 24.0),
+
+                              labelTypeWidget("Select Employment Type"),
+                              SizedBox(height: 6.0),
+
+                              employmentTypeSelector(
+                                selectedType: employmentType,
+                                onChanged: (val) {
+                                  setState(() {
+                                    employmentType = val;
+                                  });
+                                },
+                              ),
+                              SizedBox(height: 24.0),
+
+                              labelTypeWidget("Net Monthly Income"),
+                              SizedBox(height: 6.0),
+
+                              CommonTextField(
+                                controller: netMonthlyIncome,
+                                hintText: "Enter your net monthly income*",
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                                validator: (val){
+                                  if(val!.trim().isEmpty){
+                                    return "Please enter your net monthly income";
+                                  }
+                                  return null;
+                                },
+                              ),
+                              SizedBox(height: 12.0),
+                              labelTypeWidget("Company Name"),
+                              SizedBox(height: 6.0),
+
+                              CommonTextField(
+                                controller: companyNameController,
+                                hintText: "Enter your Company Name*",
+                                keyboardType: TextInputType.text,
+                                validator: (val){
+                                  if(val!.trim().isEmpty){
+                                    return "Please enter your company name";
+                                  }
+                                  return null;
+                                },
+                              ),
+                              SizedBox(height: 12.0),
+
+                              labelTypeWidget("Select Gender Type"),
+                              SizedBox(height: 6.0),
+
+                              modeOfIncomeTypeSelector(
+                                selectedType: gender,
+                                onChanged: (val) {
+                                  setState(() {
+                                    gender = val;
+                                  });
+                                },
+                              ),
+
+                              SizedBox(height: 12.0),
+
+                              labelTypeWidget("Date of Birth"),
+                              SizedBox(height: 6.0),
+
+                              CommonTextField(
+                                controller: dateOfBirth,
+                                hintText: "Select your Date of Birth*",
+                                readOnly: true,  // make it readonly, we only pick from calendar
+                                trailingWidget: GestureDetector(
+                                  onTap: () => _pickDateOfBirth(context),
+                                  child: Icon(Icons.calendar_month, color: ColorConstant.greyTextColor, size: 20),
+                                ),
+                                validator: (val) => validateDateOfBirth(val),
+                              ),
+                              SizedBox(height: 12.0),
+
+                              labelTypeWidget("Pin code"),
+                              SizedBox(height: 6.0),
+
+                              CommonTextField(
+                                  controller: pinCodeController,
+                                  hintText: "Enter Pin code",
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                  onChanged: (val){
+                                    if(val.trim().length == 6){
+                                      context.read<LoanApplicationCubit>().getPinCodeDetailsApiCall(val);
+                                    }
+                                  },
+                                  validator: (val)=> validateIndianPinCode(val)
+                              ),
+                              SizedBox(height: 12.0),
+
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        labelTypeWidget("State"),
+                                        SizedBox(height: 6.0),
+                                        CommonTextField(
+                                          controller: stateController,
+                                          hintText: "Enter your State",
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(width: 6.0),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        labelTypeWidget("City"),
+                                        SizedBox(height: 6.0),
+                                        CommonTextField(
+                                          controller: cityController,
+                                          hintText: "Enter your City",
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 12.0),
+
+                              labelTypeWidget("PAN Number"),
+                              SizedBox(height: 6.0),
+
+                              CommonTextField(
+                                controller: panController,
+                                hintText: 'Enter PAN Number',
+                                keyboardType: TextInputType.text,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(10),
+                                  UpperCaseTextFormatter(),
+                                ],
+                                validator: validatePanCard,
+                              ),
+                              SizedBox(height: 12.0),
+
+                              labelTypeWidget("Personal Email"),
+                              SizedBox(height: 6.0),
+
+                              CommonTextField(
+                                  controller: emailController,
+                                  hintText: "Enter your Email",
+                                  validator: (val) => validateEmail(val)
+                              ),
+                              SizedBox(height: 24.0),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          )
-        ],
+              )
+            ],
+          ),
       ),
       bottomNavigationBar: Container(
         height: 140,
@@ -272,12 +331,33 @@ class _CheckEligibility extends State<CheckEligibility>{
                 height: 24.0,
               ),
               Loan112Button(
-                  onPressed: (){
+                  onPressed: () async{
                     setState(() {
                       submitted = true;
                     });
                     if(_formKey.currentState!.validate()){
-                      context.push(AppRouterName.eligibilityStatus);
+                      var otpModel = await MySharedPreferences.getUserSessionDataNode();
+                      VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
+                      context.read<LoanApplicationCubit>().checkEligibilityApiCall(
+                        {
+                           "custId": verifyOtpModel.data?.custId,
+                           "employementType": employmentType,
+                            "pincode": pinCodeController.text.trim(),
+                           "pancard": panController.text.trim(),
+                            "personalEmail": emailController.text.trim(),
+                           "stateId": stateId,
+                           "cityId": cityId,
+                           "stateName": stateController.text.trim(),
+                           "cityName": cityController.text.trim(),
+                           "mobile": verifyOtpModel.data?.mobile.toString(),
+                           "requestSource": "and",
+                           "salaryAmt": int.parse(netMonthlyIncome.text.trim()),
+                           "dob": dateOfBirth.text,
+                           "gender":gender,
+                           "ip_web":"192.0.0.0",
+                           "empName": companyNameController.text.trim()
+                        }
+                      );
                     }
                   },
                   text: "Check Eligibility"
@@ -348,22 +428,22 @@ class _CheckEligibility extends State<CheckEligibility>{
 
  
   Widget employmentTypeSelector({
-    required String selectedType,
-    required Function(String) onChanged,
+    required int selectedType,
+    required Function(int) onChanged,
   }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         _buildOption(
           label: 'Salaried',
-          isSelected: selectedType == 'Salaried',
-          onTap: () => onChanged('Salaried'),
+          isSelected: selectedType == 1,
+          onTap: () => onChanged(1),
         ),
         const SizedBox(width: 24),
         _buildOption(
           label: 'Self Employed',
-          isSelected: selectedType == 'Self Employed',
-          onTap: () => onChanged('Self Employed'),
+          isSelected: selectedType == 2,
+          onTap: () => onChanged(2),
         ),
       ],
     );
@@ -372,22 +452,22 @@ class _CheckEligibility extends State<CheckEligibility>{
 
 
   Widget modeOfIncomeTypeSelector({
-    required String selectedType,
-    required Function(String) onChanged,
+    required int selectedType,
+    required Function(int) onChanged,
   }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         _buildOption(
           label: 'Male',
-          isSelected: selectedType == 'Male',
-          onTap: () => onChanged('Male'),
+          isSelected: selectedType == 1,
+          onTap: () => onChanged(1),
         ),
         const SizedBox(width: 24),
         _buildOption(
           label: 'Female',
-          isSelected: selectedType == 'Female',
-          onTap: () => onChanged('Female'),
+          isSelected: selectedType == 2,
+          onTap: () => onChanged(2),
         ),
       ],
     );

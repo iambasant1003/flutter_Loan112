@@ -1,13 +1,24 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
+import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
+import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
+import 'package:loan112_app/Model/SendPhpOTPModel.dart';
+import 'package:loan112_app/Model/VerifyPHPOTPModel.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
+import 'package:loan112_app/Utils/Debugprint.dart';
+import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:loan112_app/Widget/app_bar.dart';
 import 'package:loan112_app/Widget/circular_progress.dart';
 import '../../Constant/ColorConst/ColorConstant.dart';
 import '../../Constant/ImageConstant/ImageConstants.dart';
+import '../../Cubit/loan_application_cubit/JourneyCubit.dart';
+import '../../Model/VerifyOTPModel.dart';
+import '../../Utils/MysharePrefenceClass.dart';
 import '../../Widget/common_step.dart';
-import 'loanApplicationOptions/selfieVerification/selfie_verification.dart';
 
 class LoanApplicationPage extends StatefulWidget{
   const LoanApplicationPage({super.key});
@@ -16,11 +27,23 @@ class LoanApplicationPage extends StatefulWidget{
   State<StatefulWidget> createState() => _LoanApplicationPage();
 }
 
-class _LoanApplicationPage extends State<LoanApplicationPage>{
+class _LoanApplicationPage extends State<LoanApplicationPage> {
 
-  final int currentStep = 0;
+  final int currentStep = 1;
 
-  final List<String> steps = [
+
+  final List<String> step = [
+    "check_eligibility",
+    "ekyc_verified",
+    "selfie_upload",
+    "bank_statement_upload",
+    "loan_quote",
+    "residence_proof_upload",
+    "customer_references",
+    "banking_details"
+  ];
+
+  final List<String> stepKeys = [
     "Check Eligibility",
     "eKYC",
     "Selfie Verification",
@@ -30,6 +53,27 @@ class _LoanApplicationPage extends State<LoanApplicationPage>{
     "Add References",
     "Banking Details"
   ];
+
+
+
+
+
+
+
+  @override
+  void initState() {
+    super.initState();
+    getCustomerDetailsApiCall();
+  }
+
+
+  getCustomerDetailsApiCall() async{
+    var otpModel = await MySharedPreferences.getPhpOTPModel();
+    SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
+    context.read<LoanApplicationCubit>().getCustomerDetailsApiCall({
+      "cust_profile_id": sendPhpOTPModel.data?.custProfileId
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,127 +97,175 @@ class _LoanApplicationPage extends State<LoanApplicationPage>{
         centerTitle: true,
         backgroundColor: Color(0xffE7F3FF),
       ),
-      body: SizedBox.expand(
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.asset(
-                ImageConstants.permissionScreenBackground,
-                fit: BoxFit.cover, // Optional: to scale and crop nicely
-              ),
-            ),
-            Positioned(
-              left: 15,
-              right: 15,
-              top: 20,
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.7,
-                height: MediaQuery.of(context).size.height * 0.9,
-                decoration: BoxDecoration(
-                  color: ColorConstant.whiteColor,
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(10.0),
+      body: BlocListener<LoanApplicationCubit,LoanApplicationState>(
+          listenWhen: (prevState,currentState){
+            return prevState != currentState;
+          },
+          listener: (context,state){
+            if(state is LoanApplicationLoading){
+              EasyLoading.show(status: "Please wait...");
+            }else if(state is GetCustomerDetailsSuccess){
+              EasyLoading.dismiss();
+              context.read<JourneyCubit>().updateJourneyTabs(
+                  state.getCustomerDetailsModel.data?.screenDetails!.toJson() as Map<String,dynamic>
+              );
+              // setState(() {
+              //   journeyTabs = state.getCustomerDetailsModel.data?.journeyScreenTabs!.toJson() as Map<String,dynamic>;
+              // });
+            }else if(state is GetCustomerDetailsError){
+              EasyLoading.dismiss();
+              openSnackBar(context, state.getCustomerDetailsModel.message ?? "Unknown Error");
+            }
+          },
+          child: SizedBox.expand(
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Image.asset(
+                    ImageConstants.permissionScreenBackground,
+                    fit: BoxFit.cover, // Optional: to scale and crop nicely
                   ),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
+                Positioned(
+                  left: 15,
+                  right: 15,
+                  top: 20,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    height: MediaQuery.of(context).size.height * 0.9,
+                    decoration: BoxDecoration(
+                      color: ColorConstant.whiteColor,
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(10.0),
+                      ),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        SizedBox(
-                          height: 90,
-                          width: 90,
-                          child: CircularProgressWithText(
-                            progress: 0.1,
-                            isDrawer: false,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10.0,
-                        ),
-                        Expanded(
-                          child: Text(
-                            "Begin your journey to financial empowerment-provide the necessary details to initiate your loan application.",
-                            style: TextStyle(
-                                fontFamily: FontConstants.fontFamily,
-                                fontWeight: FontConstants.w500,
-                                fontSize: FontConstants.f14,
-                                color: ColorConstant.dashboardTextColor
+                        Row(
+                          children: [
+                            SizedBox(
+                              height: 90,
+                              width: 90,
+                              child: CircularProgressWithText(
+                                progress: 0.1,
+                                isDrawer: false,
+                              ),
                             ),
-                          ),
+                            SizedBox(
+                              width: 10.0,
+                            ),
+                            Expanded(
+                              child: Text(
+                                "Begin your journey to financial empowerment-provide the necessary details to initiate your loan application.",
+                                style: TextStyle(
+                                    fontFamily: FontConstants.fontFamily,
+                                    fontWeight: FontConstants.w500,
+                                    fontSize: FontConstants.f14,
+                                    color: ColorConstant.dashboardTextColor
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        // 👇 Wrap with Expanded
+                        BlocBuilder<JourneyCubit,Map<String,dynamic>>(
+                          builder: (context,state){
+                            return Expanded(
+                              child: ListView.builder(
+                                itemCount: stepKeys.length,
+                                itemBuilder: (context, index) {
+                                  final stepKey = step[index];
+                                  final int? status = int.tryParse(state[stepKey].toString());
+
+                                  return Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      InkWell(
+                                        onTap:(){
+                                          DebugPrint.prt("Current Status $status");
+                                          if(status == null){
+                                            if(stepKeys[index].toLowerCase().contains('eligibility')){
+                                              context.push(AppRouterName.checkEligibilityPage);
+                                            }
+                                          }else{
+                                            if(stepKeys[index].toLowerCase().contains('eligibility') && status !=1 && status != 0){
+                                              context.push(AppRouterName.checkEligibilityPage).then((val){
+                                                getCustomerDetailsApiCall();
+                                              });
+                                            }else if(stepKeys[index].toLowerCase().contains('statement') && status != 1 && status != 0){
+                                              context.push(AppRouterName.bankStatement).then((val){
+                                                getCustomerDetailsApiCall();
+                                              });
+                                            }else if(stepKeys[index].toLowerCase().contains('ekyc')&& status !=1 && status != 0){
+                                              context.push(AppRouterName.aaDarKYCScreen).then((val){
+                                                //getCustomerDetailsApiCall();
+                                              });
+                                            }else if(stepKeys[index].toLowerCase().contains('selfie')&& status!=1 && status != 0){
+                                              context.push(AppRouterName.selfieScreenPath).then((val){
+                                                getCustomerDetailsApiCall();
+                                              });
+                                            }else if(stepKeys[index].toLowerCase().contains("offer")&&status!=1 && status != 0){
+                                              context.push(AppRouterName.loanOfferPage).then((val){
+                                                getCustomerDetailsApiCall();
+                                              });
+                                            }else if(stepKeys[index].toLowerCase().contains('reference')&&status!=1 && status != 0){
+                                              context.push(AppRouterName.addReference).then((val){
+                                                getCustomerDetailsApiCall();
+                                              });
+                                            }else if(stepKeys[index].toLowerCase().contains('utility')&&status!=1 && status != 0){
+                                              context.push(AppRouterName.utilityBillScreen).then((val){
+                                                getCustomerDetailsApiCall();
+                                              });
+                                            }else if(stepKeys[index].toLowerCase().contains('bank')&&status!=1 && status != 0){
+                                              context.push(AppRouterName.bankDetailsScreen).then((val){
+                                                getCustomerDetailsApiCall();
+                                              });
+                                            }
+                                          }
+                                        },
+                                        child: StepItem(
+                                          title: stepKeys[index],
+                                          status: status ?? 0,
+                                        ),
+                                      ),
+                                      // add line below except for last item
+                                      if (index != stepKeys.length - 1)
+                                        const SizedBox(height: 4),
+                                      if (index != stepKeys.length - 1)
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 20.0),
+                                          child: Container(
+                                            height: 20,
+                                            width: 2,
+                                            color: index < currentStep - 1
+                                                ? Colors.blue // completed line color
+                                                : Colors.grey.shade300, // pending line color
+                                          ),
+                                        ),
+                                      if(index == stepKeys.length-1)
+                                        SizedBox(
+                                          height: 20,
+                                        )
+                                    ],
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                        SizedBox(
+                          height: 20.0,
                         )
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    // 👇 Wrap with Expanded
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: steps.length,
-                        itemBuilder: (context, index) {
-                          bool isCompleted = index < currentStep;
-                          bool isCurrent = index == currentStep;
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              InkWell(
-                                onTap:(){
-                                  if(steps[index].toLowerCase().contains('eligibility')){
-                                    context.push(AppRouterName.checkEligibilityPage);
-                                  }else if(steps[index].toLowerCase().contains('statement')){
-                                    context.push(AppRouterName.bankStatement);
-                                  }else if(steps[index].toLowerCase().contains('ekyc')){
-                                    context.push(AppRouterName.aaDarKYCScreen);
-                                  }else if(steps[index].toLowerCase().contains('selfie')){
-                                  context.push(AppRouterName.selfieScreenPath);
-                                  }else if(steps[index].toLowerCase().contains("offer")){
-                                    context.push(AppRouterName.loanOfferPage);
-                                  }else if(steps[index].toLowerCase().contains('reference')){
-                                    context.push(AppRouterName.addReference);
-                                  }else if(steps[index].toLowerCase().contains('utility')){
-                                    context.push(AppRouterName.utilityBillScreen);
-                                  }else if(steps[index].toLowerCase().contains('bank')){
-                                    context.push(AppRouterName.bankDetailsScreen);
-                                  }
-                                },
-                                child: StepItem(
-                                  title: steps[index],
-                                  isCompleted: isCompleted,
-                                  isCurrent: isCurrent,
-                                ),
-                              ),
-                              // add line below except for last item
-                              if (index != steps.length - 1)
-                                const SizedBox(height: 4),
-                              if (index != steps.length - 1)
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 20.0),
-                                  child: Container(
-                                    height: 20,
-                                    width: 2,
-                                    color: index < currentStep - 1
-                                        ? Colors.blue // completed line color
-                                        : Colors.grey.shade300, // pending line color
-                                  ),
-                                ),
-                              if(index == steps.length-1)
-                                SizedBox(
-                                  height: 20,
-                                )
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20.0,
-                    )
-                  ],
-                ),
-              ),
-            )
-          ],
-        ),
+                  ),
+                )
+              ],
+            ),
+          ),
       )
     );
   }

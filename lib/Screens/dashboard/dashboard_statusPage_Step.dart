@@ -49,7 +49,6 @@ class DashboardStatuspageStep extends StatelessWidget {
 
          return Container(
            margin: const EdgeInsets.symmetric(vertical: 6),
-           height: 60,
            child: Stack(
              children: [
                // Full width transparent base

@@ -5,7 +5,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 class MySharedPreferences {
   static const setLoginData = 'logInData';
   static const isPermissionGiven = 'permissionGiven';
-  static const userSessionData = 'userSessionData';
+  static const userSessionDataNode = 'userSessionDataNode';
+  static const userSessionDataPhp = "useSessionDataPhp";
+  static const savePhpOtpModel = 'savePhpOtpModel';
+  static const saveLeadId = 'saveLeadId';
+
 
   static Future<SharedPreferences> _getPreferences() async {
     return SharedPreferences.getInstance();
@@ -48,15 +52,71 @@ class MySharedPreferences {
     }
   }
 
-  static Future<void> setUserSessionData(String userdata) async {
-    String data = userdata;
+
+
+  static Future<void> setLeadId(String leadId) async {
+    String data = leadId;
     final prefs = await _getPreferences();
-    await prefs.setString(userSessionData, data);
+    await prefs.setString(saveLeadId, data);
   }
 
-  static Future<dynamic> getUserSessionData() async {
+  static Future<String> getLeadId() async {
     final prefs = await _getPreferences();
-    String? loginPIN = prefs.getString(userSessionData);
+    String? leadId = prefs.getString(saveLeadId);
+
+    if (leadId != null) {
+      return leadId;
+    } else {
+      return "";
+    }
+  }
+
+
+  static Future<void> setPhpOTPModel(String userdata) async {
+    String data = userdata;
+    final prefs = await _getPreferences();
+    await prefs.setString(savePhpOtpModel, data);
+  }
+
+  static Future<dynamic> getPhpOTPModel() async {
+    final prefs = await _getPreferences();
+    String? otpModel = prefs.getString(savePhpOtpModel);
+
+    if (otpModel != null) {
+      return otpModel;
+    } else {
+      return null;
+    }
+  }
+
+
+  static Future<void> setUserSessionDataNode(String userdata) async {
+    String data = userdata;
+    final prefs = await _getPreferences();
+    await prefs.setString(userSessionDataNode, data);
+  }
+
+  static Future<dynamic> getUserSessionDataNode() async {
+    final prefs = await _getPreferences();
+    String? loginPIN = prefs.getString(userSessionDataNode);
+
+    if (loginPIN != null) {
+      return loginPIN;
+    } else {
+      return null;
+    }
+  }
+
+
+  static Future<void> setUserSessionDataPhp(String userdata) async {
+    String data = userdata;
+    final prefs = await _getPreferences();
+    await prefs.setString(userSessionDataPhp, data);
+  }
+
+  static Future<dynamic> getUserSessionDataPhp() async {
+    final prefs = await _getPreferences();
+    String? loginPIN = prefs.getString(userSessionDataPhp);
 
     if (loginPIN != null) {
       return loginPIN;
@@ -67,12 +127,15 @@ class MySharedPreferences {
 
 
 
-  static Future<void> logOutFunctionData() async {
-    // final prefs = await _getPreferences();
-    // prefs.remove(fieldOfficerDashboardDataString);
-    // prefs.remove(fieldOfficerDataString);
-    // prefs.remove(setLoginPIN);
-    // prefs.remove(saveHomeModel);
-    // prefs.remove(_saveAreaWiseCasesModel);
+
+
+  static Future<bool> logOutFunctionData() async {
+    final prefs = await _getPreferences();
+    final removedLogin = await prefs.remove(setLoginData);
+    final removedNode = await prefs.remove(userSessionDataNode);
+    final removedPhp = await prefs.remove(userSessionDataPhp);
+    final removedOtp = await prefs.remove(savePhpOtpModel);
+
+    return removedLogin || removedNode || removedPhp || removedOtp;
   }
 }

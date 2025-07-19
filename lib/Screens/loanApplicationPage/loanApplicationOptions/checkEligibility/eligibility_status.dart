@@ -8,10 +8,12 @@ import 'package:loan112_app/Widget/app_bar.dart';
 import 'package:loan112_app/Widget/common_border_button.dart';
 import 'package:loan112_app/Widget/common_button.dart';
 
+import '../../../../Model/CreateLeadModel.dart';
 import '../../../../Widget/eligibility_status_background.dart';
 
 class EligibilityStatus extends StatefulWidget{
-  const EligibilityStatus({super.key});
+  final CreateLeadModel createLeadModel;
+  const EligibilityStatus({super.key,required this.createLeadModel});
 
   @override
   State<StatefulWidget> createState() => _EligibilityStatus();
@@ -56,14 +58,19 @@ class _EligibilityStatus extends State<EligibilityStatus>{
                             color: ColorConstant.whiteColor,
                             shape: BoxShape.circle,
                           ),
-                          child: Center(
+                          child: widget.createLeadModel.success == true?
+                          Center(
                             child: SvgPicture.asset(ImageConstants.successIcon),
+                          ):
+                          Center(
+                            child: Image.asset(ImageConstants.failedIcon),
                           ),
                         ),
                       )
                     ],
                   ),
                   const SizedBox(height: 65),
+                  widget.createLeadModel.success == true?
                   Text(
                     "Congratulations!",
                     style: TextStyle(
@@ -72,15 +79,20 @@ class _EligibilityStatus extends State<EligibilityStatus>{
                       fontFamily: FontConstants.fontFamily,
                       color: ColorConstant.blackTextColor,
                     ),
-                  ),
+                  ):
+                  SizedBox.shrink(),
                   const SizedBox(height: 12.0),
                   Text(
-                    "Hurray! You are eligible for loan",
+                    widget.createLeadModel.success == true?
+                    "Hurray! You are eligible for loan":
+                    "You are not eligible for loan",
                     style: TextStyle(
                       fontSize: FontConstants.f12,
                       fontFamily: FontConstants.fontFamily,
                       fontWeight: FontConstants.w500,
-                      color: ColorConstant.blackTextColor,
+                      color: widget.createLeadModel.success == true?
+                      ColorConstant.blackTextColor:
+                      ColorConstant.errorRedColor,
                     ),
                   ),
                   Padding(
@@ -90,7 +102,6 @@ class _EligibilityStatus extends State<EligibilityStatus>{
                         const SizedBox(height: 22),
                         eligibilityConfirmMessage(context),
                         const SizedBox(height: 22),
-                        loanOfferUi(context),
                       ],
                     ),
                   ),
@@ -105,17 +116,12 @@ class _EligibilityStatus extends State<EligibilityStatus>{
             child: Column(
               children: [
                 Loan112Button(
-                  onPressed: () {},
-                  text: "YES",
+                  onPressed: () {
+                    context.pop();
+                  },
+                  text: "Ok",
                 ),
                 const SizedBox(height: 16.0),
-                Loan112BorderButton(
-                  onPressed: () {},
-                  text: "SKIP",
-                ),
-                SizedBox(
-                  height: 40,
-                )
               ],
             ),
           ),
@@ -138,9 +144,11 @@ class _EligibilityStatus extends State<EligibilityStatus>{
       ),
       child:  Center(
         child: Text(
-          'ELIGIBILITY CONFIRMED',
+          widget.createLeadModel.success ==true?
+          'ELIGIBILITY CONFIRMED':'ELIGIBILITY FAILED',
           style: TextStyle(
-            color: ColorConstant.greenColor,
+            color: widget.createLeadModel.success ==true?
+            ColorConstant.greenColor:ColorConstant.errorRedColor,
             fontSize: FontConstants.f14,
             fontWeight: FontConstants.w700,
             fontFamily: FontConstants.fontFamily
