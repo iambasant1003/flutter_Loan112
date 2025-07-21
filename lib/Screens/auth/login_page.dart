@@ -1,7 +1,6 @@
 
 
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,7 +16,6 @@ import 'package:loan112_app/Widget/common_system_ui.dart';
 import '../../Constant/FontConstant/FontConstant.dart';
 import '../../Cubit/auth_cubit/AuthCubit.dart';
 import '../../Cubit/auth_cubit/AuthState.dart';
-import '../../Widget/app_bar.dart';
 import '../../Widget/common_button.dart';
 import '../../Widget/common_textField.dart';
 
@@ -34,11 +32,6 @@ class _LogInPageState extends State<LogInPage> {
   TextEditingController mobileController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  @override
-  void dispose() {
-    mobileController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,13 +42,16 @@ class _LogInPageState extends State<LogInPage> {
               return prev != current;
             },
             listener: (BuildContext context, state) {
+
+              if (ModalRoute.of(context)?.isCurrent != true) return;
+
               if(state is AuthLoading){
                 EasyLoading.show(status: "Please Wait");
               } else if(state is AuthPhpSuccess){
                 //EasyLoading.dismiss();
                 MySharedPreferences.setPhpOTPModel(jsonEncode(state.data));
-                context.read<AuthCubit>().sendOtpNode(mobileController.text.trim());
               } else if(state is AuthNodeSuccess){
+                DebugPrint.prt("Navigation Logic Called To OTP");
                 EasyLoading.dismiss();
                 context.push(AppRouterName.verifyOtp,extra: mobileController.text.trim()).then((val){
                   mobileController = TextEditingController();
@@ -200,3 +196,5 @@ class _LogInPageState extends State<LogInPage> {
   }
 
 }
+
+

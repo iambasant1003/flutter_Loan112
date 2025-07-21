@@ -7,6 +7,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:loan112_app/Constant/PageKeyConstant/PageKeyConstant.dart';
 import 'package:loan112_app/Model/SendOTPModel.dart';
 import 'package:loan112_app/Model/SendPhpOTPModel.dart';
+import 'package:loan112_app/ParamModel/SendOTPPramNodeModel.dart';
+import 'package:loan112_app/ParamModel/SendOTPPramPHPModel.dart';
 import 'package:loan112_app/Services/ApiResponseStatus.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
 import 'package:loan112_app/Utils/MysharePrefenceClass.dart';
@@ -21,10 +23,12 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> sendOtpNode(String phoneNumber) async {
     //emit(AuthLoading());
+
+    SendOTPPramNodeModel sendOTPPramNodeModel = SendOTPPramNodeModel();
+    sendOTPPramNodeModel.mobile = phoneNumber.trim().toString();
+
     try {
-      final response = await authRepository.sendOTPNodeApiCallFunction({
-        "mobile": phoneNumber,
-      });
+      final response = await authRepository.sendOTPNodeApiCallFunction(sendOTPPramNodeModel.toJson());
       if (response.status == ApiResponseStatus.success) {
         emit(AuthNodeSuccess(response.data!));
       } else {
@@ -43,31 +47,37 @@ class AuthCubit extends Cubit<AuthState> {
     final geoLat = position.latitude.toString();
     final geoLong = position.longitude.toString();
     final deviceId = await getDeviceId();
-    
+
+    DebugPrint.prt("Position $position,GeoLat $geoLat,GeoLang $geoLong,DeviceId $deviceId");
+
+    SendOTPPramPHPModel sendOtpParamPHPModel = SendOTPPramPHPModel();
+    sendOtpParamPHPModel.currentPage = pageLogin.toString();
+    sendOtpParamPHPModel.mobile = phoneNumber.trim().toString();
+    sendOtpParamPHPModel.isExistingCustomer = 0;
+    sendOtpParamPHPModel.adjustAdid = 1;
+    sendOtpParamPHPModel.adjustGpsId = 1;
+    sendOtpParamPHPModel.adjustIdfa = 1;
+    sendOtpParamPHPModel.pancard = "";
+    sendOtpParamPHPModel.geoLat = geoLat;
+    sendOtpParamPHPModel.geoLong = geoLong;
+    sendOtpParamPHPModel.utmSource = "";
+    sendOtpParamPHPModel.utmMedium = "";
+    sendOtpParamPHPModel.utmCampaign = "";
+    sendOtpParamPHPModel.fcmToken = "";
+    sendOtpParamPHPModel.appfylerUid = "";
+    sendOtpParamPHPModel.appfylerAdvertiserId = "";
+    sendOtpParamPHPModel.deviceId = deviceId ?? "";
+
+    SendOTPPramNodeModel sendOTPPramNodeModel = SendOTPPramNodeModel();
+    sendOTPPramNodeModel.mobile = phoneNumber.trim().toString();
+
+
+
     emit(AuthLoading());
     try {
      var responseList = await Future.wait([
-      authRepository.sendOTPNodeApiCallFunction({
-      "mobile": phoneNumber,
-      }),
-       authRepository.sendOTPhpApiCallFunction({
-    "current_page": pageLogin.toString(),
-    "mobile": phoneNumber.toString(),
-    "is_existing_customer":0,
-    "adjust_adid":1,
-    "adjust_gps_id":1,
-    "adjust_idfa":1,
-    "pancard":"",
-    "geo_lat":geoLat,
-    "geo_long":geoLong,
-    "utm_source":"",
-    "utm_medium":"",
-    "utm_campaign":"",
-    "fcm_token":"",
-    "appfyler_uid":"",
-    "appfyler_advertiser_id":"",
-    "device_id":deviceId ?? ""
-    })  
+      authRepository.sendOTPNodeApiCallFunction(sendOTPPramNodeModel.toJson()),
+       authRepository.sendOTPhpApiCallFunction(sendOtpParamPHPModel.toJson())
       ]);
       if(responseList[0].status == ApiResponseStatus.success &&
           responseList[1].status == ApiResponseStatus.success){
@@ -94,33 +104,35 @@ class AuthCubit extends Cubit<AuthState> {
 
 
   Future<void> sendOtpHp(String phoneNumber) async {
-    emit(AuthLoading());
     try {
       final position = await getCurrentPosition();
       final geoLat = position.latitude.toString();
       final geoLong = position.longitude.toString();
       final deviceId = await getDeviceId();
 
+      DebugPrint.prt("Position $position,GeoLat $geoLat,GeoLang $geoLong,DeviceId $deviceId");
 
+      SendOTPPramPHPModel sendOtpParamPHPModel = SendOTPPramPHPModel();
+      sendOtpParamPHPModel.currentPage = pageLogin.toString();
+      sendOtpParamPHPModel.mobile = phoneNumber.trim().toString();
+      sendOtpParamPHPModel.isExistingCustomer = 0;
+      sendOtpParamPHPModel.adjustAdid = 1;
+      sendOtpParamPHPModel.adjustGpsId = 1;
+      sendOtpParamPHPModel.adjustIdfa = 1;
+      sendOtpParamPHPModel.pancard = "";
+      sendOtpParamPHPModel.geoLat = geoLat;
+      sendOtpParamPHPModel.geoLong = geoLong;
+      sendOtpParamPHPModel.utmSource = "";
+      sendOtpParamPHPModel.utmMedium = "";
+      sendOtpParamPHPModel.utmCampaign = "";
+      sendOtpParamPHPModel.fcmToken = "";
+      sendOtpParamPHPModel.appfylerUid = "";
+      sendOtpParamPHPModel.appfylerAdvertiserId = "";
+      sendOtpParamPHPModel.deviceId = deviceId ?? "";
 
-      final response = await authRepository.sendOTPhpApiCallFunction({
-        "current_page": pageLogin.toString(),
-        "mobile": phoneNumber.toString(),
-        "is_existing_customer":0,
-        "adjust_adid":1,
-        "adjust_gps_id":1,
-        "adjust_idfa":1,
-        "pancard":"",
-        "geo_lat":geoLat,
-        "geo_long":geoLong,
-        "utm_source":"",
-        "utm_medium":"",
-        "utm_campaign":"",
-        "fcm_token":"",
-        "appfyler_uid":"",
-        "appfyler_advertiser_id":"",
-        "device_id":deviceId ?? ""
-      });
+      emit(AuthLoading());
+
+      final response = await authRepository.sendOTPhpApiCallFunction(sendOtpParamPHPModel.toJson());
 
 
 

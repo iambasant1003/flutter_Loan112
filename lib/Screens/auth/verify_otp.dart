@@ -61,8 +61,7 @@ class _VerifyOTP extends State<VerifyOTP>{
 
 
   void _resendOtp() {
-    // call your resend API here
-    startTimer();
+    context.read<AuthCubit>().sendBothOtp(widget.mobileNumber);
   }
 
   @override
@@ -85,6 +84,15 @@ class _VerifyOTP extends State<VerifyOTP>{
                    return prevState != currentState;
                  },
                   listener: (context,state){
+                    if(state is AuthLoading){
+                      EasyLoading.show(status: "Please Wait");
+                    } else if(state is AuthPhpSuccess){
+                      //EasyLoading.dismiss();
+                      MySharedPreferences.setPhpOTPModel(jsonEncode(state.data));
+                    } else if(state is AuthNodeSuccess){
+                      EasyLoading.dismiss();
+                      startTimer();
+                    }
                     if(state is VerifyOtpLoading){
                       EasyLoading.show(status: "Please Wait");
                     }else if(state is VerifyPhpOTPSuccess){
@@ -198,14 +206,14 @@ class _VerifyOTP extends State<VerifyOTP>{
                                        ? Row(
                                      children: [
                                        Text(
-                                         "Resend OTP",
-                                         style: TextStyle(
-                                             fontFamily: FontConstants.fontFamily,
-                                             fontSize: FontConstants.f14,
-                                             fontWeight: FontConstants.w500,
-                                             color: ColorConstant.blueTextColor
-                                         ),
-                                       ),
+                                     "Resend OTP",
+                                     style: TextStyle(
+                                         fontFamily: FontConstants.fontFamily,
+                                         fontSize: FontConstants.f14,
+                                         fontWeight: FontConstants.w500,
+                                         color: ColorConstant.blueTextColor
+                                     ),
+                                   ),
                                        SizedBox(
                                          width: 4.0,
                                        ),

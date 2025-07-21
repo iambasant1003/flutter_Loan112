@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loan112_app/Constant/ConstText/ConstText.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
+import 'package:loan112_app/Utils/Debugprint.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:loan112_app/Widget/common_button.dart';
 import '../../../../Constant/ColorConst/ColorConstant.dart';
@@ -16,6 +18,7 @@ import '../../../../Cubit/loan_application_cubit/LoanApplicationState.dart';
 import '../../../../Model/VerifyOTPModel.dart';
 import '../../../../Utils/MysharePrefenceClass.dart';
 import '../../../../Widget/app_bar.dart';
+import 'package:image/image.dart' as img;
 
 class SelfieUploadedPage extends StatefulWidget{
   final String imagePath;
@@ -158,15 +161,18 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage>{
                                 height: 12,
                               ),
                               Loan112Button(onPressed: () async{
+                                var imagePathConverted = await convertToJpeg(widget.imagePath);
+                                DebugPrint.prt("Image Path ${imagePathConverted.path}");
                                 var otpModel = await MySharedPreferences.getUserSessionDataNode();
                                 VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
-                                var dataObj = {
+
+                                final Map<String, dynamic> dataObj = {
                                   'custId': verifyOtpModel.data?.custId,
                                   'leadId': verifyOtpModel.data?.leadId,
-                                  'requestSource': "AND",
+                                  'requestSource': ConstText.requestSource,
                                   'selfie': await MultipartFile.fromFile(
-                                    widget.imagePath,
-                                    filename: widget.imagePath.split('/').last,
+                                    imagePathConverted.path,
+                                    filename: imagePathConverted.path.split('/').last,
                                   ),
                                 };
                                 context.read<LoanApplicationCubit>().uploadSelfieApiCall(dataObj);
@@ -183,6 +189,31 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage>{
         ),
       ),
     );
+  }
+
+
+
+
+  Future<File> convertToJpeg(String inputPath, {int quality = 90}) async {
+    final file = File(inputPath);
+
+    // Read the original image
+    final bytes = await file.readAsBytes();
+    final originalImage = img.decodeImage(bytes);
+
+    if (originalImage == null) {
+      throw Exception("Failed to decode image");
+    }
+
+    // Encode as JPEG
+    final jpegBytes = img.encodeJpg(originalImage, quality: quality);
+
+    // Save to a new file
+    final outputPath = inputPath.replaceAll(RegExp(r'\.\w+$'), '.jpeg');
+    final outputFile = File(outputPath);
+    await outputFile.writeAsBytes(jpegBytes);
+
+    return outputFile;
   }
 
 

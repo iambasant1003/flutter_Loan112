@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
 import 'package:loan112_app/Widget/common_button.dart';
+
+import '../../Routes/app_router_name.dart';
 
 class DashboardLoanDetails extends StatelessWidget {
   DashboardLoanDetails({super.key});
@@ -226,42 +229,46 @@ class DashboardLoanDetails extends StatelessWidget {
               )
             ],
           ),
-
           const SizedBox(height: 40),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(40),
-              border: Border.all(
-                color: Colors.blue.shade100,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.blue.shade50,
-                  blurRadius: 8,
-                  offset: Offset(0, 2),
-                )
-              ],
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Check Your Loan History',
-                  style: TextStyle(
-                    fontSize: FontConstants.f14,
-                    fontFamily: FontConstants.fontFamily,
-                    fontWeight: FontConstants.w700,
-                    color: ColorConstant.blackTextColor
+          InkWell(
+            onTap: (){
+              context.push(AppRouterName.repaymentPage);
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(40),
+                border: Border.all(
+                  color: Colors.blue.shade100,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.blue.shade50,
+                    blurRadius: 8,
+                    offset: Offset(0, 2),
                   )
-                ),
-                Icon(
-                  Icons.arrow_forward,
-                  color: ColorConstant.blueTextColor,
-                  size: 20,
-                ),
-              ],
+                ],
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                      'Check Your Loan History',
+                      style: TextStyle(
+                          fontSize: FontConstants.f14,
+                          fontFamily: FontConstants.fontFamily,
+                          fontWeight: FontConstants.w700,
+                          color: ColorConstant.blackTextColor
+                      )
+                  ),
+                  Icon(
+                    Icons.arrow_forward,
+                    color: ColorConstant.blueTextColor,
+                    size: 20,
+                  ),
+                ],
+              ),
             ),
           )
         ],

@@ -139,7 +139,7 @@ class _DashBoardHome extends State<DashBoardHome>{
                                 SizedBox(
                                   height: 40.0,
                                 ),
-                                DashboardLoanDetails(),
+                               // DashboardLoanDetails(),
                                 Padding(
                                   padding: EdgeInsets.only(left: FontConstants.horizontalPadding),
                                   child: Text(

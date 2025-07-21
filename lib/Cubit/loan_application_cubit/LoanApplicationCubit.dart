@@ -73,5 +73,16 @@ class LoanApplicationCubit extends Cubit<LoanApplicationState> {
     }
   }
 
+  Future<void> customerKycVerificationApiCall(Map<String,dynamic> dataObj) async{
+    emit(LoanApplicationLoading());
+    final response = await loanApplicationRepository.customerKYCVerificationFunction(dataObj);
+    DebugPrint.prt("KYC Api Verification Response Status ${response.status}");
+    if (response.status == ApiResponseStatus.success) {
+      emit(CustomerKYCVerificationSuccess(response.data!));
+    } else {
+      emit(CustomerKYCVerificationError(response.error!));
+    }
+  }
+
 
 }

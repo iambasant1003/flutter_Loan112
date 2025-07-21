@@ -201,7 +201,7 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
                                               });
                                             }else if(stepKeys[index].toLowerCase().contains('ekyc')&& status !=1 && status != 0){
                                               context.push(AppRouterName.aaDarKYCScreen).then((val){
-                                                //getCustomerDetailsApiCall();
+                                                getCustomerDetailsApiCall();
                                               });
                                             }else if(stepKeys[index].toLowerCase().contains('selfie')&& status!=1 && status != 0){
                                               context.push(AppRouterName.selfieScreenPath).then((val){

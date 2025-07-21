@@ -2,6 +2,7 @@
 
 import 'package:loan112_app/Model/CreateLeadModel.dart';
 import 'package:loan112_app/Model/CustomerKycModel.dart';
+import 'package:loan112_app/Model/EkycVerifictionModel.dart';
 import 'package:loan112_app/Model/GetCustomerDetailsModel.dart';
 import 'package:loan112_app/Model/GetPinCodeDetailsModel.dart';
 import 'package:loan112_app/Model/UploadSelfieModel.dart';
@@ -68,4 +69,15 @@ class CustomerKYCError extends LoanApplicationState{
   final CustomerKycModel customerKycModel;
   CustomerKYCError(this.customerKycModel);
 }
+
+class CustomerKYCVerificationSuccess extends LoanApplicationState{
+  final EkycVerificationModel ekycVerificationModel;
+  CustomerKYCVerificationSuccess(this.ekycVerificationModel);
+}
+
+class CustomerKYCVerificationError extends LoanApplicationState{
+  final EkycVerificationModel ekycVerificationModel;
+  CustomerKYCVerificationError(this.ekycVerificationModel);
+}
+
 

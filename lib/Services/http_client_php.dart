@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
-import 'package:loan112_app/Model/VerifyOTPModel.dart';
 import 'package:loan112_app/Model/VerifyPHPOTPModel.dart';
 import 'package:loan112_app/Utils/MysharePrefenceClass.dart';
 import '../Utils/AppConfig.dart';
@@ -17,8 +16,8 @@ class ApiClassPhp {
   ApiClassPhp()
       : _dio = Dio(BaseOptions(
     baseUrl: _baseUrl,
-    connectTimeout: const Duration(seconds: 30),
-    receiveTimeout: const Duration(seconds: 30),
+    connectTimeout: const Duration(seconds: 60),
+    receiveTimeout: const Duration(seconds: 60),
     headers: {},
     contentType: Headers.jsonContentType,
     preserveHeaderCase: true,

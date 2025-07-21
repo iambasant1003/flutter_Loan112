@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:loan112_app/Constant/ConstText/ConstText.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
@@ -350,7 +351,7 @@ class _CheckEligibility extends State<CheckEligibility>{
                            "stateName": stateController.text.trim(),
                            "cityName": cityController.text.trim(),
                            "mobile": verifyOtpModel.data?.mobile.toString(),
-                           "requestSource": "and",
+                           "requestSource": ConstText.requestSource,
                            "salaryAmt": int.parse(netMonthlyIncome.text.trim()),
                            "dob": dateOfBirth.text,
                            "gender":gender,

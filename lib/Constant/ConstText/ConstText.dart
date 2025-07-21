@@ -6,6 +6,6 @@ class ConstText {
 
   // font family
   static const fontType = "Manrope";
-  static const requestSource = "AND";
+  static const requestSource = "and";
 
 }

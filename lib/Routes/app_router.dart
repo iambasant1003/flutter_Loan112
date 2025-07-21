@@ -17,6 +17,7 @@ import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/s
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/selfieVerification/selfie_verification.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/utilityBills/utility_bills.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loan_application_page.dart';
+import '../Screens/Repayment/repayment_page.dart';
 import '../Screens/auth/permission_page.dart';
 import '../Screens/auth/splash.dart';
 import '../Screens/loanApplicationPage/loanApplicationOptions/bankStatement/offlineBankStatement/offline_bank_statement.dart';
@@ -65,6 +66,7 @@ final GoRouter appRouter = GoRouter(
       final webUrl = state.extra as String;
       return CustomerKycWebview(kycWebUrl: webUrl);
     }),
+    GoRoute(path: AppRouterName.repaymentPage,builder: (context,state) => RepaymentPage()),
   ],
 );
 

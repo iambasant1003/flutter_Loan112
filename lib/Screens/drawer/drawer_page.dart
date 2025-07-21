@@ -66,7 +66,6 @@ class Loan112Drawer extends StatelessWidget {
                                     ),
                                     Text(
                                       dashBoarddataModel?.data?.fullName ?? "",
-                                      //"SHIVANI",
                                       style: TextStyle(
                                           fontFamily: FontConstants.fontFamily,
                                           fontSize: FontConstants.f18,

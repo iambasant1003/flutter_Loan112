@@ -14,8 +14,8 @@ class ApiClass {
   ApiClass()
       : _dio = Dio(BaseOptions(
     baseUrl: _baseUrl,
-    connectTimeout: const Duration(seconds: 30),
-    receiveTimeout: const Duration(seconds: 30),
+    connectTimeout: const Duration(seconds: 120),
+    receiveTimeout: const Duration(seconds: 120),
     headers: {
       'Content-Type': 'application/json',
     },
@@ -93,13 +93,13 @@ class ApiClass {
     DebugPrint.prt("Header passed: $headers");
     DebugPrint.prt("ApiUrl: $_baseUrl$endPoint");
 
-    var curlRequest = buildCurlCommand(url: "$_baseUrl$endPoint", method: "POST", headers: headers, body: object);
-
-    DebugPrint.prt("Current Curl Command $curlRequest");
 
     if (isMultipart) {
       DebugPrint.prt("data to be passed: fields=${object.fields}, files=${object.files}");
     } else {
+      var curlRequest = buildCurlCommand(url: "$_baseUrl$endPoint", method: "POST", headers: headers, body: object);
+
+      DebugPrint.prt("Current Curl Command $curlRequest");
       DebugPrint.prt("data to be passed: $object");
     }
 
@@ -172,14 +172,18 @@ class ApiClass {
     DebugPrint.prt("Header passed: $headers");
     DebugPrint.prt("PUT ApiUrl: $_baseUrl$endPoint");
 
-    var curlRequest = buildCurlCommand(
-      url: "$_baseUrl$endPoint",
-      method: "PUT",
-      headers: headers,
-      body: object,
-    );
 
-    DebugPrint.prt("Current Curl Command: $curlRequest");
+    if(!isMultipart){
+      var curlRequest = buildCurlCommand(
+        url: "$_baseUrl$endPoint",
+        method: "PUT",
+        headers: headers,
+        body: object,
+      );
+
+      DebugPrint.prt("Current Curl Command: $curlRequest");
+    }
+
 
     if (isMultipart) {
       DebugPrint.prt("data to be passed: multipart data");

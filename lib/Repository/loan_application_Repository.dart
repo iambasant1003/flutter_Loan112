@@ -2,6 +2,7 @@
 import 'package:dio/dio.dart';
 import 'package:loan112_app/Model/CreateLeadModel.dart';
 import 'package:loan112_app/Model/CustomerKycModel.dart';
+import 'package:loan112_app/Model/EkycVerifictionModel.dart';
 import 'package:loan112_app/Model/GetCustomerDetailsModel.dart';
 import 'package:loan112_app/Model/GetPinCodeDetailsModel.dart';
 import 'package:loan112_app/Model/UploadSelfieModel.dart';
@@ -159,6 +160,35 @@ class LoanApplicationRepository {
     } catch (e) {
       DebugPrint.prt("Exception in get Customer Details: $e");
       final error = CustomerKycModel(
+        statusCode: 500,
+        message: "Unknown error occurred",
+      );
+      return ApiResponse.error(ApiResponseStatus.serverError, error: error);
+    }
+  }
+
+
+  Future<ApiResponse<EkycVerificationModel>> customerKYCVerificationFunction(Map<String,dynamic> dataObj) async{
+    try {
+      final response = await apiClass.put(customerKycVerification, dataObj, isHeader: true);
+      DebugPrint.prt("API Response Customer KYC data ${response.data}");
+
+      final Map<String, dynamic> responseData = response.data;
+
+
+      final ApiResponseStatus status = mapApiResponseStatus(responseData);
+
+      if (status == ApiResponseStatus.success) {
+        final data = EkycVerificationModel.fromJson(responseData);
+        return ApiResponse.success(data);
+      } else {
+        final error = EkycVerificationModel.fromJson(responseData);
+        DebugPrint.prt("Error Message ${error.message}, ${error.statusCode}");
+        return ApiResponse.error(status, error: error);
+      }
+    } catch (e) {
+      DebugPrint.prt("Exception in get Customer Details: $e");
+      final error = EkycVerificationModel(
         statusCode: 500,
         message: "Unknown error occurred",
       );
