@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
@@ -8,7 +11,10 @@ import 'package:loan112_app/Widget/app_bar.dart';
 import 'package:loan112_app/Widget/common_border_button.dart';
 import 'package:loan112_app/Widget/common_button.dart';
 
+import '../../../../Cubit/loan_application_cubit/LoanApplicationCubit.dart';
 import '../../../../Model/CreateLeadModel.dart';
+import '../../../../Model/SendPhpOTPModel.dart';
+import '../../../../Utils/MysharePrefenceClass.dart';
 import '../../../../Widget/eligibility_status_background.dart';
 
 class EligibilityStatus extends StatefulWidget{
@@ -22,6 +28,16 @@ class EligibilityStatus extends StatefulWidget{
 class _EligibilityStatus extends State<EligibilityStatus>{
 
 
+
+  getCustomerDetailsApiCall() async{
+    var otpModel = await MySharedPreferences.getPhpOTPModel();
+    SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
+    context.read<LoanApplicationCubit>().getCustomerDetailsApiCall({
+      "cust_profile_id": sendPhpOTPModel.data?.custProfileId
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,6 +46,7 @@ class _EligibilityStatus extends State<EligibilityStatus>{
         customLeading: InkWell(
           onTap: (){
             context.pop();
+            getCustomerDetailsApiCall();
           },
           child: Icon(
             Icons.arrow_back_ios,
@@ -118,6 +135,7 @@ class _EligibilityStatus extends State<EligibilityStatus>{
                 Loan112Button(
                   onPressed: () {
                     context.pop();
+                    getCustomerDetailsApiCall();
                   },
                   text: "Ok",
                 ),

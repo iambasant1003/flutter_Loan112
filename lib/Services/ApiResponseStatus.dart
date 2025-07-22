@@ -9,7 +9,8 @@ enum ApiResponseStatus {
   unauthorized,
   notFound,
   serverError,
-  declined
+  declined,
+  selfieError
 }
 
 class ApiResponse<T> {
@@ -43,6 +44,8 @@ ApiResponseStatus mapStatusCode(int statusCode) {
       return ApiResponseStatus.notFound;
     case 500:
       return ApiResponseStatus.serverError;
+    case 205:
+       return ApiResponseStatus.selfieError;
     default:
       throw Exception('Unknown status code: $statusCode');
   }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
 import 'package:loan112_app/Constant/ImageConstant/ImageConstants.dart';
+import 'package:loan112_app/Cubit/dashboard_cubit/DashboardCubit.dart';
 import 'package:loan112_app/Model/DashBoarddataModel.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
@@ -187,22 +189,27 @@ class Loan112Drawer extends StatelessWidget {
               // Delete Account
               Padding(
                 padding: EdgeInsets.only(left: FontConstants.horizontalPadding,top: 10.0),
-                child: Row(
-                  children: [
-                    Image.asset(ImageConstants.drawerDelete,height: 20,width: 20),
-                    SizedBox(
-                      width: 12,
-                    ),
-                    Text(
-                      "Delete Account",
-                      style: TextStyle(
-                          fontFamily: FontConstants.fontFamily,
-                          fontWeight: FontConstants.w600,
-                          fontSize: FontConstants.f14,
-                          color: ColorConstant.errorRedColor
+                child: InkWell(
+                  onTap: (){
+                    context.read<DashboardCubit>().callDeleteCustomerProfileApi();
+                  },
+                  child: Row(
+                    children: [
+                      Image.asset(ImageConstants.drawerDelete,height: 20,width: 20),
+                      SizedBox(
+                        width: 12,
                       ),
-                    ),
-                  ],
+                      Text(
+                        "Delete Account",
+                        style: TextStyle(
+                            fontFamily: FontConstants.fontFamily,
+                            fontWeight: FontConstants.w600,
+                            fontSize: FontConstants.f14,
+                            color: ColorConstant.errorRedColor
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               SizedBox(

@@ -7,14 +7,15 @@ const String sendOTPNode = "customer-send-otp";
 const String verifyOTPNode = "customer-verify-otp";
 const String sendOTPhp = "saveCustomerProfile$andRD";
 const String verifyOTPhp = "saveCustomerProfile$andRD";
-const String dashBoard = "getDashboardDetailsAAPPS";
-const String getCustomerDetails = "get-customer-details";
-const String getCustomerDetailsPHP = "getCustomerProfileAAPPS";
+const String dashBoard = "getDashboardDetails$andRD";
+const String getCustomerDetailsPHP = "getCustomerProfile$andRD";
 const String uploadSelfie = "upload-selfie";
 const String checkEligibility = "journey-create-leads";
 const String getPinCodeDetails = "get-pincode-details";
 const String customerKyc = "customer-ekyc";
 const String customerKycVerification = "eKyc-verification";
+const String deleteCustomerProfile = "deleteCustomerProfile$andRD";
+const String generateLoanOffer = "journey-generate-loan-offer";
 
 
 

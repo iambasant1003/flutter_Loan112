@@ -1,5 +1,6 @@
 
 
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
@@ -15,9 +16,9 @@ class LoanApplicationCubit extends Cubit<LoanApplicationState> {
 
 
   Future<void> checkEligibilityApiCall(Map<String,dynamic> dataObj) async {
+    DebugPrint.prt("Data Object Check Eligibility $dataObj");
     emit(LoanApplicationLoading());
     final response = await loanApplicationRepository.checkEligibilityFunction(dataObj);
-
     if (response.status == ApiResponseStatus.success) {
       emit(CreateLeadSuccess(response.data!));
     } else {
@@ -39,7 +40,7 @@ class LoanApplicationCubit extends Cubit<LoanApplicationState> {
     }
   }
 
-  Future<void> uploadSelfieApiCall(Map<String,dynamic> dataObj) async {
+  Future<void> uploadSelfieApiCall(FormData dataObj) async {
     emit(LoanApplicationLoading());
     final response = await loanApplicationRepository.uploadSelfieFunction(dataObj);
 
@@ -81,6 +82,18 @@ class LoanApplicationCubit extends Cubit<LoanApplicationState> {
       emit(CustomerKYCVerificationSuccess(response.data!));
     } else {
       emit(CustomerKYCVerificationError(response.error!));
+    }
+  }
+
+
+  Future<void> generateLoanOfferApiCall(Map<String,dynamic> dataObj) async{
+    emit(LoanApplicationLoading());
+    final response = await loanApplicationRepository.generateLoanOfferApiCallFunction(dataObj);
+    DebugPrint.prt("Generate Loan Offer Response Status ${response.status}");
+    if (response.status == ApiResponseStatus.success) {
+      emit(GenerateLoanOfferSuccess(response.data!));
+    } else {
+      emit(GenerateLoanOfferError(response.error!));
     }
   }
 

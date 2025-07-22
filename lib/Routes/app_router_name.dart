@@ -44,4 +44,5 @@ class AppRouterName{
   static var dashBoardStatus = "/dashBoardStatus";
   static var customerKYCWebview = "/customerKYCWebview";
   static var repaymentPage = "/repaymentPage";
+  static var dashBoardOTP = "/dashBoardOTP";
 }

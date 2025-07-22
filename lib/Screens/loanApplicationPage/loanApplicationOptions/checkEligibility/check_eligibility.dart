@@ -353,7 +353,7 @@ class _CheckEligibility extends State<CheckEligibility>{
                            "mobile": verifyOtpModel.data?.mobile.toString(),
                            "requestSource": ConstText.requestSource,
                            "salaryAmt": int.parse(netMonthlyIncome.text.trim()),
-                           "dob": dateOfBirth.text,
+                           "dob": dateOfBirth.text.trim().toString(),
                            "gender":gender,
                            "ip_web":"192.0.0.0",
                            "empName": companyNameController.text.trim()
@@ -409,7 +409,7 @@ class _CheckEligibility extends State<CheckEligibility>{
     );
 
     if (pickedDate != null) {
-      final formatted = DateFormat('dd-MM-yyyy').format(pickedDate);
+      final formatted = DateFormat('yyyy-MM-dd').format(pickedDate);
       dateOfBirth.text = formatted;
     }
   }

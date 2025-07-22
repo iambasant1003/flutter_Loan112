@@ -8,6 +8,7 @@ import 'package:loan112_app/Cubit/dashboard_cubit/DashboardState.dart';
 import 'package:loan112_app/Model/DashBoarddataModel.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
+import 'package:loan112_app/Utils/MysharePrefenceClass.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../Constant/ColorConst/ColorConstant.dart';
@@ -58,6 +59,12 @@ class _DashBoardHome extends State<DashBoardHome>{
           DebugPrint.prt("DashBoard Is facing Error");
           EasyLoading.dismiss();
           openSnackBar(context, state.dashBoardModel.message ?? "Unknown Error");
+        }else if(state is DeleteCustomerSuccess){
+          EasyLoading.dismiss();
+          context.push(AppRouterName.dashBoardOTP);
+        }else if(state is DeleteCustomerFailed){
+          EasyLoading.dismiss();
+          openSnackBar(context, state.deleteCustomerModel.message ?? "Unexpected Error");
         }
       },
       child: BlocBuilder<DashboardCubit,DashboardState>(

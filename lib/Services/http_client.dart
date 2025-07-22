@@ -143,7 +143,8 @@ class ApiClass {
 
   /// DELETE
   Future<Response> delete(
-      String endPoint, {
+      String endPoint,
+      dynamic object,{
         bool isHeader = true,
       }) async {
     final headers = await getHeaders(isHeader: isHeader);
@@ -152,6 +153,7 @@ class ApiClass {
     try {
       final response = await _dio.delete(
         endPoint,
+        data: object,
         options: Options(headers: headers),
       );
       return response;

@@ -64,8 +64,11 @@ class _AadharKycScreen extends State<AadharKycScreen>{
           }
           else if(state is CustomerKYCVerificationError){
             EasyLoading.dismiss();
+            if (!mounted) return; // 👈 add this line
             openSnackBar(context, state.ekycVerificationModel.message ?? "Unknown Error");
-            reInitiate = true;
+            setState(() {
+              reInitiate = true;
+            });
           }
         },
         child: Stack(

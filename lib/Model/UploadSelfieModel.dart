@@ -1,47 +1,83 @@
 class UploadSelfieModel {
   int? statusCode;
-  List<Data>? data;
-  String? message;
+  Data? data;
   bool? success;
+  String? message;
 
-  UploadSelfieModel({this.statusCode, this.data, this.message, this.success});
+  UploadSelfieModel({this.statusCode, this.data, this.success, this.message});
 
   UploadSelfieModel.fromJson(Map<String, dynamic> json) {
     statusCode = json['statusCode'];
-    if (json['data'] != null) {
-      data = <Data>[];
-      json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
-      });
-    }
-    message = json['message'];
+    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
     success = json['success'];
+    message = json['message'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['statusCode'] = this.statusCode;
     if (this.data != null) {
-      data['data'] = this.data!.map((v) => v.toJson()).toList();
+      data['data'] = this.data!.toJson();
     }
-    data['message'] = this.message;
     data['success'] = this.success;
+    data['message'] = this.message;
     return data;
   }
 }
 
 class Data {
-  String? imagepath;
+  int? fieldCount;
+  int? affectedRows;
+  int? insertId;
+  String? info;
+  int? serverStatus;
+  int? warningStatus;
+  int? changedRows;
+  String? decision;
+  int? loanAmount;
+  String? userType;
+  bool? checkKycFlag;
 
-  Data({this.imagepath});
+  Data(
+      {this.fieldCount,
+        this.affectedRows,
+        this.insertId,
+        this.info,
+        this.serverStatus,
+        this.warningStatus,
+        this.changedRows,
+        this.decision,
+        this.loanAmount,
+        this.userType,
+        this.checkKycFlag});
 
   Data.fromJson(Map<String, dynamic> json) {
-    imagepath = json['imagepath'];
+    fieldCount = json['fieldCount'];
+    affectedRows = json['affectedRows'];
+    insertId = json['insertId'];
+    info = json['info'];
+    serverStatus = json['serverStatus'];
+    warningStatus = json['warningStatus'];
+    changedRows = json['changedRows'];
+    decision = json['decision'];
+    loanAmount = json['loanAmount'];
+    userType = json['userType'];
+    checkKycFlag = json['checkKycFlag'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['imagepath'] = this.imagepath;
+    data['fieldCount'] = this.fieldCount;
+    data['affectedRows'] = this.affectedRows;
+    data['insertId'] = this.insertId;
+    data['info'] = this.info;
+    data['serverStatus'] = this.serverStatus;
+    data['warningStatus'] = this.warningStatus;
+    data['changedRows'] = this.changedRows;
+    data['decision'] = this.decision;
+    data['loanAmount'] = this.loanAmount;
+    data['userType'] = this.userType;
+    data['checkKycFlag'] = this.checkKycFlag;
     return data;
   }
 }

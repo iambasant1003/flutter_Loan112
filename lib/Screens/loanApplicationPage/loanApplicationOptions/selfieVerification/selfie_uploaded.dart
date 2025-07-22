@@ -15,10 +15,13 @@ import '../../../../Constant/ColorConst/ColorConstant.dart';
 import '../../../../Constant/FontConstant/FontConstant.dart';
 import '../../../../Constant/ImageConstant/ImageConstants.dart';
 import '../../../../Cubit/loan_application_cubit/LoanApplicationState.dart';
+import '../../../../Model/SendPhpOTPModel.dart';
 import '../../../../Model/VerifyOTPModel.dart';
 import '../../../../Utils/MysharePrefenceClass.dart';
 import '../../../../Widget/app_bar.dart';
 import 'package:image/image.dart' as img;
+import 'package:http_parser/http_parser.dart';
+
 
 class SelfieUploadedPage extends StatefulWidget{
   final String imagePath;
@@ -31,6 +34,16 @@ class SelfieUploadedPage extends StatefulWidget{
 class _SelfieUploadedPage extends State<SelfieUploadedPage>{
 
 
+
+  getCustomerDetailsApiCall() async{
+    var otpModel = await MySharedPreferences.getPhpOTPModel();
+    SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
+    context.read<LoanApplicationCubit>().getCustomerDetailsApiCall({
+      "cust_profile_id": sendPhpOTPModel.data?.custProfileId
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,15 +52,36 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage>{
           return prev != current;
         },
         listener: (context,state){
-          if(state is LoanApplicationLoading){
+          if (!mounted) return;
+
+          if (state is LoanApplicationLoading) {
             EasyLoading.show(status: "Please Wait...");
-          }else if(state is UploadSelfieSuccess){
+          } else if (state is UploadSelfieSuccess) {
             EasyLoading.dismiss();
-            openSnackBar(context, state.uploadSelfieModel.message ?? "Selfie uploaded successFully");
-            context.pop();
-          }else if(state is UploadSelfieError){
+
+            if (mounted) {
+              openSnackBar(
+                context,
+                state.uploadSelfieModel.message ?? "Selfie uploaded successfully",
+              );
+              // Delay pop to allow snackbar to show
+              Future.delayed(Duration(milliseconds: 500), () {
+                if (mounted) {
+                  context.pop();
+                }
+              });
+              getCustomerDetailsApiCall();
+            }
+
+          } else if (state is UploadSelfieError) {
             EasyLoading.dismiss();
-            openSnackBar(context, state.uploadSelfieModel.message ?? "Unknown Error");
+
+            if (mounted) {
+              openSnackBar(
+                context,
+                state.uploadSelfieModel.message ?? "Unknown Error",
+              );
+            }
           }
         },
         child: Stack(
@@ -68,6 +102,7 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage>{
                         child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
                         onTap: (){
                           context.pop();
+                          getCustomerDetailsApiCall();
                         },
                       ),
                     ),
@@ -166,16 +201,49 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage>{
                                 var otpModel = await MySharedPreferences.getUserSessionDataNode();
                                 VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
 
-                                final Map<String, dynamic> dataObj = {
-                                  'custId': verifyOtpModel.data?.custId,
-                                  'leadId': verifyOtpModel.data?.leadId,
-                                  'requestSource': ConstText.requestSource,
-                                  'selfie': await MultipartFile.fromFile(
-                                    imagePathConverted.path,
-                                    filename: imagePathConverted.path.split('/').last,
-                                  ),
-                                };
-                                context.read<LoanApplicationCubit>().uploadSelfieApiCall(dataObj);
+                                var customerId = verifyOtpModel.data?.custId;
+                                var leadId = verifyOtpModel.data?.leadId;
+                                if(leadId == "" || leadId == null){
+                                  leadId = await MySharedPreferences.getLeadId();
+                                }
+
+                                final formData = FormData();
+
+                                // Add text parts
+                                formData.fields
+                                  ..add(MapEntry('custId', customerId?? ""))
+                                  ..add(MapEntry('leadId', leadId))
+                                  ..add(MapEntry('requestSource', ConstText.requestSource));
+
+                                // Prepare file part
+                                final file = File(imagePathConverted.path);
+
+                                if (!await file.exists()) {
+                                  throw Exception('File does not exist at ${file.path}');
+                                }
+
+                                final fileName = file.uri.pathSegments.last;
+                                final fileExtension = fileName.split('.').last.toLowerCase();
+
+                                String? mimeType;
+                                if (fileExtension == 'jpg' || fileExtension == 'jpeg') {
+                                  mimeType = 'image/jpeg';
+                                } else if (fileExtension == 'pdf') {
+                                  mimeType = 'application/pdf';
+                                } else {
+                                  throw Exception('Unsupported file type: $fileExtension');
+                                }
+
+                                final multipartFile = await MultipartFile.fromFile(
+                                  file.path,
+                                  filename: fileName,
+                                  contentType: MediaType.parse(mimeType),
+                                );
+
+                                formData.files.add(MapEntry('selfie', multipartFile));
+
+
+                                context.read<LoanApplicationCubit>().uploadSelfieApiCall(formData);
                               }, text: "CONTINUE")
                             ],
                           ),
@@ -190,7 +258,6 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage>{
       ),
     );
   }
-
 
 
 

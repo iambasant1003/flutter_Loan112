@@ -180,6 +180,8 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
                                   final stepKey = step[index];
                                   final int? status = int.tryParse(state[stepKey].toString());
 
+                                  DebugPrint.prt("Status and Key $status,$stepKey");
+
                                   return Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -203,10 +205,8 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
                                               context.push(AppRouterName.aaDarKYCScreen).then((val){
                                                 getCustomerDetailsApiCall();
                                               });
-                                            }else if(stepKeys[index].toLowerCase().contains('selfie')&& status!=1 && status != 0){
-                                              context.push(AppRouterName.selfieScreenPath).then((val){
-                                                getCustomerDetailsApiCall();
-                                              });
+                                            }else if(stepKeys[index].toLowerCase().contains('selfie') && status!=1 && status != 0){
+                                              context.push(AppRouterName.selfieScreenPath).then((val){});
                                             }else if(stepKeys[index].toLowerCase().contains("offer")&&status!=1 && status != 0){
                                               context.push(AppRouterName.loanOfferPage).then((val){
                                                 getCustomerDetailsApiCall();

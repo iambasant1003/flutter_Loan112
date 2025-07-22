@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:loan112_app/Model/CreateLeadModel.dart';
 import 'package:loan112_app/Model/CustomerKycModel.dart';
 import 'package:loan112_app/Model/EkycVerifictionModel.dart';
+import 'package:loan112_app/Model/GenerateLoanOfferModel.dart';
 import 'package:loan112_app/Model/GetCustomerDetailsModel.dart';
 import 'package:loan112_app/Model/GetPinCodeDetailsModel.dart';
 import 'package:loan112_app/Model/UploadSelfieModel.dart';
@@ -81,9 +82,9 @@ class LoanApplicationRepository {
   }
 
 
-  Future<ApiResponse<UploadSelfieModel>> uploadSelfieFunction(Map<String,dynamic> dataObj) async{
+  Future<ApiResponse<UploadSelfieModel>> uploadSelfieFunction(FormData dataObj) async{
     try {
-      final response = await apiClass.post(uploadSelfie, FormData.fromMap(dataObj), isHeader: true,isMultipart: true);
+      final response = await apiClass.post(uploadSelfie, dataObj, isHeader: true,isMultipart: true);
       DebugPrint.prt("API Response Upload Selfie Data ${response.data}");
 
       final Map<String, dynamic> responseData = response.data;
@@ -189,6 +190,34 @@ class LoanApplicationRepository {
     } catch (e) {
       DebugPrint.prt("Exception in get Customer Details: $e");
       final error = EkycVerificationModel(
+        statusCode: 500,
+        message: "Unknown error occurred",
+      );
+      return ApiResponse.error(ApiResponseStatus.serverError, error: error);
+    }
+  }
+
+  Future<ApiResponse<GenerateLoanOfferModel>> generateLoanOfferApiCallFunction(Map<String,dynamic> dataObj) async{
+    try {
+      final response = await apiClass.post(generateLoanOffer, dataObj, isHeader: true);
+      DebugPrint.prt("API Response Generate Loan Offer data ${response.data}");
+
+      final Map<String, dynamic> responseData = response.data;
+
+
+      final ApiResponseStatus status = mapApiResponseStatus(responseData);
+
+      if (status == ApiResponseStatus.success) {
+        final data = GenerateLoanOfferModel.fromJson(responseData);
+        return ApiResponse.success(data);
+      } else {
+        final error = GenerateLoanOfferModel.fromJson(responseData);
+        DebugPrint.prt("Error Message ${error.message}, ${error.statusCode}");
+        return ApiResponse.error(status, error: error);
+      }
+    } catch (e) {
+      DebugPrint.prt("Exception in get Customer Details: $e");
+      final error = GenerateLoanOfferModel(
         statusCode: 500,
         message: "Unknown error occurred",
       );

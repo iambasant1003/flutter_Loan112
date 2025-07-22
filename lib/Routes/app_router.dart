@@ -4,6 +4,7 @@ import 'package:loan112_app/Screens/auth/login_page.dart';
 import 'package:loan112_app/Screens/auth/verify_otp.dart';
 import 'package:loan112_app/Screens/dashboard/dashboard_page.dart';
 import 'package:loan112_app/Screens/dashboard/dashboard_status.dart';
+import 'package:loan112_app/Screens/dashboard/dashboard_verify_otp.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/addReferance/add_reference.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/bankStatement/bank_statement.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/bankStatement/onlinebankStatement/online_bank_statement.dart';
@@ -67,6 +68,7 @@ final GoRouter appRouter = GoRouter(
       return CustomerKycWebview(kycWebUrl: webUrl);
     }),
     GoRoute(path: AppRouterName.repaymentPage,builder: (context,state) => RepaymentPage()),
+    GoRoute(path: AppRouterName.dashBoardOTP,builder: (context,state) => DashboardVerifyOTP()),
   ],
 );
 
