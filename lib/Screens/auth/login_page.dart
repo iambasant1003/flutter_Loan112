@@ -1,5 +1,6 @@
 
 
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,12 +9,13 @@ import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
 import 'package:loan112_app/Constant/ImageConstant/ImageConstants.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
+import 'package:loan112_app/Utils/Debugprint.dart';
+import 'package:loan112_app/Utils/MysharePrefenceClass.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:loan112_app/Widget/common_system_ui.dart';
 import '../../Constant/FontConstant/FontConstant.dart';
 import '../../Cubit/auth_cubit/AuthCubit.dart';
 import '../../Cubit/auth_cubit/AuthState.dart';
-import '../../Widget/app_bar.dart';
 import '../../Widget/common_button.dart';
 import '../../Widget/common_textField.dart';
 
@@ -27,15 +29,9 @@ class LogInPage extends StatefulWidget {
 class _LogInPageState extends State<LogInPage> {
   bool termAndCondition = false;
 
-
   TextEditingController mobileController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  @override
-  void dispose() {
-    mobileController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,9 +42,16 @@ class _LogInPageState extends State<LogInPage> {
               return prev != current;
             },
             listener: (BuildContext context, state) {
+
+              if (ModalRoute.of(context)?.isCurrent != true) return;
+
               if(state is AuthLoading){
                 EasyLoading.show(status: "Please Wait");
-              }else if(state is AuthSuccess){
+              } else if(state is AuthPhpSuccess){
+                //EasyLoading.dismiss();
+                MySharedPreferences.setPhpOTPModel(jsonEncode(state.data));
+              } else if(state is AuthNodeSuccess){
+                DebugPrint.prt("Navigation Logic Called To OTP");
                 EasyLoading.dismiss();
                 context.push(AppRouterName.verifyOtp,extra: mobileController.text.trim()).then((val){
                   mobileController = TextEditingController();
@@ -169,13 +172,13 @@ class _LogInPageState extends State<LogInPage> {
                               if(_formKey.currentState!.validate()){
                                 final phone = mobileController.text.trim();
                                 if (phone.isNotEmpty) {
-                                  context.read<AuthCubit>().sendOtp(phone);
+                                  DebugPrint.prt("LogIn Method Called $phone");
+                                  context.read<AuthCubit>().sendBothOtp(phone);
                                 } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(content: Text("Enter phone number")),
                                   );
                                 }
-                                //context.push(AppRouterName.verifyOtp);
                               }
                             },
                             text: "LOGIN",
@@ -193,3 +196,5 @@ class _LogInPageState extends State<LogInPage> {
   }
 
 }
+
+

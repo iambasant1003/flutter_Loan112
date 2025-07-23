@@ -22,3 +22,27 @@ class SendOTPModel {
     return data;
   }
 }
+
+
+class SendOTPModelPHP {
+  int? status;
+  String? message;
+  String? data;
+
+  SendOTPModelPHP({this.status, this.message, this.data});
+
+  SendOTPModelPHP.fromJson(Map<String, dynamic> json) {
+    status = json['Status'];
+    message = json['Message'];
+    data = json['Data'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['Status'] = this.status;
+    data['Message'] = this.message;
+    data['Data'] = this.data;
+    return data;
+  }
+}
+

@@ -1,10 +1,12 @@
 
-//import 'dart:io';
+
+import 'dart:convert';
+import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:go_router/go_router.dart';
-//import 'package:image_cropper/image_cropper.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
 import 'package:path/path.dart' as path;
@@ -13,6 +15,9 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../../../Constant/ColorConst/ColorConstant.dart';
 import '../../../../Constant/FontConstant/FontConstant.dart';
 import '../../../../Constant/ImageConstant/ImageConstants.dart';
+import '../../../../Cubit/loan_application_cubit/LoanApplicationCubit.dart';
+import '../../../../Model/SendPhpOTPModel.dart';
+import '../../../../Utils/MysharePrefenceClass.dart';
 import '../../../../Widget/app_bar.dart';
 
 
@@ -96,76 +101,64 @@ class _SelfieCameraPageState extends State<SelfieCameraPage> with WidgetsBinding
     if (!_controller!.value.isInitialized) return;
 
     final directory = await getTemporaryDirectory();
+
+    // 📷 Take picture
+    final file = await _controller!.takePicture();
     final filePath = path.join(
       directory.path,
-      '${DateTime.now().millisecondsSinceEpoch}.png',
+      '${DateTime.now().millisecondsSinceEpoch}.jpg',
     );
 
-    final file = await _controller!.takePicture();
     await file.saveTo(filePath);
-    var data = await file.length();
-    DebugPrint.prt("File size before Cropped $data");
 
-    /*
-    // Step 1: Crop the image
-    final croppedFile = await _cropImage(File(file.path));
+    final originalFile = File(filePath);
+    final originalSize = await originalFile.length();
+    DebugPrint.prt("Original file size: ${originalSize / (1024 * 1024)} MB");
 
-    if (croppedFile == null) {
-      // User cancelled crop
-      return;
-    }
-     */
-    // Step 2: Compress the image
-    final compressedPath = path.join(
-      directory.path,
-      '${DateTime.now().millisecondsSinceEpoch}_compressed.jpg',
-    );
+    File finalFile = originalFile;
 
-    final compressedBytes = await FlutterImageCompress.compressAndGetFile(
-      file.path,
-      compressedPath,
-      quality: 80,      // adjust quality 0-100
-      minWidth: 600,    // resize width if needed
-      minHeight: 600,   // resize height if needed
-    );
+    // 📏 Check if > 5 MB (5 * 1024 * 1024 bytes)
+    if (originalSize > 5 * 1024 * 1024) {
+      DebugPrint.prt("File > 5MB, compressing...");
 
-    if (compressedBytes == null) {
-      return;
+      final compressedPath = path.join(
+        directory.path,
+        '${DateTime.now().millisecondsSinceEpoch}_compressed.jpg',
+      );
+
+      final compressed = await FlutterImageCompress.compressAndGetFile(
+        originalFile.path,
+        compressedPath,
+        quality: 80,                 // good balance quality
+        autoCorrectionAngle: true,  // fix orientation
+      );
+
+      if (compressed != null) {
+        finalFile = File(compressed.path);
+        final compressedSize = await finalFile.length();
+        DebugPrint.prt("Compressed file size: ${compressedSize / (1024 * 1024)} MB");
+      } else {
+        DebugPrint.prt("Compression failed, using original.");
+      }
+    } else {
+      DebugPrint.prt("File <= 5MB, using original.");
     }
 
     setState(() {
-      imageFile = XFile(compressedBytes.path);
+      imageFile = XFile(finalFile.path);
     });
-    var dataAfter = await imageFile?.length();
-    DebugPrint.prt("File size after Cropped $dataAfter");
-    context.replace(AppRouterName.selfieUploadedPage,extra: imageFile?.path);
+
+    context.replace(AppRouterName.selfieUploadedPage, extra: imageFile!.path);
   }
 
 
-
-  /*
-  Future<dynamic> _cropImage(File imageFile) async {
-    final cropper = ImageCropper();
-    final croppedFile = await cropper.cropImage(
-      compressQuality: 50,
-      sourcePath: imageFile.path,
-      aspectRatioPresets: [
-        CropAspectRatioPreset.ratio5x4,
-        CropAspectRatioPreset.ratio3x2,
-        CropAspectRatioPreset.ratio4x3,
-        CropAspectRatioPreset.ratio16x9,
-      ],
-      androidUiSettings: AndroidUiSettings(
-          toolbarColor: ColorConstant.whiteColor,
-          toolbarWidgetColor: Colors.black,
-          initAspectRatio: CropAspectRatioPreset.original,
-          lockAspectRatio: false),
-    );
-    return croppedFile;
+  getCustomerDetailsApiCall() async{
+    var otpModel = await MySharedPreferences.getPhpOTPModel();
+    SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
+    context.read<LoanApplicationCubit>().getCustomerDetailsApiCall({
+      "cust_profile_id": sendPhpOTPModel.data?.custProfileId
+    });
   }
-
-   */
-
 
   @override
   Widget build(BuildContext context) {
@@ -188,6 +181,7 @@ class _SelfieCameraPageState extends State<SelfieCameraPage> with WidgetsBinding
                       child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
                       onTap: (){
                         context.pop();
+                        getCustomerDetailsApiCall();
                       },
                     ),
                   ),
@@ -227,10 +221,17 @@ class _SelfieCameraPageState extends State<SelfieCameraPage> with WidgetsBinding
                             ),
                             isCameraReady?
                             Center(
-                              child: SizedBox(
+                              child: Container(
                                 width: 300,
                                 height: 300,
-                                child: CameraPreview(_controller!),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                                  border: Border.all(color: Colors.grey.shade300, width: 2), // optional border
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  child: CameraPreview(_controller!),
+                                ),
                               ),
                             ):
                             GestureDetector(

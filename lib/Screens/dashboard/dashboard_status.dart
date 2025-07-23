@@ -7,27 +7,27 @@ import 'package:loan112_app/Widget/common_button.dart';
 
 import '../../Constant/FontConstant/FontConstant.dart';
 import '../../Constant/ImageConstant/ImageConstants.dart';
-import '../../Widget/circular_progress.dart';
 
-class DashboardStatusScreen extends StatefulWidget{
+class DashboardStatusScreen extends StatefulWidget {
   const DashboardStatusScreen({super.key});
 
   @override
   State<StatefulWidget> createState() => _DashboardStatusScreen();
 }
 
-class _DashboardStatusScreen extends State<DashboardStatusScreen>{
-
-
+class _DashboardStatusScreen extends State<DashboardStatusScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: Loan112AppBar(
         customLeading: InkWell(
-          onTap: (){
+          onTap: () {
             context.pop();
           },
-          child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
+          child: Icon(
+            Icons.arrow_back_ios,
+            color: ColorConstant.blackTextColor,
+          ),
         ),
       ),
       body: SizedBox.expand(
@@ -40,55 +40,52 @@ class _DashboardStatusScreen extends State<DashboardStatusScreen>{
               ),
             ),
 
-
             //Positioned Data
             SafeArea(
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
-                      height: 37,
-                    ),
+                    SizedBox(height: 37),
                     Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    personalLoanApplyWidget(context),
-                    Positioned(
-                      top: -2,
-                      left: 0,
-                      right: 0,
-                      child: Center(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: ColorConstant.appThemeColor,
-                            borderRadius: const BorderRadius.only(
-                              bottomLeft: Radius.circular(18.0),
-                              bottomRight: Radius.circular(18.0),
-                            ),
-                          ),
-                          width: 244,
-                          height: 40,
+                      clipBehavior: Clip.none,
+                      children: [
+                        personalLoanApplyWidget(context),
+                        Positioned(
+                          top: -2,
+                          left: 0,
+                          right: 0,
                           child: Center(
-                            child: Text(
-                              "Status of Application",
-                              style: TextStyle(
-                                fontFamily: FontConstants.fontFamily,
-                                fontSize: FontConstants.f18,
-                                fontWeight: FontConstants.w800,
-                                color: ColorConstant.whiteColor,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: ColorConstant.appThemeColor,
+                                borderRadius: const BorderRadius.only(
+                                  bottomLeft: Radius.circular(18.0),
+                                  bottomRight: Radius.circular(18.0),
+                                ),
+                              ),
+                              width: 244,
+                              height: 40,
+                              child: Center(
+                                child: Text(
+                                  "Status of Application",
+                                  style: TextStyle(
+                                    fontFamily: FontConstants.fontFamily,
+                                    fontSize: FontConstants.f18,
+                                    fontWeight: FontConstants.w800,
+                                    color: ColorConstant.whiteColor,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                   ],
                 ),
-                  ],
-                ),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -96,32 +93,37 @@ class _DashboardStatusScreen extends State<DashboardStatusScreen>{
         height: 90,
         child: Center(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
-            child: Loan112Button(text: "Refresh",onPressed: (){}),
+            padding: EdgeInsets.symmetric(
+              horizontal: FontConstants.horizontalPadding,
+            ),
+            child: Loan112Button(text: "Refresh", onPressed: () {}),
           ),
         ),
       ),
     );
   }
 
-
-  Widget personalLoanApplyWidget(BuildContext context){
+  Widget personalLoanApplyWidget(BuildContext context) {
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(ImageConstants.permissionScreenLeftPyramid,width: 26,height: 13),
-            SizedBox(
-              width: 214,
+            Image.asset(
+              ImageConstants.permissionScreenLeftPyramid,
+              width: 26,
+              height: 13,
             ),
-            Image.asset(ImageConstants.permissionScreenRightPyramid,width: 26,height: 13.0),
+            SizedBox(width: 214),
+            Image.asset(
+              ImageConstants.permissionScreenRightPyramid,
+              width: 26,
+              height: 13.0,
+            ),
           ],
         ),
         Container(
-          margin: const EdgeInsets.symmetric(
-            horizontal: 16,
-          ),
+          margin: const EdgeInsets.symmetric(horizontal: 16),
           padding: const EdgeInsets.all(FontConstants.horizontalPadding),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -137,15 +139,12 @@ class _DashboardStatusScreen extends State<DashboardStatusScreen>{
           width: double.infinity,
           child: Column(
             children: [
-              SizedBox(
-                height: 30,
-              ),
-               DashboardStatuspageStep(currentStep: 2)
+              SizedBox(height: 30),
+              DashboardStatuspageStep(currentStep: 2),
             ],
           ),
-        )
+        ),
       ],
     );
   }
-
 }

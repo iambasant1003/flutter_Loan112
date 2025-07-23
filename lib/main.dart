@@ -16,6 +16,7 @@ import 'Utils/AppConfig.dart';
 
 
 
+
 class MyApp extends StatefulWidget {
 
   final String environment;
@@ -41,34 +42,34 @@ class MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
      return MultiRepositoryProvider(
-         providers: appRepositoryProviders,
-         child: MultiBlocProvider(
-             providers: appBlocProviders,
-             child: ScreenUtilInit(
-               designSize: const Size(414, 896),
-               minTextAdapt: true,
-               splitScreenMode: true,
-               builder: (context, child) {
-                 return MaterialApp.router(
-                   debugShowCheckedModeBanner: false,
-                   title: ConstText.appName,
-                   theme: ThemeData(
-                     useMaterial3: false,
-                     fontFamily: ConstText.fontType,
-                     primaryColor: ColorConstant.appThemeColor,
-                     scaffoldBackgroundColor: ColorConstant.whiteColor,
-                     appBarTheme: AppBarTheme(
-                       systemOverlayStyle: SystemUiOverlayStyle(
-                         statusBarColor: ColorConstant.appThemeColor,
-                       ),
-                     ),
+       providers: appRepositoryProviders,
+       child: MultiBlocProvider(
+         providers: appBlocProviders,
+         child: ScreenUtilInit(
+           designSize: const Size(414, 896),
+           minTextAdapt: true,
+           splitScreenMode: true,
+           builder: (context, child) {
+             return MaterialApp.router(
+               debugShowCheckedModeBanner: false,
+               title: ConstText.appName,
+               theme: ThemeData(
+                 useMaterial3: false,
+                 fontFamily: ConstText.fontType,
+                 primaryColor: ColorConstant.appThemeColor,
+                 scaffoldBackgroundColor: ColorConstant.whiteColor,
+                 appBarTheme: AppBarTheme(
+                   systemOverlayStyle: SystemUiOverlayStyle(
+                     statusBarColor: ColorConstant.appThemeColor,
                    ),
-                   routerConfig: appRouter,
-                   builder: EasyLoading.init(),  // you can keep this if using EasyLoading
-                 );
-               },
-             )
-         )
+                 ),
+               ),
+               routerConfig: appRouter,
+               builder: EasyLoading.init(),
+             );
+           },
+         ),
+       ),
      );
   }
 

@@ -1,10 +1,20 @@
+import 'dart:convert';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
+import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
+import 'package:loan112_app/Model/GenerateLoanOfferModel.dart';
+import 'package:loan112_app/Utils/Debugprint.dart';
+import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:loan112_app/Widget/common_button.dart';
 import '../../../../Constant/ColorConst/ColorConstant.dart';
 import '../../../../Constant/FontConstant/FontConstant.dart';
 import '../../../../Constant/ImageConstant/ImageConstants.dart';
+import '../../../../Model/VerifyOTPModel.dart';
+import '../../../../Utils/MysharePrefenceClass.dart';
 import '../../../../Widget/app_bar.dart';
 
 class LoanOfferScreen extends StatefulWidget{
@@ -19,19 +29,44 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
 
 
   double currentValue = 0;
-  final double maxValue = 40000;
-
-  double currentTenure = 7;
-  final double maxTenure = 40;
-
+  double maxValue = 40000;
+  double currentTenure = 0;
+  double maxTenure = 40;
   final List<String> items = [
     'Home Loan',
     'Car Loan',
     'Personal Loan',
     'Education Loan',
   ];
+  bool initialized = false;
+  String? purPoseOfLoan;
+  int interestRate = 0;
+  String interestAmount = "";
+  String totalPayableAmount = "";
 
-  String? selectedValue;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      generateLoanOfferApiCall();
+    });
+  }
+
+
+
+  generateLoanOfferApiCall() async{
+    var otpModel = await MySharedPreferences.getUserSessionDataNode();
+    VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
+    var leadId = verifyOtpModel.data?.leadId ?? "";
+    if (leadId == "") {
+      leadId = await MySharedPreferences.getLeadId();
+    }
+    context.read<LoanApplicationCubit>().getPurposeOfLoanApiCall(
+      {
+        "leadId": leadId
+      }
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,55 +80,71 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
           ),
           backgroundColor: Color(0xffE7F3FF),
         ),
-        body: SizedBox.expand(
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: Image.asset(
-                  ImageConstants.permissionScreenBackground,
-                  fit: BoxFit.cover, // Optional: to scale and crop nicely
+        body: BlocListener<LoanApplicationCubit,LoanApplicationState>(
+          listener: (context,state){
+            if(state is LoanApplicationLoading){
+              EasyLoading.show(status: "Please wait...");
+            }else if(state is GenerateLoanOfferSuccess){
+              EasyLoading.dismiss();
+            }else if(state is GenerateLoanOfferError){
+              EasyLoading.dismiss();
+              openSnackBar(context, state.generateLoanOfferModel.message ?? "Unknown Error");
+            }else if(state is LoanAcceptanceSuccess){
+              EasyLoading.dismiss();
+            }else if(state is LoanAcceptanceError){
+
+            }
+          },
+          child: SizedBox.expand(
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Image.asset(
+                    ImageConstants.permissionScreenBackground,
+                    fit: BoxFit.cover, // Optional: to scale and crop nicely
+                  ),
                 ),
-              ),
-              Positioned(
-                left: 15,
-                right: 15,
-                top: 20,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    loanOfferContainer(context),
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      child: Center(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: ColorConstant.appThemeColor,
-                            borderRadius: const BorderRadius.only(
-                              bottomLeft: Radius.circular(18.0),
-                              bottomRight: Radius.circular(18.0),
+                Positioned(
+                  left: 15,
+                  right: 15,
+                  top: 20,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      loanOfferContainer(context),
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        child: Center(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: ColorConstant.appThemeColor,
+                              borderRadius: const BorderRadius.only(
+                                bottomLeft: Radius.circular(18.0),
+                                bottomRight: Radius.circular(18.0),
+                              ),
                             ),
-                          ),
-                          width: 244,
-                          height: 40,
-                          child: Center(
-                            child: Text(
-                              "Your Loan Offer",
-                              style: TextStyle(
-                                fontSize: FontConstants.f18,
-                                fontWeight: FontConstants.w800,
-                                color: ColorConstant.whiteColor,
+                            width: 244,
+                            height: 40,
+                            child: Center(
+                              child: Text(
+                                "Your Loan Offer",
+                                style: TextStyle(
+                                  fontSize: FontConstants.f18,
+                                  fontWeight: FontConstants.w800,
+                                  color: ColorConstant.whiteColor,
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              )
-            ],
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         ),
         bottomNavigationBar: SizedBox(
@@ -145,153 +196,183 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
 
 
   Widget loanOfferContainer(BuildContext context){
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(ImageConstants.permissionScreenLeftPyramid,width: 26,height: 13),
-            SizedBox(
-              width: 214,
-            ),
-            Image.asset(ImageConstants.permissionScreenRightPyramid,width: 26,height: 13.0),
-          ],
-        ),
-        Container(
-          width: MediaQuery.of(context).size.width * 0.9,
-          height: MediaQuery.of(context).size.height * 0.9,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                ColorConstant.whiteColor,
-                ColorConstant.appScreenBackgroundColor,
+    return BlocBuilder<LoanApplicationCubit,LoanApplicationState>(
+        builder: (context,state){
+          if(state is GenerateLoanOfferSuccess){
+            GenerateLoanOfferModel generateLoanOfferModel = state.generateLoanOfferModel;
+            if(!initialized){
+              currentTenure = double.parse((generateLoanOfferModel.data!.minLoanTenure ?? 0).toString());
+              maxTenure = double.parse((generateLoanOfferModel.data!.maxLoanTenure ?? 0).toString());
+              currentValue = double.parse((generateLoanOfferModel.data!.minLoanAmount ?? 0).toString());
+              maxValue = double.parse((generateLoanOfferModel.data!.maxLoanAmount ?? 0).toString());
+              interestRate = generateLoanOfferModel.data!.interestRate ?? 0;
+
+              Future.delayed(const Duration(milliseconds: 500), () {
+                calculateLoan(principal: currentValue, tenure: currentTenure,
+                    interestRate: double.parse((interestRate).toString())
+                );
+              });
+
+              initialized = true;
+
+            }
+            return Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(ImageConstants.permissionScreenLeftPyramid,width: 26,height: 13),
+                    SizedBox(
+                      width: 214,
+                    ),
+                    Image.asset(ImageConstants.permissionScreenRightPyramid,width: 26,height: 13.0),
+                  ],
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  height: MediaQuery.of(context).size.height * 0.9,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        ColorConstant.whiteColor,
+                        ColorConstant.appScreenBackgroundColor,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(10.0),
+                    ),
+                  ),
+                  //padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            height: 46,
+                          ),
+                          Text(
+                            state.generateLoanOfferModel.data?.loanQuotePageTopText ?? "",
+                            textAlign: TextAlign.center,
+                            //"Based on your provided details, we’ve calculated your loan eligibility. Select your preferred loan amount and tenure to proceed.",
+                            style: TextStyle(
+                                fontSize: FontConstants.f14,
+                                fontWeight: FontConstants.w500,
+                                fontFamily: FontConstants.fontFamily,
+                                color: ColorConstant.dashboardTextColor
+                            ),
+                          ),
+                          SizedBox(
+                            height: 32,
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                                color: ColorConstant.containerBackground,
+                                borderRadius: BorderRadius.all(Radius.circular(16.0))
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 12.0,
+                                  vertical: 12.0
+                              ),
+                              child: Column(
+                                children: [
+                                  Center(
+                                    child: Text(
+                                      "Purpose of Loan*".toUpperCase(),
+                                      style: TextStyle(
+                                          fontSize: FontConstants.f16,
+                                          fontWeight: FontConstants.w700,
+                                          fontFamily: FontConstants.fontFamily,
+                                          color: ColorConstant.blueTextColor
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 6.0,
+                                  ),
+                                  purposeOfLoanButton(context),
+                                  SizedBox(
+                                    height: 12.0,
+                                  ),
+                                  Center(
+                                    child: Text(
+                                      "PRINCIPAL",
+                                      style: TextStyle(
+                                          fontSize: FontConstants.f16,
+                                          fontFamily: FontConstants.fontFamily,
+                                          fontWeight: FontConstants.w700,
+                                          color: ColorConstant.blueTextColor
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 15.0,
+                                  ),
+                                  principalSliderAndValue(context),
+                                  SizedBox(
+                                    height: 12.0,
+                                  ),
+                                  Center(
+                                    child: Text(
+                                      "TENURE",
+                                      style: TextStyle(
+                                          fontSize: FontConstants.f16,
+                                          fontFamily: FontConstants.fontFamily,
+                                          fontWeight: FontConstants.w700,
+                                          color: ColorConstant.blueTextColor
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 15.0,
+                                  ),
+                                  tenureSliderAndValue(context,valueType:generateLoanOfferModel.data?.loanTenureText??""),
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 16.0,
+                          ),
+                          interestAndProcessingFeeUi(context,generateLoanOfferModel: generateLoanOfferModel),
+                          SizedBox(
+                            height: 16,
+                          ),
+                          totalLoanAmountUi(context),
+                          SizedBox(
+                            height: 16,
+                          ),
+                          Text(
+                            generateLoanOfferModel.data?.loanQuotePageBottomText ?? "",
+                           // "Thank you for expressing your interest in Loan112 and providing us with an opportunity to assist you. Please proceed with the loan details above to continue.",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: FontConstants.f12,
+                                fontWeight: FontConstants.w500,
+                                fontFamily: FontConstants.fontFamily,
+                                color: ColorConstant.brownColor
+                            ),
+                          ),
+                          SizedBox(
+                            height: 150.0,
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                )
               ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: const BorderRadius.all(
-              Radius.circular(10.0),
-            ),
-          ),
-          //padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    height: 46,
-                  ),
-                  Text(
-                    "Based on your provided details, we’ve calculated your loan eligibility. Select your preferred loan amount and tenure to proceed.",
-                    style: TextStyle(
-                        fontSize: FontConstants.f14,
-                        fontWeight: FontConstants.w500,
-                        fontFamily: FontConstants.fontFamily,
-                        color: ColorConstant.dashboardTextColor
-                    ),
-                  ),
-                  SizedBox(
-                    height: 32,
-                  ),
-                 Container(
-                   decoration: BoxDecoration(
-                     color: ColorConstant.containerBackground,
-                     borderRadius: BorderRadius.all(Radius.circular(16.0))
-                   ),
-                   child: Padding(
-                     padding: EdgeInsets.symmetric(
-                       horizontal: 12.0,
-                       vertical: 12.0
-                     ),
-                     child: Column(
-                       children: [
-                         Center(
-                           child: Text(
-                             "Purpose of Loan*".toUpperCase(),
-                             style: TextStyle(
-                                 fontSize: FontConstants.f16,
-                                 fontWeight: FontConstants.w700,
-                                 fontFamily: FontConstants.fontFamily,
-                                 color: ColorConstant.blueTextColor
-                             ),
-                           ),
-                         ),
-                         SizedBox(
-                           height: 6.0,
-                         ),
-                         purposeOfLoanButton(context),
-                         SizedBox(
-                           height: 12.0,
-                         ),
-                         Center(
-                           child: Text(
-                             "PRINCIPAL",
-                             style: TextStyle(
-                                 fontSize: FontConstants.f16,
-                                 fontFamily: FontConstants.fontFamily,
-                                 fontWeight: FontConstants.w700,
-                                 color: ColorConstant.blueTextColor
-                             ),
-                           ),
-                         ),
-                         SizedBox(
-                           height: 15.0,
-                         ),
-                         principalSliderAndValue(context),
-                         SizedBox(
-                           height: 12.0,
-                         ),
-                         Center(
-                           child: Text(
-                             "TENURE",
-                             style: TextStyle(
-                                 fontSize: FontConstants.f16,
-                                 fontFamily: FontConstants.fontFamily,
-                                 fontWeight: FontConstants.w700,
-                                 color: ColorConstant.blueTextColor
-                             ),
-                           ),
-                         ),
-                         SizedBox(
-                           height: 15.0,
-                         ),
-                         tenureSliderAndValue(context),
-                       ],
-                     ),
-                   ),
-                 ),
-                  SizedBox(
-                    height: 16.0,
-                  ),
-                  interestAndProcessingFeeUi(context),
-                  SizedBox(
-                    height: 16,
-                  ),
-                  totalLoanAmountUi(context),
-                  SizedBox(
-                    height: 16,
-                  ),
-                  Text(
-                    "Thank you for expressing your interest in Loan112 and providing us with an opportunity to assist you. Please proceed with the loan details above to continue.",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: FontConstants.f12,
-                      fontWeight: FontConstants.w500,
-                      fontFamily: FontConstants.fontFamily,
-                      color: ColorConstant.brownColor
-                    ),
-                  ),
-                  SizedBox(
-                    height: 150.0,
-                  )
-                ],
-              ),
-            ),
-          ),
-        )
-      ],
+            );
+          }else{
+            return Container(
+              height: 400,
+            );
+          }
+        }
     );
   }
 
@@ -323,10 +404,10 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
           ),
         ))
             .toList(),
-        value: selectedValue,
+        value: purPoseOfLoan,
         onChanged: (value) {
           setState(() {
-            selectedValue = value;
+            purPoseOfLoan = value;
           });
         },
         buttonStyleData: ButtonStyleData(
@@ -376,8 +457,14 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
             max: maxValue,
             divisions: 8,
             onChanged: (value) {
+              DebugPrint.prt("Current Principal Amount $value");
               setState(() {
                 currentValue = value;
+              });
+              Future.delayed(const Duration(milliseconds: 500), () {
+                calculateLoan(principal: currentValue, tenure: currentTenure,
+                    interestRate: double.parse((interestRate).toString())
+                );
               });
             },
           ),
@@ -410,7 +497,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
     );
   }
 
-  Widget tenureSliderAndValue(BuildContext context){
+  Widget tenureSliderAndValue(BuildContext context,{valueType = "Days"}){
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -431,6 +518,11 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
             onChanged: (value) {
               setState(() {
                 currentTenure = value;
+              });
+              Future.delayed(const Duration(milliseconds: 500), () {
+                calculateLoan(principal: currentValue, tenure: currentTenure,
+                    interestRate: double.parse((interestRate).toString())
+                );
               });
             },
           ),
@@ -463,7 +555,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
     );
   }
 
-  Widget interestAndProcessingFeeUi(BuildContext context){
+  Widget interestAndProcessingFeeUi(BuildContext context,{GenerateLoanOfferModel? generateLoanOfferModel}){
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -485,6 +577,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
                     height: 8.0,
                   ),
                   Text(
+                    generateLoanOfferModel?.data?.interestRateText ??
                     "Interest 1.00% p.d.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -520,6 +613,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
                     height: 8.0,
                   ),
                   Text(
+                    generateLoanOfferModel?.data?.processingFeeText ??
                     "Processing Fee 10%",
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -542,15 +636,19 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        totalAmountUI(context,amountType: "Principal",amountValue: 5000),
+        totalAmountUI(context,amountType: "Principal",
+            amountValue: (currentValue % 1 == 0)
+                ? currentValue.toInt().toString()
+                : currentValue.toStringAsFixed(2)
+        ),
         SizedBox(
           width: 10,
         ),
-        totalAmountUI(context,amountType: "Interest",amountValue: 350),
+        totalAmountUI(context,amountType: "Interest",amountValue: interestAmount),
         SizedBox(
           width: 10,
         ),
-        totalAmountUI(context,amountType: "Total Payable",amountValue: 5350)
+        totalAmountUI(context,amountType: "Total Payable",amountValue: totalPayableAmount)
       ],
     );
   }
@@ -597,6 +695,25 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
         ),
       ),
     );
+  }
+
+
+  calculateLoan({
+    required double principal,
+    required double tenure,
+    required double interestRate,
+  }) {
+    double interest = principal * (interestRate / 100) * tenure;
+    double totalPayable = principal + interest;
+    setState(() {
+      interestAmount = (interest % 1 == 0)
+          ? interest.toInt().toString()
+          : interest.toStringAsFixed(2);
+
+      totalPayableAmount = (totalPayable % 1 == 0)
+          ? totalPayable.toInt().toString()
+          : totalPayable.toStringAsFixed(2);
+    });
   }
 
 }
@@ -649,7 +766,19 @@ class CustomThumbShape extends SliderComponentShape {
 
 
 
+// {
+// "custId":"ZGIwZTNiYzQxMGM3YzE2MTM3Mzg3MTk2MjM0MGUxODY=",
+// "leadId":"NzM3NWY2YzAzOThiNTY2NGIzMzVhMzQ1NDk1NzJiMzg=",
+// "loanAmount":"",
+// "tenure":"",
+// "loanAcceptId":""
+// }
 
+
+// LoanAcceptedId Value
+// 1- Accept
+//2- Reject
+//3 - Enhancement
 
 
 

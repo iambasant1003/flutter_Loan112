@@ -40,5 +40,6 @@ class ImageConstants {
   static const String applicationSanction = "assets/icons/application_sanction.png";
   static const String applicationSubmitted = "assets/icons/application_submitted.png";
   static const String applicationDisbursement = "assets/icons/disbursement_icon.png";
+  static const String failedIcon = "assets/icons/failed_icon.png";
 
 }

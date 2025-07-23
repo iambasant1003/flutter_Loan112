@@ -1,14 +1,20 @@
 
 class AppConfig {
-  static late String baseUrl;
+  static late String baseUrlNode;
+  static late String baseUrlPhp;
+  static late String authPhpToken;
 
   static init(String env) {
     switch (env) {
       case 'dev':
-        baseUrl = "https://uat-node.loan112fintech.com/journey-service/api/v1/";
+        baseUrlNode = "https://uat-node.loan112fintech.com/journey-service/api/v1/";
+        baseUrlPhp = "https://uat-api.loan112fintech.com/";
+        authPhpToken = "NWZmYzU2NDVkN2Y3ODIwNDJjZDFhZmViYjA3MTExZDM=";
         break;
       case 'prod':
-        baseUrl = 'https://api.example.com';
+        baseUrlNode = 'https://api.example.node.com';
+        baseUrlPhp = 'https://api.example.php.com';
+        authPhpToken = 'NWZmYzU2NDVkN2Y3ODIwNDJjZDFhZmViYjA3MTExZDM=';
         break;
     }
   }

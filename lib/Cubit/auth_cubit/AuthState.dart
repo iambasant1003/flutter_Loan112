@@ -1,4 +1,6 @@
 import 'package:loan112_app/Model/SendOTPModel.dart';
+import 'package:loan112_app/Model/SendPhpOTPModel.dart';
+import 'package:loan112_app/Model/VerifyPHPOTPModel.dart';
 
 import '../../Model/VerifyOTPModel.dart';
 
@@ -8,14 +10,23 @@ class AuthInitial extends AuthState {}
 
 class AuthLoading extends AuthState {}
 
-class AuthSuccess extends AuthState {
+class AuthNodeSuccess extends AuthState {
   final SendOTPModel data;
-  AuthSuccess(this.data);
+  AuthNodeSuccess(this.data);
+}
+
+class AuthPhpSuccess extends AuthState{
+  final SendPhpOTPModel data;
+  AuthPhpSuccess(this.data);
 }
 
 
-
 class VerifyOtpLoading extends AuthState{}
+
+class VerifyPhpOTPSuccess extends AuthState{
+  final VerifyPHPOTPModel data;
+  VerifyPhpOTPSuccess(this.data);
+}
 
 class VerifyOTPSuccess extends AuthState{
   final VerifyOTPModel verifyOTPModel;

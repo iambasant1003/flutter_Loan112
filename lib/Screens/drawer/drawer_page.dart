@@ -1,16 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
 import 'package:loan112_app/Constant/ImageConstant/ImageConstants.dart';
+import 'package:loan112_app/Cubit/dashboard_cubit/DashboardCubit.dart';
+import 'package:loan112_app/Model/DashBoarddataModel.dart';
+import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
+import 'package:loan112_app/Utils/MysharePrefenceClass.dart';
+import 'package:loan112_app/Utils/snackbarMassage.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../Widget/circular_progress.dart';
 
-class Loan112Drawer extends StatelessWidget {
-  const Loan112Drawer({super.key});
+
+class Loan112Drawer extends StatefulWidget{
+
+  final DashBoarddataModel? dashBoarddataModel;
+  const Loan112Drawer({super.key,this.dashBoarddataModel});
+
+  @override
+  State<StatefulWidget> createState() => _Loan112Drawer();
+}
+
+class _Loan112Drawer extends State<Loan112Drawer> {
+
+
+
+  String buildNumber = "";
+  String versionCode = "";
+
+
+  @override
+  void initState() {
+    super.initState();
+    getPackageInformation();
+  }
+
+  getPackageInformation() async{
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      versionCode = packageInfo.version;
+      buildNumber = packageInfo.buildNumber;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
+
     return Drawer(
       child: Container(
         color: ColorConstant.appScreenBackgroundColor,
@@ -44,20 +85,20 @@ class Loan112Drawer extends StatelessWidget {
                             Row(
                               children: [
                                 CircularProgressWithText(
-                                  progress: 0.5,
+                                  progress: (widget.dashBoarddataModel?.data?.applyLoanBanner?.appBannerProgressPercent ?? 0) / 100,
                                   isDrawer: true,
                                 ),
                                 SizedBox(
                                   width: 15,
                                 ),
                                 Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SizedBox(
                                       height: 20,
                                     ),
                                     Text(
-                                      "SHIVANI",
+                                      widget.dashBoarddataModel?.data?.fullName ?? "",
                                       style: TextStyle(
                                           fontFamily: FontConstants.fontFamily,
                                           fontSize: FontConstants.f18,
@@ -69,7 +110,8 @@ class Loan112Drawer extends StatelessWidget {
                                       height: 10,
                                     ),
                                     Text(
-                                      "9090000888",
+                                      widget.dashBoarddataModel?.data?.mobile ?? "",
+                                      //"9090000888",
                                       style: TextStyle(
                                           fontWeight: FontConstants.w600,
                                           fontSize: FontConstants.f12,
@@ -87,7 +129,8 @@ class Loan112Drawer extends StatelessWidget {
                             Padding(
                               padding: EdgeInsets.only(left: 30.0,top: 10.0),
                               child: Text(
-                                "${(0.5 * 100).toInt()}%",
+                                "${widget.dashBoarddataModel?.data?.applyLoanBanner!.appBannerProgressPercent?? 0.toString()}%",
+                                //"${(0.5 * 100).toInt()}%",
                                 style: TextStyle(
                                     fontFamily: FontConstants.fontFamily,
                                     fontWeight: FontConstants.w800,
@@ -121,7 +164,8 @@ class Loan112Drawer extends StatelessWidget {
                   children: [
                     _buildMenuItem(ImageConstants.homeIcon, "Home",
                        onClick: (){
-                          DebugPrint.prt("Home Icon Pressed");
+                         // DebugPrint.prt("Home Icon Pressed");
+                         context.pop();
                        }
                     ),
                     _buildMenuItem(ImageConstants.drawerFaq, "FAQs",
@@ -137,11 +181,15 @@ class Loan112Drawer extends StatelessWidget {
                     _buildMenuItem(ImageConstants.drawerShareApp, "Share App",
                       onClick: (){
                         DebugPrint.prt("Share Icon Pressed");
+                        SharePlus.instance.share(
+                            ShareParams(text: 'Hey, I found this cool app: https://play.google.com/store/apps/details?id=com.personalLoan.loan112')
+                        );
                       }
                     ),
                     _buildMenuItem(ImageConstants.drawerRateUs, "Rate Us",
                         onClick: (){
                           DebugPrint.prt("Rate Us Pressed");
+                          openPlayStore(context);
                     }),
                   ],
                 ),
@@ -151,8 +199,16 @@ class Loan112Drawer extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    SvgPicture.asset(
-                      ImageConstants.drawerPower,
+                    InkWell(
+                      onTap:() async{
+                       var logOutData = await MySharedPreferences.logOutFunctionData();
+                       if(logOutData){
+                         context.go(AppRouterName.login);
+                       }
+                      },
+                      child: SvgPicture.asset(
+                        ImageConstants.drawerPower,
+                      ),
                     ),
                   ],
                 ),
@@ -164,22 +220,27 @@ class Loan112Drawer extends StatelessWidget {
               // Delete Account
               Padding(
                 padding: EdgeInsets.only(left: FontConstants.horizontalPadding,top: 10.0),
-                child: Row(
-                  children: [
-                    Image.asset(ImageConstants.drawerDelete,height: 20,width: 20),
-                    SizedBox(
-                      width: 12,
-                    ),
-                    Text(
-                      "Delete Account",
-                      style: TextStyle(
-                          fontFamily: FontConstants.fontFamily,
-                          fontWeight: FontConstants.w600,
-                          fontSize: FontConstants.f14,
-                          color: ColorConstant.errorRedColor
+                child: InkWell(
+                  onTap: (){
+                    context.read<DashboardCubit>().callDeleteCustomerProfileApi();
+                  },
+                  child: Row(
+                    children: [
+                      Image.asset(ImageConstants.drawerDelete,height: 20,width: 20),
+                      SizedBox(
+                        width: 12,
                       ),
-                    ),
-                  ],
+                      Text(
+                        "Delete Account",
+                        style: TextStyle(
+                            fontFamily: FontConstants.fontFamily,
+                            fontWeight: FontConstants.w600,
+                            fontSize: FontConstants.f14,
+                            color: ColorConstant.errorRedColor
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               SizedBox(
@@ -189,7 +250,7 @@ class Loan112Drawer extends StatelessWidget {
                Padding(
                 padding: EdgeInsets.only(bottom: 8.0),
                 child: Text(
-                  "Version : 19/2.2.4",
+                  "Version : $buildNumber/$versionCode",
                   style: TextStyle(
                       fontSize: FontConstants.f14,
                       fontWeight: FontConstants.w600,
@@ -208,6 +269,22 @@ class Loan112Drawer extends StatelessWidget {
     );
   }
 
+
+
+  Future<void> openPlayStore(BuildContext context) async {
+    final Uri playStoreUrl = Uri.parse(
+      'https://play.google.com/store/apps/details?id=com.personalLoan.loan112&hl=en_IN&pli=1',
+    );
+
+    if (!await launchUrl(
+      playStoreUrl,
+      mode: LaunchMode.externalApplication,
+    )) {
+       openSnackBar(context, 'Could not launch $playStoreUrl');
+    }
+  }
+
+
   Widget _buildMenuItem(String icon, String title,{onClick}) {
     return ListTile(
       leading: Image.asset(icon, color: ColorConstant.greyTextColor,height: 20,width: 20),
@@ -225,3 +302,5 @@ class Loan112Drawer extends StatelessWidget {
     );
   }
 }
+
+

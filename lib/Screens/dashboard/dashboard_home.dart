@@ -1,13 +1,25 @@
 
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loan112_app/Cubit/dashboard_cubit/DashboardState.dart';
+import 'package:loan112_app/Model/DashBoarddataModel.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
+import 'package:loan112_app/Utils/Debugprint.dart';
+import 'package:loan112_app/Utils/MysharePrefenceClass.dart';
+import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../Constant/ColorConst/ColorConstant.dart';
 import '../../Constant/FontConstant/FontConstant.dart';
 import '../../Constant/ImageConstant/ImageConstants.dart';
+import '../../Cubit/dashboard_cubit/DashboardCubit.dart';
+import '../../Widget/app_bar.dart';
 import '../../Widget/circular_progress.dart';
 import '../../Widget/common_button.dart';
+import '../drawer/drawer_page.dart';
+import 'dashboard_loan_details.dart';
 
 class DashBoardHome extends StatefulWidget{
   const DashBoardHome({super.key});
@@ -18,6 +30,14 @@ class DashBoardHome extends StatefulWidget{
 
 class _DashBoardHome extends State<DashBoardHome>{
 
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    context.read<DashboardCubit>().callDashBoardApi();
+  }
+
   final PageController _controller = PageController();
 
   List<String> imageData = ["Ram","Shyam"];
@@ -25,144 +45,245 @@ class _DashBoardHome extends State<DashBoardHome>{
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.expand(
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: Image.asset(
-              ImageConstants.permissionScreenBackground,
-              fit: BoxFit.cover, // Optional: to scale and crop nicely
-            ),
-          ),
-          SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 37,
-                  ),
-                  SizedBox(
-                    height: 225,
+    return BlocListener<DashboardCubit,DashboardState>(
+      listenWhen: (prev,next){
+        return prev != next;
+      },
+      listener: (context,state){
+        if(state is DashBoardLoading){
+          DebugPrint.prt('DashBoard Is Loading');
+          EasyLoading.show(status: "Please Wait");
+        }else if(state is DashBoardSuccess){
+          EasyLoading.dismiss();
+        }else if(state is DashBoardError){
+          DebugPrint.prt("DashBoard Is facing Error");
+          EasyLoading.dismiss();
+          openSnackBar(context, state.dashBoardModel.message ?? "Unknown Error");
+        }else if(state is DeleteCustomerSuccess){
+          EasyLoading.dismiss();
+          context.push(AppRouterName.dashBoardOTP);
+        }else if(state is DeleteCustomerFailed){
+          EasyLoading.dismiss();
+          openSnackBar(context, state.deleteCustomerModel.message ?? "Unexpected Error");
+        }
+      },
+      child: BlocBuilder<DashboardCubit,DashboardState>(
+          builder: (context,state){
+            if(state is DashBoardSuccess){
+              DashBoarddataModel dashBoarddataModel = state.dashBoardModel;
+              return commonScaffold(
+                  context,
+                  dashBoardModel: dashBoarddataModel,
+                  bodyPart: SizedBox.expand(
                     child: Stack(
-                      clipBehavior: Clip.none,
                       children: [
-                        personalLoanApplyWidget(context),
-                        Positioned(
-                        top: -2,
-                        left: 0,
-                        right: 0,
-                        child: Center(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: ColorConstant.appThemeColor,
-                              borderRadius: const BorderRadius.only(
-                                bottomLeft: Radius.circular(18.0),
-                                bottomRight: Radius.circular(18.0),
-                              ),
-                            ),
-                            width: 244,
-                            height: 40,
-                            child: Center(
-                              child: Text(
-                                "Easy personal Loans",
-                                style: TextStyle(
-                                  fontFamily: FontConstants.fontFamily,
-                                  fontSize: FontConstants.f18,
-                                  fontWeight: FontConstants.w800,
-                                  color: ColorConstant.whiteColor,
-                                ),
-                              ),
-                            ),
+                        Positioned.fill(
+                          child: Image.asset(
+                            ImageConstants.permissionScreenBackground,
+                            fit: BoxFit.cover, // Optional: to scale and crop nicely
                           ),
                         ),
-                      ),
-                        //This 2nd Positioned Contains Button
-                        Positioned(
-                            bottom: -10,
-                            left: 100,
-                            right: 100,
-                            child: GestureDetector(
-                              onTap: (){
-                                context.push(AppRouterName.loanApplicationPage);
-                              },
-                              child: Loan112Button(
-                                  onPressed: null,
-                                  text: "Let's Start"
-                              ),
-                            )
-                        )
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 40.0,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: FontConstants.horizontalPadding),
-                    child: Text(
-                      "We Provide",
-                      style: TextStyle(
-                          fontSize: FontConstants.f18,
-                          fontWeight: FontConstants.w800,
-                          fontFamily: FontConstants.fontFamily,
-                          color: ColorConstant.blackTextColor
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 220,
-                    child: PageView.builder(
-                      controller: _controller,
-                      itemCount: imageData.length,
-                      itemBuilder: (context, index) {
-                        final item = imageData[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                  image: AssetImage(ImageConstants.emergencyLoanPoster),
-                                  fit: BoxFit.fill
-                              ),
-                              borderRadius: BorderRadius.circular(16),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black12,
-                                  blurRadius: 4,
+                        SafeArea(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  height: 37,
+                                ),
+                                Stack(
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    personalLoanApplyWidget(context,state.dashBoardModel),
+                                    Positioned(
+                                      top: -2,
+                                      left: 0,
+                                      right: 0,
+                                      child: Center(
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: ColorConstant.appThemeColor,
+                                            borderRadius: const BorderRadius.only(
+                                              bottomLeft: Radius.circular(18.0),
+                                              bottomRight: Radius.circular(18.0),
+                                            ),
+                                          ),
+                                          width: 244,
+                                          height: 40,
+                                          child: Center(
+                                            child: Text(
+                                              dashBoarddataModel.data!.applyLoanBanner!.appBannerTitle ?? "",
+                                              //"Easy personal Loans",
+                                              style: TextStyle(
+                                                fontFamily: FontConstants.fontFamily,
+                                                fontSize: FontConstants.f18,
+                                                fontWeight: FontConstants.w800,
+                                                color: ColorConstant.whiteColor,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    //This 2nd Positioned Contains Button
+                                    Positioned(
+                                        bottom: -15,
+                                        left: 100,
+                                        right: 100,
+                                        child: GestureDetector(
+                                          onTap: (){
+                                            context.push(AppRouterName.loanApplicationPage);
+                                          },
+                                          child: Loan112Button(
+                                              onPressed: null,
+                                              text: dashBoarddataModel.data?.applyLoanBanner?.appBannerBtnText ?? ""
+                                            //"Let's Start"
+                                          ),
+                                        )
+                                    )
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 40.0,
+                                ),
+                               // DashboardLoanDetails(),
+                                Padding(
+                                  padding: EdgeInsets.only(left: FontConstants.horizontalPadding),
+                                  child: Text(
+                                    "We Provide",
+                                    style: TextStyle(
+                                        fontSize: FontConstants.f18,
+                                        fontWeight: FontConstants.w800,
+                                        fontFamily: FontConstants.fontFamily,
+                                        color: ColorConstant.blackTextColor
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 220,
+                                  child: PageView.builder(
+                                    controller: _controller,
+                                    itemCount: dashBoarddataModel.data?.appBanners?.length,
+                                    itemBuilder: (context, index) {
+                                      final item = dashBoarddataModel.data?.appBanners?[index];
+                                      return Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
+                                          child: Image.network(item?.imgUrl ??"" ,height: 156)
+                                        /*
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                            image: NetworkImage(item?.imgUrl ??"" ),
+                                            fit: BoxFit.fill
+                                        ),
+                                        borderRadius: BorderRadius.circular(16),
+                                        color: Colors.white,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black12,
+                                            blurRadius: 4,
+                                          )
+                                        ],
+                                      ),
+                                      // child: Image.asset(ImageConstants.emergencyLoanPoster)
+                                    ),
+
+                                         */
+                                      );
+                                    },
+                                  ),
+                                ),
+                                Center(
+                                  child: SmoothPageIndicator(
+                                    controller: _controller,
+                                    count: dashBoarddataModel.data?.appBanners!.length ?? 0,
+                                    effect: const WormEffect(
+                                      dotHeight: 8,
+                                      dotWidth: 8,
+                                      spacing: 8,
+                                      dotColor: Colors.grey,
+                                      activeDotColor: Colors.blue,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 20,
                                 )
                               ],
                             ),
-                           // child: Image.asset(ImageConstants.emergencyLoanPoster)
                           ),
-                        );
-                      },
-                    ),
-                  ),
-                  Center(
-                    child: SmoothPageIndicator(
-                      controller: _controller,
-                      count: imageData.length,
-                      effect: const WormEffect(
-                        dotHeight: 8,
-                        dotWidth: 8,
-                        spacing: 8,
-                        dotColor: Colors.grey,
-                        activeDotColor: Colors.blue,
-                      ),
+                        )
+                      ],
                     ),
                   )
-                ],
-              ),
-            ),
-          )
-        ],
+              );
+            }else{
+              return commonScaffold(
+                  context,
+                  bodyPart: SizedBox.expand(
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: Image.asset(
+                            ImageConstants.permissionScreenBackground,
+                            fit: BoxFit.cover, // Optional: to scale and crop nicely
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+              );
+            }
+          }
       ),
     );
   }
 
-  Widget personalLoanApplyWidget(BuildContext context){
+  Widget commonScaffold(BuildContext context,{required Widget bodyPart,dashBoardModel}){
+    return Scaffold(
+      drawer: Loan112Drawer(
+        dashBoarddataModel: dashBoardModel,
+      ),
+      appBar: Loan112AppBar(
+        leadingSpacing: 25,
+        title: Image.asset(
+          ImageConstants.loan112AppNameIcon,
+          height: 76,
+          width: 76,
+        ),
+        customLeading: Builder(
+          builder: (context) => Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: InkWell(
+              onTap: () {
+                Scaffold.of(context).openDrawer();
+              },
+              child: Icon(
+                Icons.menu,
+                color: ColorConstant.greyTextColor,
+              ),
+            ),
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(right: 8.0),
+            child: InkWell(
+              onTap: (){
+                DebugPrint.prt("Headphone is tapped");
+              },
+              child: Image.asset(ImageConstants.dashBoardHeadphone,height: 24,width: 24),
+            ),
+          )
+        ],
+      ),
+      body: bodyPart,
+    );
+  }
+
+
+
+  Widget personalLoanApplyWidget(BuildContext context,DashBoarddataModel dashBoardModel){
     return Column(
       children: [
         Row(
@@ -195,13 +316,14 @@ class _DashBoardHome extends State<DashBoardHome>{
           width: double.infinity,
           child: Column(
             children: [
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
               // other content goes here
               Row(
                 children: [
                   Expanded(
                     child: Text(
-                      "Discover the possibilities with an instant personal loan up to Rs 1.2 Lakh. Curious about your eligibility? There's only one way to find out",
+                      dashBoardModel.data?.applyLoanBanner?.appBannerText?? "",
+                      //"Discover the possibilities with an instant personal loan up to Rs 1.2 Lakh. Curious about your eligibility? There's only one way to find out",
                       style: TextStyle(
                           fontWeight: FontConstants.w600,
                           fontSize: FontConstants.f14,
@@ -214,7 +336,7 @@ class _DashBoardHome extends State<DashBoardHome>{
                     width: 24,
                   ),
                   CircularProgressWithText(
-                    progress: 0.5,
+                    progress: (dashBoardModel.data?.applyLoanBanner?.appBannerProgressPercent ?? 0) / 100,
                     isDrawer: false,
                   )
                 ],
@@ -226,6 +348,11 @@ class _DashBoardHome extends State<DashBoardHome>{
       ],
     );
   }
+
+
+
+
+
 
 
 }

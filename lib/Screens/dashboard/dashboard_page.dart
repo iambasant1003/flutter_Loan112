@@ -1,7 +1,9 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
+import 'package:loan112_app/Cubit/dashboard_cubit/DashboardCubit.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Screens/dashboard/dashboard_home.dart';
 import 'package:loan112_app/Screens/dashboard/dashboard_status.dart';
@@ -42,40 +44,6 @@ class _DashBoardPage extends State<DashBoardPage>{
         },
         child: Scaffold(
             backgroundColor: ColorConstant.appScreenBackgroundColor,
-            drawer: Loan112Drawer(),
-            appBar: Loan112AppBar(
-              leadingSpacing: 25,
-              title: Image.asset(
-                ImageConstants.loan112AppNameIcon,
-                height: 76,
-                width: 76,
-              ),
-              customLeading: Builder(
-                builder: (context) => Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: InkWell(
-                    onTap: () {
-                      Scaffold.of(context).openDrawer();
-                    },
-                    child: Icon(
-                      Icons.menu,
-                      color: ColorConstant.greyTextColor,
-                    ),
-                  ),
-                ),
-              ),
-              actions: [
-                Padding(
-                  padding: EdgeInsets.only(right: 8.0),
-                  child: InkWell(
-                    onTap: (){
-                      DebugPrint.prt("Headphone is tapped");
-                    },
-                    child: Image.asset(ImageConstants.dashBoardHeadphone,height: 24,width: 24),
-                  ),
-                )
-              ],
-            ),
             body: screenList[selectedIndex],
             bottomNavigationBar: bottomNavigationWidget(context)
         )

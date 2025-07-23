@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
 import 'package:loan112_app/Constant/ImageConstant/ImageConstants.dart';
+import 'package:loan112_app/Utils/Debugprint.dart';
 import 'package:loan112_app/Utils/MysharePrefenceClass.dart';
+import 'package:loan112_app/Utils/snackbarMassage.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../Constant/FontConstant/FontConstant.dart';
 import '../../Routes/app_router_name.dart';
 import '../../Widget/common_button.dart';
@@ -86,8 +89,9 @@ class _PermissionPage extends State<PermissionPage> {
                           child: Loan112Button(
                             onPressed: () {
                               if (allPermissionAccepted) {
-                                MySharedPreferences.setPermissionStatus(true);
-                                context.push(AppRouterName.login);
+                                takeAllRequiredPermission(context);
+                              }else{
+                                openSnackBar(context, "Please accept our Terms & Conditions and Privacy Policy.");
                               }
                             },
                             text: "Allow",
@@ -103,6 +107,27 @@ class _PermissionPage extends State<PermissionPage> {
         ),
       ),
     );
+  }
+
+
+  void takeAllRequiredPermission(BuildContext context) async{
+    final cameraPermission = await Permission.camera.request();
+    final microPhonePermission = await Permission.microphone.request();
+    final locationPermission = await Permission.location.request();
+
+    DebugPrint.prt("camera permission ${cameraPermission.isGranted}");
+    DebugPrint.prt("MicroPhone permission ${microPhonePermission.isGranted}");
+    DebugPrint.prt("Location permission ${locationPermission.isGranted}");
+
+
+    if (cameraPermission.isGranted &&
+        microPhonePermission.isGranted &&
+        locationPermission.isGranted) {
+      MySharedPreferences.setPermissionStatus(true);
+      context.push(AppRouterName.login);
+    } else {
+      openAppSettings();
+    }
   }
 
 

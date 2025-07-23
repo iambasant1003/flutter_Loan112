@@ -1,4 +1,3 @@
-
 class VerifyOTPModel {
   int? statusCode;
   Data? data;
@@ -9,19 +8,19 @@ class VerifyOTPModel {
 
   VerifyOTPModel.fromJson(Map<String, dynamic> json) {
     statusCode = json['statusCode'];
-    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    data = json['data'] != null ? Data.fromJson(json['data']) : null;
     success = json['success'];
     message = json['message'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['statusCode'] = this.statusCode;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['statusCode'] = statusCode;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
-    data['success'] = this.success;
-    data['message'] = this.message;
+    data['success'] = success;
+    data['message'] = message;
     return data;
   }
 }
@@ -39,18 +38,19 @@ class Data {
   int? custIdDecode;
   String? token;
 
-  Data(
-      {this.custId,
-      this.leadId,
-      this.firstName,
-      this.middleName,
-      this.lastName,
-      this.mobile,
-      this.pancard,
-      this.personalEmail,
-      this.isRegister,
-      this.custIdDecode,
-      this.token});
+  Data({
+    this.custId,
+    this.leadId,
+    this.firstName,
+    this.middleName,
+    this.lastName,
+    this.mobile,
+    this.pancard,
+    this.personalEmail,
+    this.isRegister,
+    this.custIdDecode,
+    this.token,
+  });
 
   Data.fromJson(Map<String, dynamic> json) {
     custId = json['custId'];
@@ -67,18 +67,18 @@ class Data {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['custId'] = this.custId;
-    data['leadId'] = this.leadId;
-    data['firstName'] = this.firstName;
-    data['middleName'] = this.middleName;
-    data['lastName'] = this.lastName;
-    data['mobile'] = this.mobile;
-    data['pancard'] = this.pancard;
-    data['personalEmail'] = this.personalEmail;
-    data['isRegister'] = this.isRegister;
-    data['custIdDecode'] = this.custIdDecode;
-    data['token'] = this.token;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['custId'] = custId;
+    data['leadId'] = leadId;
+    data['firstName'] = firstName;
+    data['middleName'] = middleName;
+    data['lastName'] = lastName;
+    data['mobile'] = mobile;
+    data['pancard'] = pancard;
+    data['personalEmail'] = personalEmail;
+    data['isRegister'] = isRegister;
+    data['custIdDecode'] = custIdDecode;
+    data['token'] = token;
     return data;
   }
 }
