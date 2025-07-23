@@ -197,7 +197,7 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
                                               context.push(AppRouterName.checkEligibilityPage).then((val){
                                                 getCustomerDetailsApiCall();
                                               });
-                                            }else if(stepKeys[index].toLowerCase().contains('statement') && status != 1 && status != 0){
+                                            }else if(stepKeys[index].toLowerCase().contains('statement')&& status != 1 && status != 0){
                                               context.push(AppRouterName.bankStatement).then((val){
                                                 getCustomerDetailsApiCall();
                                               });
@@ -205,7 +205,7 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
                                               context.push(AppRouterName.aaDarKYCScreen).then((val){
                                                 getCustomerDetailsApiCall();
                                               });
-                                            }else if(stepKeys[index].toLowerCase().contains('selfie') && status!=1 && status != 0){
+                                            }else if(stepKeys[index].toLowerCase().contains('selfie')&& status!=1 && status != 0){
                                               context.push(AppRouterName.selfieScreenPath).then((val){});
                                             }else if(stepKeys[index].toLowerCase().contains("offer")&&status!=1 && status != 0){
                                               context.push(AppRouterName.loanOfferPage).then((val){

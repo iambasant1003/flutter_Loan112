@@ -11,16 +11,47 @@ import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
 import 'package:loan112_app/Utils/MysharePrefenceClass.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../Widget/circular_progress.dart';
 
-class Loan112Drawer extends StatelessWidget {
+
+class Loan112Drawer extends StatefulWidget{
+
   final DashBoarddataModel? dashBoarddataModel;
   const Loan112Drawer({super.key,this.dashBoarddataModel});
 
   @override
+  State<StatefulWidget> createState() => _Loan112Drawer();
+}
+
+class _Loan112Drawer extends State<Loan112Drawer> {
+
+
+
+  String buildNumber = "";
+  String versionCode = "";
+
+
+  @override
+  void initState() {
+    super.initState();
+    getPackageInformation();
+  }
+
+  getPackageInformation() async{
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      versionCode = packageInfo.version;
+      buildNumber = packageInfo.buildNumber;
+    });
+  }
+
+
+  @override
   Widget build(BuildContext context) {
+
     return Drawer(
       child: Container(
         color: ColorConstant.appScreenBackgroundColor,
@@ -54,7 +85,7 @@ class Loan112Drawer extends StatelessWidget {
                             Row(
                               children: [
                                 CircularProgressWithText(
-                                  progress: (dashBoarddataModel?.data?.applyLoanBanner?.appBannerProgressPercent ?? 0) / 100,
+                                  progress: (widget.dashBoarddataModel?.data?.applyLoanBanner?.appBannerProgressPercent ?? 0) / 100,
                                   isDrawer: true,
                                 ),
                                 SizedBox(
@@ -67,7 +98,7 @@ class Loan112Drawer extends StatelessWidget {
                                       height: 20,
                                     ),
                                     Text(
-                                      dashBoarddataModel?.data?.fullName ?? "",
+                                      widget.dashBoarddataModel?.data?.fullName ?? "",
                                       style: TextStyle(
                                           fontFamily: FontConstants.fontFamily,
                                           fontSize: FontConstants.f18,
@@ -79,7 +110,7 @@ class Loan112Drawer extends StatelessWidget {
                                       height: 10,
                                     ),
                                     Text(
-                                      dashBoarddataModel?.data?.mobile ?? "",
+                                      widget.dashBoarddataModel?.data?.mobile ?? "",
                                       //"9090000888",
                                       style: TextStyle(
                                           fontWeight: FontConstants.w600,
@@ -98,7 +129,7 @@ class Loan112Drawer extends StatelessWidget {
                             Padding(
                               padding: EdgeInsets.only(left: 30.0,top: 10.0),
                               child: Text(
-                                "${dashBoarddataModel?.data?.applyLoanBanner!.appBannerProgressPercent?? 0.toString()}%",
+                                "${widget.dashBoarddataModel?.data?.applyLoanBanner!.appBannerProgressPercent?? 0.toString()}%",
                                 //"${(0.5 * 100).toInt()}%",
                                 style: TextStyle(
                                     fontFamily: FontConstants.fontFamily,
@@ -219,7 +250,7 @@ class Loan112Drawer extends StatelessWidget {
                Padding(
                 padding: EdgeInsets.only(bottom: 8.0),
                 child: Text(
-                  "Version : 19/2.2.4",
+                  "Version : $buildNumber/$versionCode",
                   style: TextStyle(
                       fontSize: FontConstants.f14,
                       fontWeight: FontConstants.w600,

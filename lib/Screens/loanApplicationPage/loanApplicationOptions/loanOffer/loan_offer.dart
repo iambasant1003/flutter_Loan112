@@ -61,7 +61,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
     if (leadId == "") {
       leadId = await MySharedPreferences.getLeadId();
     }
-    context.read<LoanApplicationCubit>().generateLoanOfferApiCall(
+    context.read<LoanApplicationCubit>().getPurposeOfLoanApiCall(
       {
         "leadId": leadId
       }
@@ -89,6 +89,10 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
             }else if(state is GenerateLoanOfferError){
               EasyLoading.dismiss();
               openSnackBar(context, state.generateLoanOfferModel.message ?? "Unknown Error");
+            }else if(state is LoanAcceptanceSuccess){
+              EasyLoading.dismiss();
+            }else if(state is LoanAcceptanceError){
+
             }
           },
           child: SizedBox.expand(
@@ -762,7 +766,19 @@ class CustomThumbShape extends SliderComponentShape {
 
 
 
+// {
+// "custId":"ZGIwZTNiYzQxMGM3YzE2MTM3Mzg3MTk2MjM0MGUxODY=",
+// "leadId":"NzM3NWY2YzAzOThiNTY2NGIzMzVhMzQ1NDk1NzJiMzg=",
+// "loanAmount":"",
+// "tenure":"",
+// "loanAcceptId":""
+// }
 
+
+// LoanAcceptedId Value
+// 1- Accept
+//2- Reject
+//3 - Enhancement
 
 
 

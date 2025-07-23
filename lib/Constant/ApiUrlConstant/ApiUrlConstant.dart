@@ -16,6 +16,9 @@ const String customerKyc = "customer-ekyc";
 const String customerKycVerification = "eKyc-verification";
 const String deleteCustomerProfile = "deleteCustomerProfile$andRD";
 const String generateLoanOffer = "journey-generate-loan-offer";
+const String uploadDocs = "journey-upload-docs";
+const String loanAcceptance = "accept-loan-offer";
+const String  loanPurpose = "getMasterLoanPurpose$andRD";
 
 
 

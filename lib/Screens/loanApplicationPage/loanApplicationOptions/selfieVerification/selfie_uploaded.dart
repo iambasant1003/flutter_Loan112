@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math' as math;
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -42,6 +43,7 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage>{
       "cust_profile_id": sendPhpOTPModel.data?.custProfileId
     });
   }
+
 
 
   @override
@@ -129,15 +131,21 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage>{
                                 height: 63,
                               ),
                               Center(
-                                child: Container(
-                                  height: 245,
-                                  width: 245,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.all(Radius.circular(12.0)),
-                                      image: DecorationImage(
-                                          image: FileImage(File(widget.imagePath)),
-                                          fit: BoxFit.cover
-                                      )
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  child: SizedBox(
+                                    height: 245,
+                                    width: 245,
+                                    child: Transform(
+                                      alignment: Alignment.center,
+                                      transform: Matrix4.rotationY(math.pi),
+                                      child: Image.file(
+                                        height: 245,
+                                        width: 245,
+                                        File(widget.imagePath),
+                                        fit: BoxFit.fitWidth,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),

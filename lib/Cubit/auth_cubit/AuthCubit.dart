@@ -85,7 +85,8 @@ class AuthCubit extends Cubit<AuthState> {
         emit(AuthNodeSuccess(sendOTPModel));
         SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(jsonEncode(responseList[1].data)));
         emit(AuthPhpSuccess(sendPhpOTPModel));
-      }else{
+      }
+      else{
         if(responseList[0].status != ApiResponseStatus.success){
           SendOTPModel sendOTPModel = SendOTPModel.fromJson(jsonDecode(jsonEncode(responseList[0].data)));
           emit(AuthError(sendOTPModel.message ?? "Unknown Error"));

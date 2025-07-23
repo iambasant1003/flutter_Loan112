@@ -1,8 +1,11 @@
 
 
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
+import 'package:loan112_app/Model/GenerateLoanOfferModel.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
 import '../../Repository/loan_application_Repository.dart';
 import '../../Services/ApiResponseStatus.dart';
@@ -94,6 +97,40 @@ class LoanApplicationCubit extends Cubit<LoanApplicationState> {
       emit(GenerateLoanOfferSuccess(response.data!));
     } else {
       emit(GenerateLoanOfferError(response.error!));
+    }
+  }
+
+  Future<void>  getPurposeOfLoanApiCall(Map<String,dynamic> dataObj) async{
+    emit(LoanApplicationLoading());
+    final responseList =await Future.wait([
+          loanApplicationRepository.generateLoanOfferApiCallFunction(dataObj),
+          loanApplicationRepository.getPurposeOfLoanApiCallFunction(dataObj)
+    ]);
+    if(responseList[0].status == ApiResponseStatus.success &&
+        responseList[1].status == ApiResponseStatus.success){
+      GenerateLoanOfferModel generateLoanOfferModel = GenerateLoanOfferModel.fromJson(jsonDecode(jsonEncode(responseList[0].data)));
+      emit(GenerateLoanOfferSuccess(generateLoanOfferModel));
+      emit(GetPurposeOfLoanSuccess());
+    }
+    else{
+      if(responseList[0].status != ApiResponseStatus.success){
+        GenerateLoanOfferModel generateLoanOfferModel = GenerateLoanOfferModel.fromJson(jsonDecode(jsonEncode(responseList[0].data)));
+        emit(GenerateLoanOfferError(generateLoanOfferModel));
+      }else if(responseList[1].status != ApiResponseStatus.success){
+        emit(GetPurposeOfLoanFailed());
+      }
+    }
+  }
+
+
+  Future<void> loanAcceptanceApiCall(Map<String,dynamic> dataObj) async{
+    emit(LoanApplicationLoading());
+    final response = await loanApplicationRepository.loanAcceptanceApiCallFunction(dataObj);
+    DebugPrint.prt("Accept Loan Offer Response Status ${response.status}");
+    if (response.status == ApiResponseStatus.success) {
+      emit(LoanAcceptanceSuccess(response.data!));
+    } else {
+      emit(LoanAcceptanceError(response.error!));
     }
   }
 

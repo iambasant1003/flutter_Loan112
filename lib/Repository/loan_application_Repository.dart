@@ -6,6 +6,7 @@ import 'package:loan112_app/Model/EkycVerifictionModel.dart';
 import 'package:loan112_app/Model/GenerateLoanOfferModel.dart';
 import 'package:loan112_app/Model/GetCustomerDetailsModel.dart';
 import 'package:loan112_app/Model/GetPinCodeDetailsModel.dart';
+import 'package:loan112_app/Model/LoanAcceptanceModel.dart';
 import 'package:loan112_app/Model/UploadSelfieModel.dart';
 import 'package:loan112_app/Services/http_client_php.dart';
 import '../Constant/ApiUrlConstant/ApiUrlConstant.dart';
@@ -224,6 +225,66 @@ class LoanApplicationRepository {
       return ApiResponse.error(ApiResponseStatus.serverError, error: error);
     }
   }
+
+  Future<ApiResponse<LoanAcceptanceModel>> loanAcceptanceApiCallFunction(Map<String,dynamic> dataObj) async{
+    try {
+      final response = await apiClass.post(loanAcceptance, dataObj, isHeader: true);
+      DebugPrint.prt("API Response Loan Acceptance data ${response.data}");
+
+      final Map<String, dynamic> responseData = response.data;
+
+
+      final ApiResponseStatus status = mapApiResponseStatus(responseData);
+
+      if (status == ApiResponseStatus.success) {
+        final data = LoanAcceptanceModel.fromJson(responseData);
+        return ApiResponse.success(data);
+      } else {
+        final error = LoanAcceptanceModel.fromJson(responseData);
+        DebugPrint.prt("Error Message ${error.message}, ${error.statusCode}");
+        return ApiResponse.error(status, error: error);
+      }
+    } catch (e) {
+      DebugPrint.prt("Exception in accept Loan Offer: $e");
+      final error = LoanAcceptanceModel(
+        statusCode: 500,
+        message: "Unknown error occurred",
+      );
+      return ApiResponse.error(ApiResponseStatus.serverError, error: error);
+    }
+  }
+
+
+  Future<ApiResponse<dynamic>> getPurposeOfLoanApiCallFunction(Map<String,dynamic> dataObj) async{
+    try {
+      final response = await apiClass.post(loanPurpose, {},isHeader: true);
+      DebugPrint.prt("API Response Purpose of Loan data ${response.data}");
+
+      final Map<String, dynamic> responseData = response.data;
+
+
+      final ApiResponseStatus status = mapApiResponseStatus(responseData);
+
+      if (status == ApiResponseStatus.success) {
+        final data = LoanAcceptanceModel.fromJson(responseData);
+        return ApiResponse.success(data);
+      } else {
+        final error = LoanAcceptanceModel.fromJson(responseData);
+        DebugPrint.prt("Error Message ${error.message}, ${error.statusCode}");
+        return ApiResponse.error(status, error: error);
+      }
+    } catch (e) {
+      DebugPrint.prt("Exception in accept Loan Offer: $e");
+      final error = LoanAcceptanceModel(
+        statusCode: 500,
+        message: "Unknown error occurred",
+      );
+      return ApiResponse.error(ApiResponseStatus.serverError, error: error);
+    }
+  }
+
+
+
 
 }
 

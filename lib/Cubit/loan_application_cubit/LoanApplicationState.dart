@@ -6,6 +6,7 @@ import 'package:loan112_app/Model/EkycVerifictionModel.dart';
 import 'package:loan112_app/Model/GenerateLoanOfferModel.dart';
 import 'package:loan112_app/Model/GetCustomerDetailsModel.dart';
 import 'package:loan112_app/Model/GetPinCodeDetailsModel.dart';
+import 'package:loan112_app/Model/LoanAcceptanceModel.dart';
 import 'package:loan112_app/Model/UploadSelfieModel.dart';
 
 abstract class LoanApplicationState {}
@@ -86,9 +87,28 @@ class GenerateLoanOfferSuccess extends LoanApplicationState{
   GenerateLoanOfferSuccess(this.generateLoanOfferModel);
 }
 
+class GetPurposeOfLoanSuccess extends LoanApplicationState{
+
+}
+
+class GetPurposeOfLoanFailed extends LoanApplicationState{
+
+}
+
 class GenerateLoanOfferError extends LoanApplicationState{
   final GenerateLoanOfferModel generateLoanOfferModel;
   GenerateLoanOfferError(this.generateLoanOfferModel);
 }
+
+class LoanAcceptanceSuccess extends LoanApplicationState{
+ final LoanAcceptanceModel loanAcceptanceModel;
+ LoanAcceptanceSuccess(this.loanAcceptanceModel);
+}
+
+class LoanAcceptanceError extends LoanApplicationState{
+  final LoanAcceptanceModel loanAcceptanceModel;
+  LoanAcceptanceError(this.loanAcceptanceModel);
+}
+
 
 

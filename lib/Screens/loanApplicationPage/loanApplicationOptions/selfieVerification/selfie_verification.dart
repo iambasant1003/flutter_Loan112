@@ -221,10 +221,17 @@ class _SelfieCameraPageState extends State<SelfieCameraPage> with WidgetsBinding
                             ),
                             isCameraReady?
                             Center(
-                              child: SizedBox(
+                              child: Container(
                                 width: 300,
                                 height: 300,
-                                child: CameraPreview(_controller!),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                                  border: Border.all(color: Colors.grey.shade300, width: 2), // optional border
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  child: CameraPreview(_controller!),
+                                ),
                               ),
                             ):
                             GestureDetector(
