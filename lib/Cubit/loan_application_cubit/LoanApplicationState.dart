@@ -6,8 +6,11 @@ import 'package:loan112_app/Model/EkycVerifictionModel.dart';
 import 'package:loan112_app/Model/GenerateLoanOfferModel.dart';
 import 'package:loan112_app/Model/GetCustomerDetailsModel.dart';
 import 'package:loan112_app/Model/GetPinCodeDetailsModel.dart';
+import 'package:loan112_app/Model/GetPurposeOfLoanModel.dart';
+import 'package:loan112_app/Model/GetUtilityDocTypeModel.dart';
 import 'package:loan112_app/Model/LoanAcceptanceModel.dart';
 import 'package:loan112_app/Model/UploadSelfieModel.dart';
+import 'package:loan112_app/Model/UploadUtilityDocTypeModel.dart';
 
 abstract class LoanApplicationState {}
 
@@ -83,22 +86,27 @@ class CustomerKYCVerificationError extends LoanApplicationState{
 }
 
 class GenerateLoanOfferSuccess extends LoanApplicationState{
-  final GenerateLoanOfferModel generateLoanOfferModel;
-  GenerateLoanOfferSuccess(this.generateLoanOfferModel);
+  GenerateLoanOfferModel? generateLoanOfferModel;
+  GetPurposeOfLoanModel? getPurposeOfLoanModel;
+  GenerateLoanOfferSuccess(this.generateLoanOfferModel,this.getPurposeOfLoanModel);
 }
 
 class GetPurposeOfLoanSuccess extends LoanApplicationState{
-
+  final GetPurposeOfLoanModel getPurposeOfLoanModel;
+  GetPurposeOfLoanSuccess(this.getPurposeOfLoanModel);
 }
 
 class GetPurposeOfLoanFailed extends LoanApplicationState{
-
+  final GetPurposeOfLoanModel getPurposeOfLoanModel;
+  GetPurposeOfLoanFailed(this.getPurposeOfLoanModel);
 }
 
 class GenerateLoanOfferError extends LoanApplicationState{
   final GenerateLoanOfferModel generateLoanOfferModel;
   GenerateLoanOfferError(this.generateLoanOfferModel);
 }
+
+class LoanAcceptanceLoading extends LoanApplicationState{}
 
 class LoanAcceptanceSuccess extends LoanApplicationState{
  final LoanAcceptanceModel loanAcceptanceModel;
@@ -108,6 +116,21 @@ class LoanAcceptanceSuccess extends LoanApplicationState{
 class LoanAcceptanceError extends LoanApplicationState{
   final LoanAcceptanceModel loanAcceptanceModel;
   LoanAcceptanceError(this.loanAcceptanceModel);
+}
+
+class GetUtilityDocTypeLoaded extends LoanApplicationState{
+  final GetUtilityDocTypeModel getUtilityDocTypeModel;
+  GetUtilityDocTypeLoaded(this.getUtilityDocTypeModel);
+}
+
+class UploadUtilityDocSuccess extends LoanApplicationState{
+  final UploadUtilityDocTypeModel uploadUtilityDocTypeModel;
+  UploadUtilityDocSuccess(this.uploadUtilityDocTypeModel);
+}
+
+class UploadUtilityDocError extends LoanApplicationState{
+  final String errorMessage;
+  UploadUtilityDocError(this.errorMessage);
 }
 
 

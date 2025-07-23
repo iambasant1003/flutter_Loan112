@@ -6,8 +6,11 @@ import 'package:loan112_app/Model/EkycVerifictionModel.dart';
 import 'package:loan112_app/Model/GenerateLoanOfferModel.dart';
 import 'package:loan112_app/Model/GetCustomerDetailsModel.dart';
 import 'package:loan112_app/Model/GetPinCodeDetailsModel.dart';
+import 'package:loan112_app/Model/GetPurposeOfLoanModel.dart';
+import 'package:loan112_app/Model/GetUtilityDocTypeModel.dart';
 import 'package:loan112_app/Model/LoanAcceptanceModel.dart';
 import 'package:loan112_app/Model/UploadSelfieModel.dart';
+import 'package:loan112_app/Model/UploadUtilityDocTypeModel.dart';
 import 'package:loan112_app/Services/http_client_php.dart';
 import '../Constant/ApiUrlConstant/ApiUrlConstant.dart';
 import '../Services/ApiResponseStatus.dart';
@@ -31,6 +34,20 @@ class LoanApplicationRepository {
     }
 
     return mapStatusCode(logicalStatusCode);
+  }
+
+  ApiResponseStatus mapApiResponseStatusPhp(dynamic responseBody) {
+    final Map<String, dynamic> decoded = responseBody;
+
+    final int? logicalStatusCode = decoded['Status'];
+    DebugPrint.prt("Token Getting ${logicalStatusCode.runtimeType}");
+
+    if (logicalStatusCode == null) {
+      // Fallback: if no logical status code found, treat as failure
+      return ApiResponseStatus.notFound;
+    }
+
+    return mapStatusCodePhp(logicalStatusCode);
   }
 
 
@@ -228,7 +245,7 @@ class LoanApplicationRepository {
 
   Future<ApiResponse<LoanAcceptanceModel>> loanAcceptanceApiCallFunction(Map<String,dynamic> dataObj) async{
     try {
-      final response = await apiClass.post(loanAcceptance, dataObj, isHeader: true);
+      final response = await apiClass.put(loanAcceptance, dataObj, isHeader: true);
       DebugPrint.prt("API Response Loan Acceptance data ${response.data}");
 
       final Map<String, dynamic> responseData = response.data;
@@ -255,10 +272,38 @@ class LoanApplicationRepository {
   }
 
 
-  Future<ApiResponse<dynamic>> getPurposeOfLoanApiCallFunction(Map<String,dynamic> dataObj) async{
+  Future<ApiResponse<GetPurposeOfLoanModel>> getPurposeOfLoanApiCallFunction(Map<String,dynamic> dataObj) async{
     try {
-      final response = await apiClass.post(loanPurpose, {},isHeader: true);
+      final response = await apiClassPhp.post(loanPurpose, {},isHeader: true);
       DebugPrint.prt("API Response Purpose of Loan data ${response.data}");
+
+      final Map<String, dynamic> responseData = response.data;
+
+
+      final ApiResponseStatus status = mapApiResponseStatusPhp(responseData);
+
+      if (status == ApiResponseStatus.success) {
+        final data = GetPurposeOfLoanModel.fromJson(responseData);
+        return ApiResponse.success(data);
+      } else {
+        final error = GetPurposeOfLoanModel.fromJson(responseData);
+        DebugPrint.prt("Error Message ${error.message}, ${error.status}");
+        return ApiResponse.error(status, error: error);
+      }
+    } catch (e) {
+      DebugPrint.prt("Exception in accept Loan Offer: $e");
+      final error = GetPurposeOfLoanModel(
+        status: 500,
+        message: "Unknown error occurred",
+      );
+      return ApiResponse.error(ApiResponseStatus.serverError, error: error);
+    }
+  }
+
+  Future<ApiResponse<GetUtilityDocTypeModel>> getUtilityTyeApiCallFunction() async{
+    try {
+      final response = await apiClass.get(getUtilityDoc,isHeader: true);
+      DebugPrint.prt("API Response Utility Type data ${response.data}");
 
       final Map<String, dynamic> responseData = response.data;
 
@@ -266,16 +311,45 @@ class LoanApplicationRepository {
       final ApiResponseStatus status = mapApiResponseStatus(responseData);
 
       if (status == ApiResponseStatus.success) {
-        final data = LoanAcceptanceModel.fromJson(responseData);
+        final data = GetUtilityDocTypeModel.fromJson(responseData);
         return ApiResponse.success(data);
       } else {
-        final error = LoanAcceptanceModel.fromJson(responseData);
+        final error = GetUtilityDocTypeModel.fromJson(responseData);
         DebugPrint.prt("Error Message ${error.message}, ${error.statusCode}");
         return ApiResponse.error(status, error: error);
       }
     } catch (e) {
       DebugPrint.prt("Exception in accept Loan Offer: $e");
-      final error = LoanAcceptanceModel(
+      final error = GetUtilityDocTypeModel(
+        statusCode: 500,
+        message: "Unknown error occurred",
+      );
+      return ApiResponse.error(ApiResponseStatus.serverError, error: error);
+    }
+  }
+
+
+  Future<ApiResponse<UploadUtilityDocTypeModel>> uploadUtilityTypeDocApiCallFunction(FormData dataObj) async{
+    try {
+      final response = await apiClass.post(getUtilityDoc,dataObj,isHeader: true);
+      DebugPrint.prt("API Response Upload Utility data ${response.data}");
+
+      final Map<String, dynamic> responseData = response.data;
+
+
+      final ApiResponseStatus status = mapApiResponseStatus(responseData);
+
+      if (status == ApiResponseStatus.success) {
+        final data = UploadUtilityDocTypeModel.fromJson(responseData);
+        return ApiResponse.success(data);
+      } else {
+        final error = UploadUtilityDocTypeModel.fromJson(responseData);
+        DebugPrint.prt("Error Message ${error.message}, ${error.statusCode}");
+        return ApiResponse.error(status, error: error);
+      }
+    } catch (e) {
+      DebugPrint.prt("Exception in accept Loan Offer: $e");
+      final error = UploadUtilityDocTypeModel(
         statusCode: 500,
         message: "Unknown error occurred",
       );

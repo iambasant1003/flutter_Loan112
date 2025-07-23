@@ -1,10 +1,10 @@
 class Loanacceptanceparammodel {
-  final String? custId;
-  final String? leadId;
-  final int? loanAcceptId;
-  final int? loanAmount;
-  final int? tenure;
-  final int? loanPurposeId;
+   String? custId;
+   String? leadId;
+   int? loanAcceptId;
+   int? loanAmount;
+   int? tenure;
+   int? loanPurposeId;
 
   Loanacceptanceparammodel({
     this.custId,

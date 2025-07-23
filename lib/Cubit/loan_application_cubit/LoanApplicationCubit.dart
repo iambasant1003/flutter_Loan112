@@ -1,11 +1,11 @@
 
 
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
 import 'package:loan112_app/Model/GenerateLoanOfferModel.dart';
+import 'package:loan112_app/Model/GetPurposeOfLoanModel.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
 import '../../Repository/loan_application_Repository.dart';
 import '../../Services/ApiResponseStatus.dart';
@@ -89,42 +89,33 @@ class LoanApplicationCubit extends Cubit<LoanApplicationState> {
   }
 
 
-  Future<void> generateLoanOfferApiCall(Map<String,dynamic> dataObj) async{
-    emit(LoanApplicationLoading());
-    final response = await loanApplicationRepository.generateLoanOfferApiCallFunction(dataObj);
-    DebugPrint.prt("Generate Loan Offer Response Status ${response.status}");
-    if (response.status == ApiResponseStatus.success) {
-      emit(GenerateLoanOfferSuccess(response.data!));
-    } else {
-      emit(GenerateLoanOfferError(response.error!));
-    }
-  }
-
   Future<void>  getPurposeOfLoanApiCall(Map<String,dynamic> dataObj) async{
     emit(LoanApplicationLoading());
     final responseList =await Future.wait([
           loanApplicationRepository.generateLoanOfferApiCallFunction(dataObj),
           loanApplicationRepository.getPurposeOfLoanApiCallFunction(dataObj)
     ]);
+    DebugPrint.prt("Status Loan Offer ${responseList[0].status}, Purpose of Loan ${responseList[1].status}");
     if(responseList[0].status == ApiResponseStatus.success &&
         responseList[1].status == ApiResponseStatus.success){
       GenerateLoanOfferModel generateLoanOfferModel = GenerateLoanOfferModel.fromJson(jsonDecode(jsonEncode(responseList[0].data)));
-      emit(GenerateLoanOfferSuccess(generateLoanOfferModel));
-      emit(GetPurposeOfLoanSuccess());
+      GetPurposeOfLoanModel getPurposeOfLoanModel = GetPurposeOfLoanModel.fromJson(jsonDecode(jsonEncode(responseList[1].data)));
+      emit(GenerateLoanOfferSuccess(generateLoanOfferModel,getPurposeOfLoanModel));
     }
     else{
       if(responseList[0].status != ApiResponseStatus.success){
         GenerateLoanOfferModel generateLoanOfferModel = GenerateLoanOfferModel.fromJson(jsonDecode(jsonEncode(responseList[0].data)));
         emit(GenerateLoanOfferError(generateLoanOfferModel));
       }else if(responseList[1].status != ApiResponseStatus.success){
-        emit(GetPurposeOfLoanFailed());
+        GetPurposeOfLoanModel getPurposeOfLoanModel = GetPurposeOfLoanModel.fromJson(jsonDecode(jsonEncode(responseList[1].data)));
+        emit(GetPurposeOfLoanFailed(getPurposeOfLoanModel));
       }
     }
   }
 
 
   Future<void> loanAcceptanceApiCall(Map<String,dynamic> dataObj) async{
-    emit(LoanApplicationLoading());
+    emit(LoanAcceptanceLoading());
     final response = await loanApplicationRepository.loanAcceptanceApiCallFunction(dataObj);
     DebugPrint.prt("Accept Loan Offer Response Status ${response.status}");
     if (response.status == ApiResponseStatus.success) {
@@ -134,5 +125,31 @@ class LoanApplicationCubit extends Cubit<LoanApplicationState> {
     }
   }
 
+  Future<void> getUtilityTypeDocApiCall() async{
+    emit(LoanApplicationLoading());
+    final response = await loanApplicationRepository.getUtilityTyeApiCallFunction();
+    DebugPrint.prt("Get Utility Doc Type Response Status ${response.status}");
+    if (response.status == ApiResponseStatus.success) {
+      emit(GetUtilityDocTypeLoaded(response.data!));
+    } else {
+      emit(LoanApplicationError(response.error?.message ?? "Unknown Error"));
+    }
+  }
+
+
+  Future<void> uploadUtilityTypeDocApiCall(FormData dataObj) async{
+    emit(LoanApplicationLoading());
+    final response = await loanApplicationRepository.uploadUtilityTypeDocApiCallFunction(dataObj);
+    DebugPrint.prt("Upload Utility Doc Type Response Status ${response.status}");
+    if (response.status == ApiResponseStatus.success) {
+      emit(UploadUtilityDocSuccess(response.data!));
+    } else {
+      emit(UploadUtilityDocError(response.error?.message ?? "Unknown Error"));
+    }
+  }
+
+
+
 
 }
+
