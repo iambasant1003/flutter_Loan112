@@ -1,5 +1,6 @@
 
 
+import 'package:loan112_app/Model/AddReferenceModel.dart';
 import 'package:loan112_app/Model/CreateLeadModel.dart';
 import 'package:loan112_app/Model/CustomerKycModel.dart';
 import 'package:loan112_app/Model/EkycVerifictionModel.dart';
@@ -144,6 +145,17 @@ class UploadBankStatementFailed extends LoanApplicationState{
   final UploadBankStatementModel uploadBankStatementModel;
   UploadBankStatementFailed(this.uploadBankStatementModel);
 }
+
+class AddReferenceSuccess extends LoanApplicationState{
+  final AddReferenceModel addReferenceModel;
+  AddReferenceSuccess(this.addReferenceModel);
+}
+
+class AddReferenceFailed extends LoanApplicationState{
+  final AddReferenceModel addReferenceModel;
+  AddReferenceFailed(this.addReferenceModel);
+}
+
 
 
 

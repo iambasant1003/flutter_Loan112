@@ -12,6 +12,7 @@ import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
 import 'package:loan112_app/Utils/MysharePrefenceClass.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
+import 'package:loan112_app/Utils/validation.dart';
 import 'package:loan112_app/Widget/common_system_ui.dart';
 import '../../Constant/FontConstant/FontConstant.dart';
 import '../../Cubit/auth_cubit/AuthCubit.dart';
@@ -140,14 +141,7 @@ class _LogInPageState extends State<LogInPage> {
                                               FilteringTextInputFormatter.digitsOnly,
                                             ],
                                             validator: (value) {
-                                              if (value == null || value.isEmpty) {
-                                                return 'Mobile number cannot be empty';
-                                              }
-                                              if (!RegExp(r'^[6-9][0-9]{9}$')
-                                                  .hasMatch(value)) {
-                                                return 'Enter valid 10-digit number';
-                                              }
-                                              return null;
+                                              return validateMobileNumber(value);
                                             },
                                             onChanged: (val) {
                                               print("Value is Changing");

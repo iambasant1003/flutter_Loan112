@@ -15,6 +15,7 @@ import 'package:loan112_app/Model/UploadSelfieModel.dart';
 import 'package:loan112_app/Model/UploadUtilityDocTypeModel.dart';
 import 'package:loan112_app/Services/http_client_php.dart';
 import '../Constant/ApiUrlConstant/ApiUrlConstant.dart';
+import '../Model/AddReferenceModel.dart';
 import '../Services/ApiResponseStatus.dart';
 import '../Services/http_client.dart';
 import '../Utils/Debugprint.dart';
@@ -382,6 +383,35 @@ class LoanApplicationRepository {
     } catch (e) {
       DebugPrint.prt("Exception in Upload BankStatement : $e");
       final error = UploadBankStatementModel(
+        statusCode: 500,
+        message: ConstText.exceptionError,
+      );
+      return ApiResponse.error(ApiResponseStatus.serverError, error: error);
+    }
+  }
+
+  Future<ApiResponse<AddReferenceModel>> addReferenceApiCallFunction(Map<String,dynamic> dataObj) async{
+    try {
+      final response = await apiClass.post(addReFeRance,dataObj,isHeader: true);
+      DebugPrint.prt("API Response Add Reference data ${response.data}");
+
+      final Map<String, dynamic> responseData = response.data;
+
+
+      final ApiResponseStatus status = mapApiResponseStatus(responseData);
+
+      if (status == ApiResponseStatus.success) {
+        DebugPrint.prt("BankStatement Success Response Model $responseData}");
+        final data = AddReferenceModel.fromJson(responseData);
+        return ApiResponse.success(data);
+      } else {
+        final error = AddReferenceModel.fromJson(responseData);
+        //DebugPrint.prt("BankStatement Error Message ${error.message}, ${error.statusCode}");
+        return ApiResponse.error(status, error: error);
+      }
+    } catch (e) {
+      DebugPrint.prt("Exception in Add Reference : $e");
+      final error = AddReferenceModel(
         statusCode: 500,
         message: ConstText.exceptionError,
       );

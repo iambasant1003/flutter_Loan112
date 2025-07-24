@@ -164,6 +164,19 @@ class LoanApplicationCubit extends Cubit<LoanApplicationState> {
   }
 
 
+  Future<void> addReferenceApiCall(Map<String,dynamic> dataObj) async{
+    emit(LoanApplicationLoading());
+    final response = await loanApplicationRepository.addReferenceApiCallFunction(dataObj);
+    DebugPrint.prt("Upload Reference Response Status ${response.status}");
+    if (response.status == ApiResponseStatus.success) {
+      emit(AddReferenceSuccess(response.data!));
+    } else {
+      DebugPrint.prt("Inside Else Block of response");
+      emit(AddReferenceFailed(response.error!));
+    }
+  }
+
+
 
 
 }

@@ -68,3 +68,34 @@ String? validateEmail(String? value) {
   return null; // ✅ valid
 }
 
+
+String? validateMobileNumber(String? value){
+  if (value == null || value.isEmpty) {
+    return 'Mobile number cannot be empty';
+  }
+  if (!RegExp(r'^[6-9][0-9]{9}$')
+      .hasMatch(value)) {
+    return 'Enter valid 10-digit number';
+  }
+  return null;
+}
+
+String? validateName(String? value) {
+  if (value == null || value.trim().isEmpty) {
+    return 'Name is required';
+  }
+
+  // Trim and normalize multiple spaces
+  String normalized = value.trim().replaceAll(RegExp(r'\s+'), ' ');
+
+  // Match only letters, one space between words, allow dot & apostrophe
+  if (!RegExp(r"^[a-zA-Z.'']+( [a-zA-Z.'']+)*$").hasMatch(normalized)) {
+    return 'Enter a valid name';
+  }
+
+  if (normalized.length < 2) {
+    return 'Name must be at least 2 characters long';
+  }
+
+  return null;
+}

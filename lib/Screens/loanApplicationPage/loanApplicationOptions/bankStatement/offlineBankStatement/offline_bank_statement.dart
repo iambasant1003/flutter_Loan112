@@ -179,7 +179,9 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
                             color: ColorConstant.blackTextColor,
                           ),
                         ),
-                        SizedBox(height: 12.0),
+                        SizedBox(
+                            height: 12.0
+                        ),
                         Text(
                           "Please provide your latest bank statement.",
                           style: TextStyle(
