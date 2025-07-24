@@ -19,6 +19,10 @@ const String generateLoanOffer = "journey-generate-loan-offer";
 const String uploadDocs = "journey-upload-docs";
 const String loanAcceptance = "accept-loan-offer";
 const String  loanPurpose = "getMasterLoanPurpose$andRD";
+const String getUtilityDoc = "get-current-address-docs";
+const String uploadResidenceDoc = "upload-residence-docs";
+const String uploadBankStatement = "journey-upload-docs";
+const String addReFeRance ="add-reference";
 
 
 

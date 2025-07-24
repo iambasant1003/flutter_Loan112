@@ -1,18 +1,29 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
+import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
+import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
 import 'package:loan112_app/Widget/common_screen_background.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:widgets_easier/widgets_easier.dart';
+import '../../../../Constant/ConstText/ConstText.dart';
 import '../../../../Constant/FontConstant/FontConstant.dart';
 import '../../../../Constant/ImageConstant/ImageConstants.dart';
+import '../../../../Model/GetUtilityDocTypeModel.dart';
+import '../../../../Model/VerifyOTPModel.dart';
 import '../../../../Utils/Debugprint.dart';
+import '../../../../Utils/MysharePrefenceClass.dart';
 import '../../../../Utils/snackbarMassage.dart';
 import '../../../../Widget/app_bar.dart';
 import 'dart:typed_data';
-
+import 'package:http_parser/http_parser.dart';
 import '../../../../Widget/common_textField.dart';
 
 class UtilityBillScreen extends StatefulWidget{
@@ -30,19 +41,13 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
     "Only PDF,JPG,JPEG,PNG files allowed",
     "Latest month's bills required"
   ];
-
-  var items = [
-    "Electricity Bill",
-    "Rent Agreement",
-  ];
-  String? selectedValue;
-
-
+  int? selectedValue;
   bool passWordVisible = false;
   Uint8List? pdfBytes;
   bool needsPassword = false;
   String? passwordError;
   String? fileNamePath;
+  String? fileName;
   String? fileSize;
 
   final TextEditingController _passwordController = TextEditingController();
@@ -64,13 +69,14 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
 
     if (result != null && result.files.single.bytes != null) {
       pdfBytes = result.files.single.bytes!;
-      fileNamePath = result.files.single.name;
+      fileName = result.files.single.name;
+      fileNamePath = result.files.single.path;
       fileSize = (result.files.single.size / 1024).toStringAsFixed(1);
       _checkPdf();
     }
   }
 
-  void _checkPdf({String? password}) {
+  Future<bool> _checkPdf({String? password}) async {
     try {
       // Try to load PDF
       final doc = PdfDocument(
@@ -79,16 +85,14 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
       );
       DebugPrint.prt("Pdf Loaded Successfully");
 
-      // Success — correct password or no password
-      openSnackBar(context, 'PDF opened successfully!',backGroundColor: ColorConstant.appThemeColor);
-      //doc.dispose();
-
       setState(() {
         needsPassword = false;
         passwordError = null;
       });
+
+      return true; // ✅ verified
+
     } catch (e) {
-      // Inspect the exception message
       DebugPrint.prt("Exception occurred $e");
       if (e.toString().contains('password')) {
         // Password is required or incorrect
@@ -100,146 +104,191 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
             passwordError = null; // just ask for password
           }
         });
-        DebugPrint.prt("Need Password $needsPassword,$passwordError");
+        DebugPrint.prt("Need Password $needsPassword, $passwordError");
       } else {
         // Some other PDF error
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to open PDF: ${e.toString()}')),
         );
       }
+
+      return false; // ❌ failed
     }
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<LoanApplicationCubit>().getUtilityTypeDocApiCall();
   }
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GradientBackground(
-        child: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Loan112AppBar(
-                  customLeading: InkWell(
-                    child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
-                    onTap: (){
-                      context.pop();
-                    },
-                  ),
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 24.0,
-                          ),
-                          Text(
-                            "Verify Residence",
-                            style: TextStyle(
-                              fontSize: FontConstants.f20,
-                              fontFamily: FontConstants.fontFamily,
-                              fontWeight: FontConstants.w800,
-                              color: ColorConstant.dashboardTextColor
-                            ),
-                          ),
-                          SizedBox(
-                            height: 16.0,
-                          ),
-                          Text(
-                            "Prove that you're in charge of your domain!",
-                            style: TextStyle(
-                                fontSize: FontConstants.f14,
-                                fontFamily: FontConstants.fontFamily,
-                                fontWeight: FontConstants.w500,
-                                color: Color(0xff4E4F50)
-                            ),
-                          ),
-                          SizedBox(
-                            height: 31,
-                          ),
-                          chooseDocumentButton(context),
-                          SizedBox(
-                            height: 24.0,
-                          ),
-                          filePickingUI(context),
-                          SizedBox(
-                            height: 24.0,
-                          ),
-                          filePickingDeclarationUI(context)
-                        ],
-                      ),
+      body: BlocListener<LoanApplicationCubit,LoanApplicationState>(
+        listener: (BuildContext context, LoanApplicationState state) {
+          if(state is LoanApplicationLoading){
+            EasyLoading.show(status: "Please wait...");
+          }else if(state is GetUtilityDocTypeLoaded){
+            EasyLoading.dismiss();
+            DebugPrint.prt("List data length ${state.getUtilityDocTypeModel.data?.length}");
+          }else if(state is LoanApplicationError){
+            EasyLoading.dismiss();
+            openSnackBar(context, state.message);
+          }else if(state is UploadUtilityDocSuccess){
+            EasyLoading.dismiss();
+            openSnackBar(context, state.uploadUtilityDocTypeModel.message ?? "",backGroundColor: ColorConstant.appThemeColor);
+            context.pop();
+          }else if(state is UploadUtilityDocError){
+            EasyLoading.dismiss();
+            openSnackBar(context, state.errorMessage ?? "");
+          }
+        },
+        child: GradientBackground(
+          child: SafeArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Loan112AppBar(
+                    customLeading: InkWell(
+                      child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
+                      onTap: (){
+                        context.pop();
+                      },
                     ),
                   ),
-                )
-              ],
-            )
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: 24.0,
+                            ),
+                            Text(
+                              "Verify Residence",
+                              style: TextStyle(
+                                  fontSize: FontConstants.f20,
+                                  fontFamily: FontConstants.fontFamily,
+                                  fontWeight: FontConstants.w800,
+                                  color: ColorConstant.dashboardTextColor
+                              ),
+                            ),
+                            SizedBox(
+                              height: 16.0,
+                            ),
+                            Text(
+                              "Prove that you're in charge of your domain!",
+                              style: TextStyle(
+                                  fontSize: FontConstants.f14,
+                                  fontFamily: FontConstants.fontFamily,
+                                  fontWeight: FontConstants.w500,
+                                  color: Color(0xff4E4F50)
+                              ),
+                            ),
+                            SizedBox(
+                              height: 31,
+                            ),
+                            chooseDocumentButton(context),
+                            SizedBox(
+                              height: 24.0,
+                            ),
+                            filePickingUI(context),
+                            SizedBox(
+                              height: 24.0,
+                            ),
+                            filePickingDeclarationUI(context)
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              )
+          ),
         ),
       ),
     );
   }
 
-  Widget chooseDocumentButton(BuildContext context){
-    return DropdownButtonHideUnderline(
-      child: DropdownButton2<String>(
-        isExpanded: true,
-        hint:  Text(
-          'Choose Your Document',
-          style: TextStyle(
-              fontSize: FontConstants.f14,
-              color: ColorConstant.blackTextColor,
-              fontWeight: FontConstants.w400,
-              fontFamily: FontConstants.fontFamily
-          ),
-        ),
-        items: items
-            .map((item) => DropdownMenuItem<String>(
-          value: item,
-          child: Text(
-            item,
-            style:  TextStyle(
-                fontSize: FontConstants.f14,
-                color: ColorConstant.blackTextColor,
-                fontWeight: FontConstants.w500,
-                fontFamily: FontConstants.fontFamily
+
+  GetUtilityDocTypeModel? getUtilityDocTypeModel;
+  DataUtilityModel? selectedDocument;
+
+  Widget chooseDocumentButton(BuildContext context) {
+    return BlocBuilder<LoanApplicationCubit, LoanApplicationState>(
+      builder: (context, state) {
+        if (state is GetUtilityDocTypeLoaded) {
+          getUtilityDocTypeModel = state.getUtilityDocTypeModel;
+        }
+
+        if (getUtilityDocTypeModel?.data != null) {
+          return DropdownButtonHideUnderline(
+            child: DropdownButton2<DataUtilityModel>(
+              isExpanded: true,
+              hint: Text(
+                'Choose Your Document',
+                style: TextStyle(
+                  fontSize: FontConstants.f14,
+                  color: ColorConstant.blackTextColor,
+                  fontWeight: FontConstants.w400,
+                  fontFamily: FontConstants.fontFamily,
+                ),
+              ),
+              items: getUtilityDocTypeModel!.data!
+                  .map((item) => DropdownMenuItem<DataUtilityModel>(
+                value: item,
+                child: Text(
+                  item.docType ?? '',
+                  style: TextStyle(
+                    fontSize: FontConstants.f14,
+                    color: ColorConstant.blackTextColor,
+                    fontWeight: FontConstants.w500,
+                    fontFamily: FontConstants.fontFamily,
+                  ),
+                ),
+              ))
+                  .toList(),
+              value: selectedDocument,
+              onChanged: (value) {
+                setState(() {
+                  selectedDocument = value;
+                });
+              },
+              buttonStyleData: ButtonStyleData(
+                height: 50,
+                padding: const EdgeInsets.only(right: 12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: ColorConstant.textFieldBorderColor,
+                  ),
+                  color: ColorConstant.appScreenBackgroundColor,
+                ),
+                elevation: 0,
+              ),
+              iconStyleData: IconStyleData(
+                icon: Icon(
+                  Icons.keyboard_arrow_down,
+                  size: 20,
+                  color: ColorConstant.greyTextColor,
+                ),
+              ),
+              dropdownStyleData: DropdownStyleData(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
             ),
-          ),
-        ))
-            .toList(),
-        value: selectedValue,
-        onChanged: (value) {
-          setState(() {
-            selectedValue = value;
-          });
-        },
-        buttonStyleData: ButtonStyleData(
-          height: 50,
-          padding: const EdgeInsets.only(right: 12),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: ColorConstant.textFieldBorderColor,
-            ),
-            color: ColorConstant.appScreenBackgroundColor,
-          ),
-          elevation: 0,
-        ),
-        iconStyleData:  IconStyleData(
-          icon: Icon(
-            Icons.keyboard_arrow_down,
-            size: 20,
-            color: ColorConstant.greyTextColor,
-          ),
-        ),
-        dropdownStyleData: DropdownStyleData(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-      ),
+          );
+        } else {
+          return SizedBox.shrink();
+        }
+      },
     );
   }
 
@@ -259,50 +308,47 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
       child:  Padding(
           padding: EdgeInsets.symmetric(horizontal: 18.0,vertical: 24.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Center(
-                child: (fileNamePath != null && fileNamePath != "")?
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(ImageConstants.pdfIcon,height: 25,width: 25),
-                    SizedBox(
-                      width: 8.0,
+               Center(
+          child: (fileNamePath != null && fileNamePath != "")
+              ? Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset(ImageConstants.pdfIcon, height: 25, width: 25),
+              const SizedBox(width: 8.0),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    fileName ?? "",
+                    style: TextStyle(
+                      fontSize: FontConstants.f14,
+                      fontFamily: FontConstants.fontFamily,
+                      fontWeight: FontConstants.w700,
+                      color: ColorConstant.blackTextColor,
                     ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            fileNamePath ?? "",
-                            style: TextStyle(
-                                fontSize: FontConstants.f14,
-                                fontFamily: FontConstants.fontFamily,
-                                fontWeight: FontConstants.w700,
-                                color: ColorConstant.blackTextColor
-                            ),
-                          ),
-                          SizedBox(
-                            height: 2.0,
-                          ),
-                          Text(
-                            "$fileSize KB" ?? "",
-                            style: TextStyle(
-                                fontSize: FontConstants.f12,
-                                fontFamily: FontConstants.fontFamily,
-                                fontWeight: FontConstants.w400,
-                                color: ColorConstant.greyTextColor
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ):
-                Image.asset(ImageConstants.bankStatementUploadIcon,height: 50,width: 50),
-              ),
+                  ),
+                  const SizedBox(height: 2.0),
+                  Text(
+                    "$fileSize KB",
+                    style: TextStyle(
+                      fontSize: FontConstants.f12,
+                      fontFamily: FontConstants.fontFamily,
+                      fontWeight: FontConstants.w400,
+                      color: ColorConstant.greyTextColor,
+                    ),
+                  ),
+                ],
+              )
+            ],
+          )
+              : Image.asset(ImageConstants.bankStatementUploadIcon, height: 50, width: 50),
+      ),
               SizedBox(
                 height: 26,
               ),
@@ -334,7 +380,8 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
                     ),
                   ),
                   const SizedBox(height: 8),
-                ]else...[
+                ]
+                else...[
                   const SizedBox(height: 16),
                 ]
               ],
@@ -349,17 +396,22 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   ),
                   onPressed: () async {
-                    if(pdfBytes != null){
-                      _checkPdf(password: _passwordController.text.trim());
-                    }else{
-                      _pickPdf();
+                    if (pdfBytes != null) {
+                      final verified = await _checkPdf(password: _passwordController.text.trim());
+                      if (verified) {
+                        uploadUtilityData(context); // 📤 Call upload if verified
+                      }
+                    } else {
+                      await _pickPdf();
                     }
                   },
-                  child: const Text(
+                  child: Text(
+                    (fileNamePath != null && fileNamePath != "")?
+                    "Upload files":
                     'Select files',
                     style: TextStyle(fontSize: 14),
                   ),
-                ),
+                )
               )
             ],
           )
@@ -404,6 +456,60 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
           );
         }
     );
+  }
+
+
+  uploadUtilityData(BuildContext context) async{
+    if(selectedDocument?.docType != null || selectedDocument?.docType != ""){
+      DebugPrint.prt("File name path $fileNamePath");
+      var imagePathConverted = File(fileNamePath!);
+      var otpModel = await MySharedPreferences.getUserSessionDataNode();
+      VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
+
+      var customerId = verifyOtpModel.data?.custId;
+      var leadId = verifyOtpModel.data?.leadId;
+      if(leadId == "" || leadId == null){
+        leadId = await MySharedPreferences.getLeadId();
+      }
+
+      final formData = FormData();
+
+      // Add text parts
+      formData.fields
+        ..add(MapEntry('custId', customerId?? ""))
+        ..add(MapEntry('leadId', leadId))
+        ..add(MapEntry('requestSource', ConstText.requestSource))
+        ..add(MapEntry('docType', ConstText.utilityBillType));
+
+      // Prepare file part
+      final file = File(imagePathConverted.path);
+
+      if (!await file.exists()) {
+        throw Exception('File does not exist at ${file.path}');
+      }
+
+      final fileName = file.uri.pathSegments.last;
+      final fileExtension = fileName.split('.').last.toLowerCase();
+
+      String? mimeType;
+      if (fileExtension == 'pdf') {
+        mimeType = 'application/pdf';
+      } else {
+        throw Exception('Unsupported file type: $fileExtension');
+      }
+
+      final multipartFile = await MultipartFile.fromFile(
+        file.path,
+        filename: fileName,
+        contentType: MediaType.parse(mimeType),
+      );
+
+      formData.files.add(MapEntry('addressDocs', multipartFile));
+
+      context.read<LoanApplicationCubit>().uploadUtilityTypeDocApiCall(formData);
+    }else{
+      openSnackBar(context, "Please choose document type");
+    }
   }
 
 

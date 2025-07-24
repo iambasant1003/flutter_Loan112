@@ -7,5 +7,8 @@ class ConstText {
   // font family
   static const fontType = "Manrope";
   static const requestSource = "and";
+  static const utilityBillType = "UTILITY BILL";
+  static const exceptionError = "Server error";
+
 
 }
