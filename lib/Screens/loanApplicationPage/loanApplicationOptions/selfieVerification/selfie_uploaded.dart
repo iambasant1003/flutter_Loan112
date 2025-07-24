@@ -131,24 +131,22 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage>{
                                 height: 63,
                               ),
                               Center(
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(12.0),
-                                  child: SizedBox(
-                                    height: 245,
-                                    width: 245,
-                                    child: Transform(
-                                      alignment: Alignment.center,
-                                      transform: Matrix4.rotationY(math.pi),
-                                      child: Image.file(
-                                        height: 245,
-                                        width: 245,
-                                        File(widget.imagePath),
-                                        fit: BoxFit.fitWidth,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                            child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12.0),
+                        child: Transform(
+                          alignment: Alignment.center,
+                          transform: Matrix4.rotationY(math.pi),
+                          child: SizedBox(
+                            height: 245,
+                            width: 245,
+                            child: Image.file(
+                              File(widget.imagePath),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                               SizedBox(
                                 height: 43,
                               ),

@@ -88,10 +88,10 @@ class AuthCubit extends Cubit<AuthState> {
       }
       else{
         if(responseList[0].status != ApiResponseStatus.success){
-          SendOTPModel sendOTPModel = SendOTPModel.fromJson(jsonDecode(jsonEncode(responseList[0].data)));
+          SendOTPModel sendOTPModel = SendOTPModel.fromJson(jsonDecode(jsonEncode(responseList[0].error)));
           emit(AuthError(sendOTPModel.message ?? "Unknown Error"));
         }else if(responseList[1].status != ApiResponseStatus.success){
-          SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(jsonEncode(responseList[1].data)));
+          SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(jsonEncode(responseList[1].error)));
           emit(AuthError(sendPhpOTPModel.message ?? "Unknown Error"));
         }
       }
@@ -104,6 +104,7 @@ class AuthCubit extends Cubit<AuthState> {
 
 
 
+  /*
   Future<void> sendOtpHp(String phoneNumber) async {
     try {
       final position = await getCurrentPosition();
@@ -148,6 +149,8 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthError("something went wrong"));
     }
   }
+
+   */
 
 
   Future<Position> getCurrentPosition() async {

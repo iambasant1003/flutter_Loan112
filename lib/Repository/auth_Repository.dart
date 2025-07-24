@@ -7,6 +7,7 @@ import 'package:loan112_app/Model/VerifyOTPModel.dart';
 import 'package:loan112_app/Model/VerifyPHPOTPModel.dart';
 import 'package:loan112_app/Services/ApiResponseStatus.dart';
 import 'package:loan112_app/Services/http_client_php.dart';
+import '../Constant/ConstText/ConstText.dart';
 import '../Model/SendOTPModel.dart';
 import '../Model/error_model.dart';
 import '../Services/http_client.dart';
@@ -80,7 +81,7 @@ class AuthRepository {
         return ApiResponse.error(status, error: error);
       }
     } catch (e) {
-      throw "Unknown Error";
+      throw ConstText.exceptionError;
     }
   }
 
@@ -101,7 +102,7 @@ class AuthRepository {
         return ApiResponse.error(status, error: error);
       }
     } catch (e) {
-      throw e.toString();
+      throw ConstText.exceptionError;
     }
   }
 
@@ -120,7 +121,7 @@ class AuthRepository {
         return ApiResponse.error(status, error: error);
       }
     } catch (e) {
-      throw e.toString();
+      throw ConstText.exceptionError;
     }
   }
 

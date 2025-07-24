@@ -54,15 +54,12 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
     "Banking Details"
   ];
 
-
-
-
-
-
-
   @override
   void initState() {
     super.initState();
+    context.read<JourneyCubit>().updateJourneyTabs(
+        {}
+    );
     getCustomerDetailsApiCall();
   }
 

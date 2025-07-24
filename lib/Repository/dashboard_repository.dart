@@ -1,4 +1,5 @@
 
+import 'package:loan112_app/Constant/ConstText/ConstText.dart';
 import 'package:loan112_app/Model/DashBoarddataModel.dart';
 import 'package:loan112_app/Model/DeleteCustomerModel.dart';
 import 'package:loan112_app/Services/http_client.dart';
@@ -76,7 +77,7 @@ class DashBoardRepository{
     } catch (e){
       final error = DeleteCustomerModel.fromJson({
       'Data': null,
-      'Message': "UnExpected Error",
+      'Message': ConstText.exceptionError,
       'Status': null,
       });
       return ApiResponse.error(ApiResponseStatus.notFound, error: error);
@@ -103,7 +104,7 @@ class DashBoardRepository{
     } catch (e){
       final error = DeleteProfileOTPVerifyModel.fromJson({
         'Data': null,
-        'Message': "UnExpected Error",
+        'Message': ConstText.exceptionError,
         'Status': null,
       });
       return ApiResponse.error(ApiResponseStatus.notFound, error: error);

@@ -101,13 +101,16 @@ class LoanApplicationCubit extends Cubit<LoanApplicationState> {
       GenerateLoanOfferModel generateLoanOfferModel = GenerateLoanOfferModel.fromJson(jsonDecode(jsonEncode(responseList[0].data)));
       GetPurposeOfLoanModel getPurposeOfLoanModel = GetPurposeOfLoanModel.fromJson(jsonDecode(jsonEncode(responseList[1].data)));
       emit(GenerateLoanOfferSuccess(generateLoanOfferModel,getPurposeOfLoanModel));
+      DebugPrint.prt("Emitted generate Loan Offer");
     }
     else{
       if(responseList[0].status != ApiResponseStatus.success){
-        GenerateLoanOfferModel generateLoanOfferModel = GenerateLoanOfferModel.fromJson(jsonDecode(jsonEncode(responseList[0].data)));
+        DebugPrint.prt("InSide Else if Block ${responseList[0].error}");
+        GenerateLoanOfferModel generateLoanOfferModel = GenerateLoanOfferModel.fromJson(jsonDecode(jsonEncode(responseList[0].error)));
         emit(GenerateLoanOfferError(generateLoanOfferModel));
       }else if(responseList[1].status != ApiResponseStatus.success){
-        GetPurposeOfLoanModel getPurposeOfLoanModel = GetPurposeOfLoanModel.fromJson(jsonDecode(jsonEncode(responseList[1].data)));
+        DebugPrint.prt("InSide Else else Block");
+        GetPurposeOfLoanModel getPurposeOfLoanModel = GetPurposeOfLoanModel.fromJson(jsonDecode(jsonEncode(responseList[1].error)));
         emit(GetPurposeOfLoanFailed(getPurposeOfLoanModel));
       }
     }
@@ -145,6 +148,18 @@ class LoanApplicationCubit extends Cubit<LoanApplicationState> {
       emit(UploadUtilityDocSuccess(response.data!));
     } else {
       emit(UploadUtilityDocError(response.error?.message ?? "Unknown Error"));
+    }
+  }
+
+  Future<void> uploadBankStatementApiCall(FormData dataObj) async{
+    emit(LoanApplicationLoading());
+    final response = await loanApplicationRepository.uploadBankStatementApiCallFunction(dataObj);
+    DebugPrint.prt("Upload BankStatement Response Status ${response.status}");
+    if (response.status == ApiResponseStatus.success) {
+      emit(UploadBankStatementSuccess(response.data!));
+    } else {
+      DebugPrint.prt("Inside Else Block of response");
+      emit(UploadBankStatementFailed(response.error!));
     }
   }
 

@@ -42,6 +42,8 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
   String purposeOfLoanId = "";
   // put this in your State
   DataModeL? selectedPurpose;
+  GenerateLoanOfferModel? generateLoanOfferModel;
+  GetPurposeOfLoanModel? getPurposeOfLoanModel;
 
   @override
   void initState() {
@@ -85,6 +87,23 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
               EasyLoading.show(status: "Please wait...");
             }else if(state is GenerateLoanOfferSuccess){
               EasyLoading.dismiss();
+              DebugPrint.prt("Loan Offer Success Ui");
+              generateLoanOfferModel = state.generateLoanOfferModel;
+              getPurposeOfLoanModel = state.getPurposeOfLoanModel;
+                currentTenure = double.parse((generateLoanOfferModel?.data!.minLoanTenure ?? 0).toString());
+                maxTenure = double.parse((generateLoanOfferModel?.data!.maxLoanTenure ?? 0).toString());
+                currentValue = double.parse((generateLoanOfferModel?.data!.minLoanAmount ?? 0).toString());
+                maxValue = double.parse((generateLoanOfferModel?.data!.maxLoanAmount ?? 0).toString());
+                interestRate = generateLoanOfferModel?.data!.interestRate ?? 0;
+
+                DebugPrint.prt("Model data $generateLoanOfferModel, $getPurposeOfLoanModel");
+
+                Future.delayed(const Duration(milliseconds: 500), () {
+                  calculateLoan(principal: currentValue, tenure: currentTenure,
+                      interestRate: double.parse((interestRate).toString())
+                  );
+                });
+                setState(() {});
             }else if(state is GenerateLoanOfferError){
               EasyLoading.dismiss();
               openSnackBar(context, state.generateLoanOfferModel.message ?? "Unknown Error");
@@ -110,45 +129,47 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
                     fit: BoxFit.cover, // Optional: to scale and crop nicely
                   ),
                 ),
-                Positioned(
-                  left: 15,
-                  right: 15,
-                  top: 20,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      loanOfferContainer(context),
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        child: Center(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: ColorConstant.appThemeColor,
-                              borderRadius: const BorderRadius.only(
-                                bottomLeft: Radius.circular(18.0),
-                                bottomRight: Radius.circular(18.0),
-                              ),
+                if(generateLoanOfferModel != null && getPurposeOfLoanModel != null)...[
+              Positioned(
+                left: 15,
+                right: 15,
+                top: 20,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    loanOfferContainer(context),
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: ColorConstant.appThemeColor,
+                            borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(18.0),
+                              bottomRight: Radius.circular(18.0),
                             ),
-                            width: 244,
-                            height: 40,
-                            child: Center(
-                              child: Text(
-                                "Your Loan Offer",
-                                style: TextStyle(
-                                  fontSize: FontConstants.f18,
-                                  fontWeight: FontConstants.w800,
-                                  color: ColorConstant.whiteColor,
-                                ),
+                          ),
+                          width: 244,
+                          height: 40,
+                          child: Center(
+                            child: Text(
+                              "Your Loan Offer",
+                              style: TextStyle(
+                                fontSize: FontConstants.f18,
+                                fontWeight: FontConstants.w800,
+                                color: ColorConstant.whiteColor,
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                )
+                    ),
+                  ],
+                ),
+              )
+            ]
               ],
             ),
           ),
@@ -236,31 +257,10 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
   }
 
 
-  GenerateLoanOfferModel? generateLoanOfferModel;
-  GetPurposeOfLoanModel? getPurposeOfLoanModel;
+
   Widget loanOfferContainer(BuildContext context){
     return BlocBuilder<LoanApplicationCubit,LoanApplicationState>(
         builder: (context,state){
-          if(state is GenerateLoanOfferSuccess){
-            generateLoanOfferModel = state.generateLoanOfferModel;
-            getPurposeOfLoanModel = state.getPurposeOfLoanModel;
-            if(!initialized){
-              currentTenure = double.parse((generateLoanOfferModel?.data!.minLoanTenure ?? 0).toString());
-              maxTenure = double.parse((generateLoanOfferModel?.data!.maxLoanTenure ?? 0).toString());
-              currentValue = double.parse((generateLoanOfferModel?.data!.minLoanAmount ?? 0).toString());
-              maxValue = double.parse((generateLoanOfferModel?.data!.maxLoanAmount ?? 0).toString());
-              interestRate = generateLoanOfferModel?.data!.interestRate ?? 0;
-
-              Future.delayed(const Duration(milliseconds: 500), () {
-                calculateLoan(principal: currentValue, tenure: currentTenure,
-                    interestRate: double.parse((interestRate).toString())
-                );
-              });
-
-              initialized = true;
-
-            }
-          }
            if(generateLoanOfferModel != null && getPurposeOfLoanModel != null){
              return Column(
                children: [

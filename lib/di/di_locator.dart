@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:loan112_app/Cubit/NetworkConnectivityCheck/ConnectivityCubit.dart';
 import 'package:loan112_app/Cubit/dashboard_cubit/DashboardCubit.dart';
+import 'package:loan112_app/Cubit/loan_application_cubit/AddMoreReferenceCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/JourneyCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
 import 'package:loan112_app/Repository/auth_Repository.dart';
@@ -23,6 +24,7 @@ void setupLocator() {
   locator.registerLazySingleton<DashBoardRepository>(()=> DashBoardRepository(locator<ApiClassPhp>()));
   locator.registerFactory(()=> DashboardCubit(locator<DashBoardRepository>()));
   locator.registerFactory(()=> JourneyCubit());
+  locator.registerFactory(()=> AddMoreReferenceCubit());
   locator.registerFactory(()=> ConnectivityCubit());
 
 }

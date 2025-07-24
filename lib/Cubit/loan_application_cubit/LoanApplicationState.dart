@@ -12,6 +12,8 @@ import 'package:loan112_app/Model/LoanAcceptanceModel.dart';
 import 'package:loan112_app/Model/UploadSelfieModel.dart';
 import 'package:loan112_app/Model/UploadUtilityDocTypeModel.dart';
 
+import '../../Model/UploadBankStatementModel.dart';
+
 abstract class LoanApplicationState {}
 
 class LoanApplicationInitial extends LoanApplicationState {}
@@ -131,6 +133,16 @@ class UploadUtilityDocSuccess extends LoanApplicationState{
 class UploadUtilityDocError extends LoanApplicationState{
   final String errorMessage;
   UploadUtilityDocError(this.errorMessage);
+}
+
+class UploadBankStatementSuccess extends LoanApplicationState{
+  final UploadBankStatementModel uploadBankStatementModel;
+  UploadBankStatementSuccess(this.uploadBankStatementModel);
+}
+
+class UploadBankStatementFailed extends LoanApplicationState{
+  final UploadBankStatementModel uploadBankStatementModel;
+  UploadBankStatementFailed(this.uploadBankStatementModel);
 }
 
 

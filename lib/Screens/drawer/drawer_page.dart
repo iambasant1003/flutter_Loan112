@@ -201,10 +201,7 @@ class _Loan112Drawer extends State<Loan112Drawer> {
                   children: [
                     InkWell(
                       onTap:() async{
-                       var logOutData = await MySharedPreferences.logOutFunctionData();
-                       if(logOutData){
-                         context.go(AppRouterName.login);
-                       }
+                        showLogoutConfirmationDialog(context);
                       },
                       child: SvgPicture.asset(
                         ImageConstants.drawerPower,
@@ -222,7 +219,7 @@ class _Loan112Drawer extends State<Loan112Drawer> {
                 padding: EdgeInsets.only(left: FontConstants.horizontalPadding,top: 10.0),
                 child: InkWell(
                   onTap: (){
-                    context.read<DashboardCubit>().callDeleteCustomerProfileApi();
+                    showDeleteAccountDialog(context);
                   },
                   child: Row(
                     children: [
@@ -268,6 +265,104 @@ class _Loan112Drawer extends State<Loan112Drawer> {
       ),
     );
   }
+
+
+  void showLogoutConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          title: Text(
+            "Confirm Logout",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Text(
+            "Are you sure you want to log out?",
+            style: TextStyle(
+              fontSize: 16,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                context.pop(); // Dismiss dialog
+              },
+              child: Text(
+                "Cancel",
+                style: TextStyle(color: Colors.grey[700]),
+              ),
+            ),
+            TextButton(
+              onPressed: () async{
+                var logOutData = await MySharedPreferences.logOutFunctionData();
+                if(logOutData){
+                  context.go(AppRouterName.login);
+                }
+              },
+              child: Text(
+                "Logout",
+                style: TextStyle(color: Colors.redAccent),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showDeleteAccountDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          title: Text(
+            "Delete Account",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Text(
+            "Are you sure you want to delete your account? This action cannot be undone.",
+            style: TextStyle(
+              fontSize: 16,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                context.pop();
+              },
+              child: Text(
+                "Cancel",
+                style: TextStyle(color: Colors.grey[700]),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                context.pop();
+                context.read<DashboardCubit>().callDeleteCustomerProfileApi();
+              },
+              child: Text(
+                "Delete",
+                style: TextStyle(color: Colors.redAccent),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+
 
 
 

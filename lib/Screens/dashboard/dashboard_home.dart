@@ -43,6 +43,7 @@ class _DashBoardHome extends State<DashBoardHome>{
   List<String> imageData = ["Ram","Shyam"];
 
 
+  DashBoarddataModel? dashBoarddataModel;
   @override
   Widget build(BuildContext context) {
     return BlocListener<DashboardCubit,DashboardState>(
@@ -70,7 +71,9 @@ class _DashBoardHome extends State<DashBoardHome>{
       child: BlocBuilder<DashboardCubit,DashboardState>(
           builder: (context,state){
             if(state is DashBoardSuccess){
-              DashBoarddataModel dashBoarddataModel = state.dashBoardModel;
+              dashBoarddataModel = state.dashBoardModel;
+            }
+            if(dashBoarddataModel != null){
               return commonScaffold(
                   context,
                   dashBoardModel: dashBoarddataModel,
@@ -94,7 +97,7 @@ class _DashBoardHome extends State<DashBoardHome>{
                                 Stack(
                                   clipBehavior: Clip.none,
                                   children: [
-                                    personalLoanApplyWidget(context,state.dashBoardModel),
+                                    personalLoanApplyWidget(context,dashBoarddataModel!),
                                     Positioned(
                                       top: -2,
                                       left: 0,
@@ -112,7 +115,7 @@ class _DashBoardHome extends State<DashBoardHome>{
                                           height: 40,
                                           child: Center(
                                             child: Text(
-                                              dashBoarddataModel.data!.applyLoanBanner!.appBannerTitle ?? "",
+                                              dashBoarddataModel?.data!.applyLoanBanner!.appBannerTitle ?? "",
                                               //"Easy personal Loans",
                                               style: TextStyle(
                                                 fontFamily: FontConstants.fontFamily,
@@ -136,7 +139,7 @@ class _DashBoardHome extends State<DashBoardHome>{
                                           },
                                           child: Loan112Button(
                                               onPressed: null,
-                                              text: dashBoarddataModel.data?.applyLoanBanner?.appBannerBtnText ?? ""
+                                              text: dashBoarddataModel?.data?.applyLoanBanner?.appBannerBtnText ?? ""
                                             //"Let's Start"
                                           ),
                                         )
@@ -146,7 +149,7 @@ class _DashBoardHome extends State<DashBoardHome>{
                                 SizedBox(
                                   height: 40.0,
                                 ),
-                               // DashboardLoanDetails(),
+                                // DashboardLoanDetails(),
                                 Padding(
                                   padding: EdgeInsets.only(left: FontConstants.horizontalPadding),
                                   child: Text(
@@ -163,9 +166,9 @@ class _DashBoardHome extends State<DashBoardHome>{
                                   height: 220,
                                   child: PageView.builder(
                                     controller: _controller,
-                                    itemCount: dashBoarddataModel.data?.appBanners?.length,
+                                    itemCount: dashBoarddataModel?.data?.appBanners?.length,
                                     itemBuilder: (context, index) {
-                                      final item = dashBoarddataModel.data?.appBanners?[index];
+                                      final item = dashBoarddataModel?.data?.appBanners?[index];
                                       return Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
                                           child: Image.network(item?.imgUrl ??"" ,height: 156)
@@ -196,7 +199,7 @@ class _DashBoardHome extends State<DashBoardHome>{
                                 Center(
                                   child: SmoothPageIndicator(
                                     controller: _controller,
-                                    count: dashBoarddataModel.data?.appBanners!.length ?? 0,
+                                    count: dashBoarddataModel?.data?.appBanners!.length ?? 0,
                                     effect: const WormEffect(
                                       dotHeight: 8,
                                       dotWidth: 8,
@@ -217,7 +220,8 @@ class _DashBoardHome extends State<DashBoardHome>{
                     ),
                   )
               );
-            }else{
+            }
+            else{
               return commonScaffold(
                   context,
                   bodyPart: SizedBox.expand(

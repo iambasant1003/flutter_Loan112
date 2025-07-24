@@ -85,10 +85,6 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
       );
       DebugPrint.prt("Pdf Loaded Successfully");
 
-      // Success — correct password or no password
-      openSnackBar(context, 'PDF opened successfully!',
-          backGroundColor: ColorConstant.appThemeColor);
-
       setState(() {
         needsPassword = false;
         passwordError = null;
@@ -141,6 +137,13 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
           }else if(state is LoanApplicationError){
             EasyLoading.dismiss();
             openSnackBar(context, state.message);
+          }else if(state is UploadUtilityDocSuccess){
+            EasyLoading.dismiss();
+            openSnackBar(context, state.uploadUtilityDocTypeModel.message ?? "",backGroundColor: ColorConstant.appThemeColor);
+            context.pop();
+          }else if(state is UploadUtilityDocError){
+            EasyLoading.dismiss();
+            openSnackBar(context, state.errorMessage ?? "");
           }
         },
         child: GradientBackground(
@@ -322,7 +325,7 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    fileNamePath ?? "",
+                    fileName ?? "",
                     style: TextStyle(
                       fontSize: FontConstants.f14,
                       fontFamily: FontConstants.fontFamily,
@@ -402,7 +405,9 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
                       await _pickPdf();
                     }
                   },
-                  child: const Text(
+                  child: Text(
+                    (fileNamePath != null && fileNamePath != "")?
+                    "Upload files":
                     'Select files',
                     style: TextStyle(fontSize: 14),
                   ),

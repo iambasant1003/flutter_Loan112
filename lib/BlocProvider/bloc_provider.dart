@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loan112_app/Cubit/NetworkConnectivityCheck/ConnectivityCubit.dart';
 import 'package:loan112_app/Cubit/dashboard_cubit/DashboardCubit.dart';
+import 'package:loan112_app/Cubit/loan_application_cubit/AddMoreReferenceCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/JourneyCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
 
@@ -22,6 +23,9 @@ final List<BlocProvider> appBlocProviders = [
   ),
   BlocProvider<JourneyCubit>(
     create: (_) => locator<JourneyCubit>(),
+  ),
+  BlocProvider<AddMoreReferenceCubit>(
+    create: (_) => locator<AddMoreReferenceCubit>(),
   ),
   BlocProvider<ConnectivityCubit>(
     create: (_) => locator<ConnectivityCubit>(),

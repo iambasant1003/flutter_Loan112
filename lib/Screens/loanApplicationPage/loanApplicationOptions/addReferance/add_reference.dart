@@ -1,7 +1,9 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/ImageConstant/ImageConstants.dart';
+import 'package:loan112_app/Cubit/loan_application_cubit/AddMoreReferenceCubit.dart';
 import 'package:loan112_app/Widget/common_button.dart';
 import 'package:loan112_app/Widget/common_screen_background.dart';
 import 'package:loan112_app/Widget/common_textField.dart';
@@ -33,6 +35,12 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
   ];
 
   String? selectedValue;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<AddMoreReferenceCubit>().clear();
+  }
 
 
 
@@ -83,66 +91,24 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
                                 color: ColorConstant.dashboardTextColor
                             ),
                           ),
-                          SizedBox(
-                            height: 22,
+                          addReferenceFormData(context),
+                          BlocBuilder<AddMoreReferenceCubit,bool>(
+                            builder: (context, bool data){
+                              return data?
+                                  addReferenceFormData2(context):
+                                   Center(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      height: 22,
+                                    ),
+                                    addMoreReferenceUI(context)
+                                  ],
+                                ),
+                              );
+                            },
                           ),
-                          Text(
-                            "Reference Name",
-                            style: TextStyle(
-                              fontSize: FontConstants.f14,
-                              fontWeight: FontConstants.w600,
-                              fontFamily: FontConstants.fontFamily,
-                              color: ColorConstant.dashboardTextColor
-                            ),
-                          ),
-                          SizedBox(
-                            height: 6.0,
-                          ),
-                          CommonTextField(
-                              controller: referAnceNameController,
-                              hintText: "Enter your Reference Name"
-                          ),
-                          SizedBox(
-                            height: 12.0,
-                          ),
-                          Text(
-                            "Relation",
-                            style: TextStyle(
-                                fontSize: FontConstants.f14,
-                                fontWeight: FontConstants.w600,
-                                fontFamily: FontConstants.fontFamily,
-                                color: ColorConstant.dashboardTextColor
-                            ),
-                          ),
-                          SizedBox(
-                            height: 6.0,
-                          ),
-                          selectRelationType(context),
-                          SizedBox(
-                            height: 12.0,
-                          ),
-                          Text(
-                            "Mobile No.",
-                            style: TextStyle(
-                                fontSize: FontConstants.f14,
-                                fontWeight: FontConstants.w600,
-                                fontFamily: FontConstants.fontFamily,
-                                color: ColorConstant.dashboardTextColor
-                            ),
-                          ),
-                          SizedBox(
-                            height: 6.0,
-                          ),
-                          CommonTextField(
-                              controller: referAnceNumberController,
-                              hintText: "Enter mobile number"
-                          ),
-                          SizedBox(
-                            height: 56,
-                          ),
-                          Center(
-                            child: addMoreReferenceUI(context),
-                          )
                         ],
                       ),
                     ),
@@ -167,6 +133,130 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
     );
   }
 
+
+
+  Widget addReferenceFormData(BuildContext context){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Reference Name",
+          style: TextStyle(
+              fontSize: FontConstants.f14,
+              fontWeight: FontConstants.w600,
+              fontFamily: FontConstants.fontFamily,
+              color: ColorConstant.dashboardTextColor
+          ),
+        ),
+        SizedBox(
+          height: 6.0,
+        ),
+        CommonTextField(
+            controller: referAnceNameController,
+            hintText: "Enter your Reference Name"
+        ),
+        SizedBox(
+          height: 12.0,
+        ),
+        Text(
+          "Relation",
+          style: TextStyle(
+              fontSize: FontConstants.f14,
+              fontWeight: FontConstants.w600,
+              fontFamily: FontConstants.fontFamily,
+              color: ColorConstant.dashboardTextColor
+          ),
+        ),
+        SizedBox(
+          height: 6.0,
+        ),
+        selectRelationType(context),
+        SizedBox(
+          height: 12.0,
+        ),
+        Text(
+          "Mobile No.",
+          style: TextStyle(
+              fontSize: FontConstants.f14,
+              fontWeight: FontConstants.w600,
+              fontFamily: FontConstants.fontFamily,
+              color: ColorConstant.dashboardTextColor
+          ),
+        ),
+        SizedBox(
+          height: 6.0,
+        ),
+        CommonTextField(
+            controller: referAnceNumberController,
+            hintText: "Enter mobile number"
+        ),
+      ],
+    );
+  }
+
+
+
+  Widget addReferenceFormData2(BuildContext context){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 12.0,
+        ),
+        Text(
+          "Reference Name-2",
+          style: TextStyle(
+              fontSize: FontConstants.f14,
+              fontWeight: FontConstants.w600,
+              fontFamily: FontConstants.fontFamily,
+              color: ColorConstant.dashboardTextColor
+          ),
+        ),
+        SizedBox(
+          height: 6.0,
+        ),
+        CommonTextField(
+            controller: referAnceNameController,
+            hintText: "Enter your Reference Name"
+        ),
+        SizedBox(
+          height: 12.0,
+        ),
+        Text(
+          "Relation-2",
+          style: TextStyle(
+              fontSize: FontConstants.f14,
+              fontWeight: FontConstants.w600,
+              fontFamily: FontConstants.fontFamily,
+              color: ColorConstant.dashboardTextColor
+          ),
+        ),
+        SizedBox(
+          height: 6.0,
+        ),
+        selectRelationType(context),
+        SizedBox(
+          height: 12.0,
+        ),
+        Text(
+          "Mobile No.-2",
+          style: TextStyle(
+              fontSize: FontConstants.f14,
+              fontWeight: FontConstants.w600,
+              fontFamily: FontConstants.fontFamily,
+              color: ColorConstant.dashboardTextColor
+          ),
+        ),
+        SizedBox(
+          height: 6.0,
+        ),
+        CommonTextField(
+            controller: referAnceNumberController,
+            hintText: "Enter mobile number"
+        ),
+      ],
+    );
+  }
 
   Widget selectRelationType(BuildContext context){
     return DropdownButtonHideUnderline(
@@ -230,19 +320,24 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
   }
 
   Widget addMoreReferenceUI(BuildContext context){
-    return Container(
-      decoration: BoxDecoration(
-        color: ColorConstant.appThemeColor,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Text(
-        '+ Add one more reference',
-        style: TextStyle(
-          color: ColorConstant.whiteColor,
-          fontSize: FontConstants.f14,
-          fontWeight: FontConstants.w700,
-          fontFamily: FontConstants.fontFamily
+    return InkWell(
+      onTap: (){
+        context.read<AddMoreReferenceCubit>().updateReference(true);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: ColorConstant.appThemeColor,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Text(
+          '+ Add one more reference',
+          style: TextStyle(
+              color: ColorConstant.whiteColor,
+              fontSize: FontConstants.f14,
+              fontWeight: FontConstants.w700,
+              fontFamily: FontConstants.fontFamily
+          ),
         ),
       ),
     );
