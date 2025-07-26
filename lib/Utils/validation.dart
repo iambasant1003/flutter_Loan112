@@ -99,3 +99,35 @@ String? validateName(String? value) {
 
   return null;
 }
+
+String? validateIfsc(String input) {
+  final regex = RegExp(r'^[A-Z]{4}0[A-Z0-9]{6}$');
+   if(!regex.hasMatch(input.toUpperCase())){
+     return "Enter a valid ifsc";
+   }
+   else{
+     return null;
+   }
+}
+
+String? validateBankName(String? value) {
+  final RegExp bankNameRegExp = RegExp(r"^[A-Za-z .'-]{3,}$");
+  if (value == null || value.trim().isEmpty) {
+    return "Bank name is required";
+  } else if (!bankNameRegExp.hasMatch(value.trim())) {
+    return "Enter a valid bank name (letters, spaces, . ' - only)";
+  }
+  return null;
+}
+
+String? validateBankAccount(String? value) {
+  if (value == null || value.trim().isEmpty) {
+    return "Bank account number is required";
+  } else if (!RegExp(r'^[1-9][0-9]{8,17}$').hasMatch(value.trim())) {
+    return "Enter a valid bank account number (9–18 digits)";
+  }
+  return null;
+}
+
+
+

@@ -30,6 +30,8 @@ class AddReferenceScreen extends StatefulWidget{
 class _AddReferenceScreen extends State<AddReferenceScreen>{
 
 
+
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   TextEditingController referAnceNameController = TextEditingController();
   TextEditingController referAnceNumberController = TextEditingController();
   TextEditingController referAnceNameControllerTwo = TextEditingController();
@@ -62,16 +64,34 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocListener<LoanApplicationCubit,LoanApplicationState>(
-        listener: (context,state){
-          if(state is LoanApplicationLoading){
+        listener: (context, state) {
+          if (!context.mounted) return;
+
+          if (state is LoanApplicationLoading) {
             EasyLoading.show(status: "Please wait...");
-          }else if(state is AddReferenceSuccess){
+          }
+
+          else if (state is AddReferenceSuccess) {
             EasyLoading.dismiss();
-            openSnackBar(context, state.addReferenceModel.data?.finalResult ?? "Success",backGroundColor: ColorConstant.appThemeColor);
-            context.pop();
-          }else if(state is AddReferenceFailed){
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted) {
+                openSnackBar(
+                  context,
+                  state.addReferenceModel.data?.finalResult ?? "Success",
+                  backGroundColor: ColorConstant.appThemeColor,
+                );
+                context.pop();
+              }
+            });
+          }
+
+          else if (state is AddReferenceFailed) {
             EasyLoading.dismiss();
-            openSnackBar(context, state.addReferenceModel.message ?? "Unknown Error");
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted) {
+                openSnackBar(context, state.addReferenceModel.message ?? "Unknown Error");
+              }
+            });
           }
         },
         child: GradientBackground(
@@ -91,55 +111,58 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
                     child: SingleChildScrollView(
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: 24.0,
-                            ),
-                            Text(
-                              "Add References",
-                              style: TextStyle(
-                                  fontSize: FontConstants.f20,
-                                  fontWeight: FontConstants.w800,
-                                  fontFamily: FontConstants.fontFamily,
-                                  color: ColorConstant.blackTextColor
+                        child: Form(
+                          key: formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                height: 24.0,
                               ),
-                            ),
-                            SizedBox(
-                              height: 16.0,
-                            ),
-                            Text(
-                              "Note*  Only Two reference allowed",
-                              style: TextStyle(
-                                  fontSize: FontConstants.f14,
-                                  fontWeight: FontConstants.w500,
-                                  fontFamily: FontConstants.fontFamily,
-                                  color: ColorConstant.dashboardTextColor
+                              Text(
+                                "Add References",
+                                style: TextStyle(
+                                    fontSize: FontConstants.f20,
+                                    fontWeight: FontConstants.w800,
+                                    fontFamily: FontConstants.fontFamily,
+                                    color: ColorConstant.blackTextColor
+                                ),
                               ),
-                            ),
-                            SizedBox(
-                              height: 16.0,
-                            ),
-                            addReferenceFormData(context),
-                            BlocBuilder<AddMoreReferenceCubit,bool>(
-                              builder: (context, bool data){
-                                return data?
-                                addReferenceFormData2(context):
-                                Center(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      SizedBox(
-                                        height: 22,
-                                      ),
-                                      addMoreReferenceUI(context)
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
+                              SizedBox(
+                                height: 16.0,
+                              ),
+                              Text(
+                                "Note*  Only Two reference allowed",
+                                style: TextStyle(
+                                    fontSize: FontConstants.f14,
+                                    fontWeight: FontConstants.w500,
+                                    fontFamily: FontConstants.fontFamily,
+                                    color: ColorConstant.dashboardTextColor
+                                ),
+                              ),
+                              SizedBox(
+                                height: 16.0,
+                              ),
+                              addReferenceFormData(context),
+                              BlocBuilder<AddMoreReferenceCubit,bool>(
+                                builder: (context, bool data){
+                                  return data?
+                                  addReferenceFormData2(context):
+                                  Center(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                          height: 22,
+                                        ),
+                                        addMoreReferenceUI(context)
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -149,21 +172,26 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
           ),
         ),
       ),
-      bottomNavigationBar: SizedBox(
-        height: 100,
-        child: Column(
-          children: [
-            Image.asset(ImageConstants.bottomDashLine),
-            Padding(
-              padding: EdgeInsets.only(bottom: 22,left: 16,right: 16,top: 10),
-              child: Loan112Button(
-                 onPressed: (){
-                   addReferenceApiCallFunction(context);
-                 },
-                  text: "CONTINUE"
-              ),
-            )
-          ],
+      bottomNavigationBar: SafeArea(
+        bottom: true,
+        child: SizedBox(
+          height: 100,
+          child: Column(
+            children: [
+              Image.asset(ImageConstants.bottomDashLine),
+              Padding(
+                padding: EdgeInsets.only(bottom: 22,left: 16,right: 16,top: 10),
+                child: Loan112Button(
+                    onPressed: (){
+                      if(formKey.currentState!.validate()){
+                        addReferenceApiCallFunction(context);
+                      }
+                    },
+                    text: "CONTINUE"
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -187,7 +215,10 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
         ),
         CommonTextField(
             controller: referAnceNameController,
-            hintText: "Enter your Reference Name"
+            hintText: "Enter your Reference Name",
+            validator: (value){
+              return validateName(value);
+            },
         ),
         SizedBox(
           height: 12.0,
@@ -252,7 +283,10 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
         ),
         CommonTextField(
             controller: referAnceNameController2,
-            hintText: "Enter your Reference Name"
+            hintText: "Enter your Reference Name",
+            validator: (value){
+              return validateName(value);
+            },
         ),
         SizedBox(
           height: 12.0,
@@ -296,72 +330,100 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
     );
   }
 
-  Widget selectRelationType(BuildContext context,int type){
-    return DropdownButtonHideUnderline(
-      child: DropdownButton2<String>(
-        isExpanded: true,
-        hint:  Text(
-          'Select Relation',
-          style: TextStyle(
-              fontSize: FontConstants.f14,
-              color: ColorConstant.blackTextColor,
-              fontWeight: FontConstants.w400,
-              fontFamily: FontConstants.fontFamily
-          ),
-        ),
-        items: relationsDataList
-            .map((item) => DropdownMenuItem<String>(
-          value: item,
-          child: Text(
-            item,
-            style:  TextStyle(
-                fontSize: FontConstants.f14,
-                color: ColorConstant.blackTextColor,
-                fontWeight: FontConstants.w500,
-                fontFamily: FontConstants.fontFamily
+  Widget selectRelationType(BuildContext context, int type) {
+    return FormField<String>(
+      validator: (value) {
+        if ((type == 1 && selectedValue == null) || (type == 2 && selectedValue2 == null)) {
+          return 'Please select a relation';
+        }
+        return null;
+      },
+      builder: (FormFieldState<String> state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DropdownButtonHideUnderline(
+              child: DropdownButton2<String>(
+                isExpanded: true,
+                hint: Text(
+                  'Select Relation',
+                  style: TextStyle(
+                    fontSize: FontConstants.f14,
+                    color: ColorConstant.blackTextColor,
+                    fontWeight: FontConstants.w400,
+                    fontFamily: FontConstants.fontFamily,
+                  ),
+                ),
+                items: relationsDataList
+                    .map((item) => DropdownMenuItem<String>(
+                  value: item,
+                  child: Text(
+                    item,
+                    style: TextStyle(
+                      fontSize: FontConstants.f14,
+                      color: ColorConstant.blackTextColor,
+                      fontWeight: FontConstants.w500,
+                      fontFamily: FontConstants.fontFamily,
+                    ),
+                  ),
+                ))
+                    .toList(),
+                value: type == 1 ? selectedValue : selectedValue2,
+                onChanged: (value) {
+                  if (type == 1) {
+                    setState(() {
+                      selectedValue = value;
+                    });
+                  } else {
+                    setState(() {
+                      selectedValue2 = value;
+                    });
+                  }
+                  state.didChange(value);
+                },
+                buttonStyleData: ButtonStyleData(
+                  height: 50,
+                  padding: const EdgeInsets.only(right: 12),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: ColorConstant.textFieldBorderColor,
+                    ),
+                    color: ColorConstant.appScreenBackgroundColor,
+                  ),
+                  elevation: 0,
+                ),
+                iconStyleData: IconStyleData(
+                  icon: Icon(
+                    Icons.keyboard_arrow_down,
+                    size: 20,
+                    color: ColorConstant.greyTextColor,
+                  ),
+                ),
+                dropdownStyleData: DropdownStyleData(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
             ),
-          ),
-        ))
-            .toList(),
-        value: type == 1?selectedValue:selectedValue2,
-        onChanged: (value) {
-          if(type ==1){
-            setState(() {
-              selectedValue = value;
-            });
-          }else{
-            setState(() {
-              selectedValue2 = value;
-            });
-          }
-        },
-        buttonStyleData: ButtonStyleData(
-          height: 50,
-          padding: const EdgeInsets.only(right: 12),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: ColorConstant.textFieldBorderColor,
-            ),
-            color: ColorConstant.appScreenBackgroundColor,
-          ),
-          elevation: 0,
-        ),
-        iconStyleData:  IconStyleData(
-          icon: Icon(
-            Icons.keyboard_arrow_down,
-            size: 20,
-            color: ColorConstant.greyTextColor,
-          ),
-        ),
-        dropdownStyleData: DropdownStyleData(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-      ),
+            if (state.hasError)
+              Padding(
+                padding: const EdgeInsets.only(left: 12, top: 4),
+                child: Text(
+                  state.errorText!,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.red,
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
+
 
   Widget addMoreReferenceUI(BuildContext context){
     return InkWell(

@@ -1,12 +1,17 @@
+
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
 import 'package:loan112_app/Screens/dashboard/dashboard_statusPage_Step.dart';
 import 'package:loan112_app/Widget/app_bar.dart';
 import 'package:loan112_app/Widget/common_button.dart';
-
 import '../../Constant/FontConstant/FontConstant.dart';
 import '../../Constant/ImageConstant/ImageConstants.dart';
+import '../../Cubit/loan_application_cubit/LoanApplicationCubit.dart';
+import '../../Model/SendPhpOTPModel.dart';
+import '../../Utils/MysharePrefenceClass.dart';
 
 class DashboardStatusScreen extends StatefulWidget {
   const DashboardStatusScreen({super.key});
@@ -16,6 +21,20 @@ class DashboardStatusScreen extends StatefulWidget {
 }
 
 class _DashboardStatusScreen extends State<DashboardStatusScreen> {
+
+
+
+
+  getCustomerDetailsApiCall() async {
+    var otpModel = await MySharedPreferences.getPhpOTPModel();
+    SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(
+        jsonDecode(otpModel));
+    context.read<LoanApplicationCubit>().getCustomerDetailsApiCall({
+      "cust_profile_id": sendPhpOTPModel.data?.custProfileId
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,14 +108,20 @@ class _DashboardStatusScreen extends State<DashboardStatusScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: SizedBox(
-        height: 90,
-        child: Center(
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: FontConstants.horizontalPadding,
+      bottomNavigationBar: SafeArea(
+        bottom: true,
+        child: Padding(
+          padding: EdgeInsets.only(bottom: 10.0),
+          child: SizedBox(
+            height: 50,
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: FontConstants.horizontalPadding,
+                ),
+                child: Loan112Button(text: "Refresh", onPressed: () {getCustomerDetailsApiCall();}),
+              ),
             ),
-            child: Loan112Button(text: "Refresh", onPressed: () {}),
           ),
         ),
       ),
@@ -140,11 +165,13 @@ class _DashboardStatusScreen extends State<DashboardStatusScreen> {
           child: Column(
             children: [
               SizedBox(height: 30),
-              DashboardStatuspageStep(currentStep: 2),
+              DashboardStatusPageStep(),
             ],
           ),
         ),
       ],
     );
   }
+
+
 }

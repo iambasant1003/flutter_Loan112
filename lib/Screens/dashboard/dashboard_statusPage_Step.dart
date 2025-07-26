@@ -1,14 +1,28 @@
+
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
 import 'package:loan112_app/Constant/ImageConstant/ImageConstants.dart';
+import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
+import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
+import '../../Model/GetCustomerDetailsModel.dart';
+import '../../Model/SendPhpOTPModel.dart';
+import '../../Utils/MysharePrefenceClass.dart';
 
-class DashboardStatuspageStep extends StatelessWidget {
+class DashboardStatusPageStep extends StatefulWidget {
+   DashboardStatusPageStep({super.key});
 
-   DashboardStatuspageStep({super.key,required this.currentStep});
+  @override
+  State<StatefulWidget> createState() => _DashboardStatusPageStep();
+}
 
-  final int currentStep; // index of current in-progress step (1-based)
+class _DashboardStatusPageStep extends State<DashboardStatusPageStep> {
 
+
+  int currentStep = 0;
   final List<String> steps = [
     "Application Submitted",
     "Application in Review",
@@ -26,95 +40,161 @@ class DashboardStatuspageStep extends StatelessWidget {
   ];
 
 
-   @override
-   Widget build(BuildContext context) {
-     return Column(
-       children: List.generate(steps.length, (index) {
-         bool isCompleted = index + 1 < currentStep;
-         bool isCurrent = index + 1 == currentStep;
+  getCustomerDetailsApiCall() async {
+    var otpModel = await MySharedPreferences.getPhpOTPModel();
+    SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(
+        jsonDecode(otpModel));
+    context.read<LoanApplicationCubit>().getCustomerDetailsApiCall({
+      "cust_profile_id": sendPhpOTPModel.data?.custProfileId
+    });
+  }
 
-         double widthFactor = isCompleted
-             ? 1.0
-             : isCurrent
-             ? 0.8
-             : 0.6;
 
-         Color bgColor = isCompleted || isCurrent
-             ? Colors.blue.shade50
-             : Colors.grey.shade100;
+  @override
+  void initState() {
+    super.initState();
+    getCustomerDetailsApiCall();
+  }
 
-         Color textColor = isCompleted || isCurrent
-             ? ColorConstant.dashboardTextColor
-             : ColorConstant.greyTextColor;
 
-         return Container(
-           margin: const EdgeInsets.symmetric(vertical: 6),
-           child: Stack(
-             children: [
-               // Full width transparent base
-               Container(
-                 decoration: BoxDecoration(
-                   color: Colors.grey.shade100,
-                   borderRadius: BorderRadius.circular(12),
-                 ),
-               ),
-               // Colored portion with variable width
-               FractionallySizedBox(
-                 widthFactor: widthFactor,
-                 child: Container(
-                   decoration: BoxDecoration(
-                     color: bgColor,
-                     borderRadius: BorderRadius.circular(12),
-                     boxShadow: [
-                       BoxShadow(
-                         color: Colors.black12,
-                         blurRadius: 3,
-                         offset: const Offset(0, 2),
-                       ),
-                     ],
-                   ),
-                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                   child: Row(
-                     children: [
-                       Text(
-                         "${index + 1}".padLeft(2, '0'),
-                         style: TextStyle(
-                           fontWeight: FontWeight.bold,
-                           color: textColor,
-                         ),
-                       ),
-                       const SizedBox(width: 12),
-                       Expanded(
-                         child: Text(
-                           steps[index],
-                           style: TextStyle(
-                             fontWeight: FontConstants.w700,
-                             fontSize: FontConstants.f16,
-                             fontFamily: FontConstants.fontFamily,
-                             color: textColor,
-                           ),
-                         ),
-                       ),
-                       CircleAvatar(
-                         backgroundColor: ColorConstant.drawerHeaderColor,
-                         radius: 18,
-                         child: Image.asset(
-                           icons[index],
-                           color: textColor,
-                           height: 20,
-                           width: 20
-                         ),
-                       )
-                     ],
-                   ),
-                 ),
-               ),
-             ],
-           ),
-         );
-       }),
-     );
-   }
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<LoanApplicationCubit,LoanApplicationState>(
+        builder: (context, state) {
+          if (state is GetCustomerDetailsSuccess) {
+            GetCustomerDetailsModel model = state.getCustomerDetailsModel;
+            Map<String, dynamic> status = model.data?.applicationStatus?.toJson() ?? {};
+            currentStep = getCurrentStepDynamic(status);
 
+            List<String> stepKeys = [
+              "application_submitted",
+              "application_in_review",
+              "sanction",
+              "esign",
+              "disbursement"
+            ];
+
+            return Column(
+              children: List.generate(steps.length, (index) {
+                final stepKey = stepKeys[index];
+                final int stepStatus = status[stepKey] ?? 0;
+
+                // Determine width factor
+                double widthFactor;
+                if (stepStatus == 2) {
+                  widthFactor = 1.0;
+                } else if (stepStatus == 1) {
+                  widthFactor = 0.7;
+                } else {
+                  widthFactor = 0.6;
+                }
+
+                // Determine colors
+                Color bgColor = (stepStatus == 1 || stepStatus == 2)
+                    ? Colors.blue.shade50
+                    : Colors.grey.shade100;
+
+                Color textColor = (stepStatus == 1 || stepStatus == 2)
+                    ? Colors.black
+                    : ColorConstant.greyTextColor;
+
+                return Container(
+                  margin: const EdgeInsets.symmetric(vertical: 6),
+                  child: Stack(
+                    children: [
+                      // Base layer
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      // Progress step with dynamic width and styles
+                      Container(
+                        width: MediaQuery.of(context).size.width * widthFactor,
+                        decoration: BoxDecoration(
+                          color: bgColor,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 3,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                        child: Row(
+                          children: [
+                            Text(
+                              "${index + 1}",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: textColor,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                steps[index],
+                                style: TextStyle(
+                                  fontWeight: FontConstants.w700,
+                                  fontSize: FontConstants.f16,
+                                  fontFamily: FontConstants.fontFamily,
+                                  color: textColor,
+                                ),
+                              ),
+                            ),
+                            CircleAvatar(
+                              backgroundColor: ColorConstant.drawerHeaderColor,
+                              radius: 18,
+                              child: Image.asset(
+                                icons[index],
+                                color: textColor,
+                                height: 20,
+                                width: 20,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            );
+          }
+          return const SizedBox(); // fallback when no state
+        },
+        listener: (context,state){
+          if(state is LoanApplicationLoading){
+            EasyLoading.show(status: "Please Wait...");
+          }else if(state is GetCustomerDetailsSuccess){
+            EasyLoading.dismiss();
+          }else if(state is GetCustomerDetailsError){
+            EasyLoading.dismiss();
+          }
+        }
+    );
+  }
+
+
+  int getCurrentStepDynamic(Map<String, dynamic> status) {
+    final List<String> stepOrder = [
+      "application_submitted",
+      "application_in_review",
+      "sanction",
+      "esign",
+      "disbursement"
+    ];
+
+    int step = 0;
+    for (int i = 0; i < stepOrder.length; i++) {
+      if (status[stepOrder[i]] == 2) {
+        step = i + 1;
+      }
+    }
+    return step;
+  }
 
 }

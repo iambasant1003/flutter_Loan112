@@ -177,6 +177,43 @@ class LoanApplicationCubit extends Cubit<LoanApplicationState> {
   }
 
 
+  Future<void> updateBankDetailsApiCall(Map<String,dynamic> dataObj) async{
+    emit(LoanApplicationLoading());
+    final response = await loanApplicationRepository.updateBankingDetailsApiCallFunction(dataObj);
+    DebugPrint.prt("Update Bank Details Response Status ${response.status}");
+    if (response.status == ApiResponseStatus.success) {
+      emit(UpdateBankDetailsSuccess(response.data!));
+    } else {
+      DebugPrint.prt("Inside Else Block of response");
+      emit(UpdateBankDetailsFailed(response.error!));
+    }
+  }
+
+  Future<void> verifyIfscCodeApiCall(Map<String,dynamic> dataObj) async{
+    emit(LoanApplicationLoading());
+    final response = await loanApplicationRepository.verifyIfscCodeApiCallFunction(dataObj);
+    DebugPrint.prt("Verify ifsc Code Response Status ${response.status}");
+    if (response.status == ApiResponseStatus.success) {
+      emit(VerifyIfscCodeSuccess(response.data!));
+    } else {
+      DebugPrint.prt("Inside Else Block of response");
+      emit(VerifyIfscCodeFailed(response.error!));
+    }
+  }
+
+  Future<void> getBankAccountTypeApiCall(Map<String,dynamic> dataObj) async{
+    emit(LoanApplicationLoading());
+    final response = await loanApplicationRepository.bankAccountTypeApiCallFunction(dataObj);
+    DebugPrint.prt("Get Bank Account Type Response Status ${response.status}");
+    if (response.status == ApiResponseStatus.success) {
+      emit(BankAccountTypeSuccess(response.data!));
+    } else {
+      DebugPrint.prt("Inside Else Block of response");
+      emit(BankAccountTypeFailed(response.error!));
+    }
+  }
+
+
 
 
 }

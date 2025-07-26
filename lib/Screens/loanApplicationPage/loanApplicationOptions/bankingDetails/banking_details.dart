@@ -1,10 +1,24 @@
+import 'dart:convert';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
+import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
+import 'package:loan112_app/ParamModel/UpdateBankDetailsParamModel.dart';
+import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:loan112_app/Widget/common_button.dart';
 import 'package:loan112_app/Widget/common_textField.dart';
 import '../../../../Constant/ColorConst/ColorConstant.dart';
 import '../../../../Constant/FontConstant/FontConstant.dart';
+import '../../../../Model/BankAccountTypeModel.dart';
+import '../../../../Model/VerifyOTPModel.dart';
+import '../../../../ParamModel/VerifyIfscParamModel.dart';
+import '../../../../Utils/MysharePrefenceClass.dart';
+import '../../../../Utils/UpperCaseTextFormatter.dart';
+import '../../../../Utils/validation.dart';
 import '../../../../Widget/app_bar.dart';
 import '../../../../Widget/common_screen_background.dart';
 
@@ -19,176 +33,313 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
 
 
   TextEditingController ifscCode = TextEditingController();
+  TextEditingController bankAccount = TextEditingController();
+  TextEditingController confirmBankAccount = TextEditingController();
+  TextEditingController bankName = TextEditingController();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  var items = [
-    "Saving",
-    "Current"
-  ];
-  String? selectedValue;
+
+  //String? selectedValue;
+  BankAccountTypeModel? bankAccountTypeModel;
+  BankAccountTypeParamModel? selectedBankType;
+  
+  
+  
+  @override
+  void initState() {
+    super.initState();
+    context.read<LoanApplicationCubit>().getBankAccountTypeApiCall({});
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     body: GradientBackground(
-        child: SafeArea(
+     body: BlocListener<LoanApplicationCubit,LoanApplicationState>(
+       listener: (BuildContext context, state) {
+         if (!context.mounted) return;
+
+         if (state is LoanApplicationLoading) {
+           EasyLoading.show(status: "Please wait...");
+         }
+
+         else if (state is VerifyIfscCodeSuccess) {
+           EasyLoading.dismiss();
+           WidgetsBinding.instance.addPostFrameCallback((_) {
+             if (context.mounted) {
+               bankName.text = state.ifscCodeModel.data?.bankAccountName ?? "";
+             }
+           });
+         }
+
+         else if (state is VerifyIfscCodeFailed) {
+           EasyLoading.dismiss();
+           WidgetsBinding.instance.addPostFrameCallback((_) {
+             if (context.mounted) {
+               openSnackBar(context, state.ifscCodeModel.message ?? "Unexpected Error");
+             }
+           });
+         }
+
+         else if (state is UpdateBankDetailsSuccess) {
+           EasyLoading.dismiss();
+           WidgetsBinding.instance.addPostFrameCallback((_) {
+             if (context.mounted && (state.updateBankAccountModel.success ?? false)) {
+               context.pop();
+             }
+           });
+         }
+
+         else if (state is UpdateBankDetailsFailed) {
+           EasyLoading.dismiss();
+           WidgetsBinding.instance.addPostFrameCallback((_) {
+             if (context.mounted) {
+               openSnackBar(context, state.updateBankAccountModel.message ?? "Unexpected Error");
+             }
+           });
+         }
+
+         else if (state is BankAccountTypeSuccess) {
+           EasyLoading.dismiss();
+           WidgetsBinding.instance.addPostFrameCallback((_) {
+             if (context.mounted) {
+               setState(() {
+                 bankAccountTypeModel = state.bankAccountTypeModel;
+               });
+             }
+           });
+         }
+
+         else if (state is BankAccountTypeFailed) {
+           EasyLoading.dismiss();
+           WidgetsBinding.instance.addPostFrameCallback((_) {
+             if (context.mounted) {
+               openSnackBar(context, state.bankAccountTypeModel.message ?? "Unexpected Error");
+             }
+           });
+         }
+       },
+       child: GradientBackground(
+         child: SafeArea(
+             child: Form(
+               key: formKey,
+               autovalidateMode: AutovalidateMode.onUserInteraction,
+               child: Column(
+                 crossAxisAlignment: CrossAxisAlignment.start,
+                 children: [
+                   Loan112AppBar(
+                     customLeading: InkWell(
+                       child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
+                       onTap: (){
+                         context.pop();
+                       },
+                     ),
+                   ),
+                   Expanded(
+                     child: SingleChildScrollView(
+                       child: Padding(
+                         padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
+                         child: Column(
+                           crossAxisAlignment: CrossAxisAlignment.start,
+                           children: [
+                             SizedBox(
+                               height: 24.0,
+                             ),
+                             Text(
+                               "Banking Details",
+                               style: TextStyle(
+                                   fontSize: FontConstants.f20,
+                                   fontFamily: FontConstants.fontFamily,
+                                   fontWeight: FontConstants.w800,
+                                   color: ColorConstant.dashboardTextColor
+                               ),
+                             ),
+                             SizedBox(
+                               height: 16.0,
+                             ),
+                             Text(
+                               "Please enter your Bank details for Disbursal",
+                               style: TextStyle(
+                                   fontSize: FontConstants.f14,
+                                   fontFamily: FontConstants.fontFamily,
+                                   fontWeight: FontConstants.w600,
+                                   color: Color(0xff4E4F50)
+                               ),
+                             ),
+                             SizedBox(
+                               height: 24,
+                             ),
+                             Text(
+                               "IFSC Code*",
+                               style: TextStyle(
+                                   fontSize: FontConstants.f14,
+                                   fontFamily: FontConstants.fontFamily,
+                                   fontWeight: FontConstants.w500,
+                                   color: ColorConstant.dashboardTextColor
+                               ),
+                             ),
+                             SizedBox(
+                               height: 6.0,
+                             ),
+                             CommonTextField(
+                               controller: ifscCode,
+                               hintText: "Enter your IFSC Code*",
+                               inputFormatters: [
+                                 LengthLimitingTextInputFormatter(11),
+                                 UpperCaseTextFormatter(), // Custom formatter below
+                               ],
+                               validator: (value){
+                                 return validateIfsc(value ?? "");
+                               },
+                               onChanged: (value){
+                                 if(value.trim().length == 11){
+                                   VerifyIfscParamModel verifyIfscCodeParamModel = VerifyIfscParamModel(bankAccountIfsc: value);
+                                   context.read<LoanApplicationCubit>().verifyIfscCodeApiCall(verifyIfscCodeParamModel.toJson());
+                                 }
+                               },
+                             ),
+                             SizedBox(
+                               height: 12,
+                             ),
+                             Text(
+                               "Bank A/C No*",
+                               style: TextStyle(
+                                   fontSize: FontConstants.f14,
+                                   fontFamily: FontConstants.fontFamily,
+                                   fontWeight: FontConstants.w500,
+                                   color: ColorConstant.dashboardTextColor
+                               ),
+                             ),
+                             SizedBox(
+                               height: 6.0,
+                             ),
+                             CommonTextField(
+                                 controller: bankAccount,
+                                 hintText: "Enter your Bank A/C No*",
+                                 keyboardType: TextInputType.number,
+                                 obscureText: true,
+                                 validator: (value){
+                                   return validateBankAccount(value);
+                                 },
+                             ),
+                             SizedBox(
+                               height: 12,
+                             ),
+                             Text(
+                               "Confirm A/C No.*",
+                               style: TextStyle(
+                                   fontSize: FontConstants.f14,
+                                   fontFamily: FontConstants.fontFamily,
+                                   fontWeight: FontConstants.w500,
+                                   color: ColorConstant.dashboardTextColor
+                               ),
+                             ),
+                             SizedBox(
+                               height: 6.0,
+                             ),
+                             CommonTextField(
+                                 controller: confirmBankAccount,
+                                 hintText: "Re-enter your Bank A/C No.",
+                                 keyboardType: TextInputType.number,
+                                 validator: (value){
+                                   if(value?.trim() != bankAccount.text.trim()){
+                                     return "Account numbers do not match";
+                                   }
+                                   return null;
+                                 },
+                             ),
+                             SizedBox(
+                               height: 12,
+                             ),
+                             Text(
+                               "Bank Name*",
+                               style: TextStyle(
+                                   fontSize: FontConstants.f14,
+                                   fontFamily: FontConstants.fontFamily,
+                                   fontWeight: FontConstants.w500,
+                                   color: ColorConstant.dashboardTextColor
+                               ),
+                             ),
+                             SizedBox(
+                               height: 6.0,
+                             ),
+                             CommonTextField(
+                                 controller: bankName,
+                                 hintText: "Enter your Bank Name*",
+                                 validator: (value){
+                                   return validateBankName(value);
+                                 },
+                             ),
+                             SizedBox(
+                               height: 12,
+                             ),
+                             Text(
+                               "Bank A/C Type*",
+                               style: TextStyle(
+                                   fontSize: FontConstants.f14,
+                                   fontFamily: FontConstants.fontFamily,
+                                   fontWeight: FontConstants.w500,
+                                   color: ColorConstant.dashboardTextColor
+                               ),
+                             ),
+                             SizedBox(
+                               height: 6.0,
+                             ),
+                             bankAccountType(context)
+                           ],
+                         ),
+                       ),
+                     ),
+                   )
+                 ],
+               ),
+             )
+         ),
+       ),
+     ),
+      bottomNavigationBar: SafeArea(
+        child: SizedBox(
+          height: 100,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Loan112AppBar(
-                  customLeading: InkWell(
-                    child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
-                    onTap: (){
-                      context.pop();
-                    },
-                  ),
+                SizedBox(
+                  height: 24,
                 ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 24.0,
-                          ),
-                          Text(
-                            "Banking Details",
-                            style: TextStyle(
-                                fontSize: FontConstants.f20,
-                                fontFamily: FontConstants.fontFamily,
-                                fontWeight: FontConstants.w800,
-                                color: ColorConstant.dashboardTextColor
-                            ),
-                          ),
-                          SizedBox(
-                            height: 16.0,
-                          ),
-                          Text(
-                            "Please enter your Bank details for Disbursal",
-                            style: TextStyle(
-                                fontSize: FontConstants.f14,
-                                fontFamily: FontConstants.fontFamily,
-                                fontWeight: FontConstants.w600,
-                                color: Color(0xff4E4F50)
-                            ),
-                          ),
-                          SizedBox(
-                            height: 24,
-                          ),
-                          Text(
-                            "IFSC Code*",
-                            style: TextStyle(
-                              fontSize: FontConstants.f14,
-                              fontFamily: FontConstants.fontFamily,
-                              fontWeight: FontConstants.w500,
-                              color: ColorConstant.dashboardTextColor
-                            ),
-                          ),
-                          SizedBox(
-                            height: 6.0,
-                          ),
-                          CommonTextField(
-                              controller: ifscCode,
-                              hintText: "Enter your IFSC Code*"
-                          ),
-                          SizedBox(
-                            height: 12,
-                          ),
-                          Text(
-                            "Bank A/C No*",
-                            style: TextStyle(
-                                fontSize: FontConstants.f14,
-                                fontFamily: FontConstants.fontFamily,
-                                fontWeight: FontConstants.w500,
-                                color: ColorConstant.dashboardTextColor
-                            ),
-                          ),
-                          SizedBox(
-                            height: 6.0,
-                          ),
-                          CommonTextField(
-                              controller: ifscCode,
-                              hintText: "Enter your Bank A/C No*"
-                          ),
-                          SizedBox(
-                            height: 12,
-                          ),
-                          Text(
-                            "Confirm A/C No.*",
-                            style: TextStyle(
-                                fontSize: FontConstants.f14,
-                                fontFamily: FontConstants.fontFamily,
-                                fontWeight: FontConstants.w500,
-                                color: ColorConstant.dashboardTextColor
-                            ),
-                          ),
-                          SizedBox(
-                            height: 6.0,
-                          ),
-                          CommonTextField(
-                              controller: ifscCode,
-                              hintText: "Re-enter your Bank A/C No."
-                          ),
-                          SizedBox(
-                            height: 12,
-                          ),
-                          Text(
-                            "Bank Name*",
-                            style: TextStyle(
-                                fontSize: FontConstants.f14,
-                                fontFamily: FontConstants.fontFamily,
-                                fontWeight: FontConstants.w500,
-                                color: ColorConstant.dashboardTextColor
-                            ),
-                          ),
-                          SizedBox(
-                            height: 6.0,
-                          ),
-                          CommonTextField(
-                              controller: ifscCode,
-                              hintText: "Enter your Bank Name*"
-                          ),
-                          SizedBox(
-                            height: 12,
-                          ),
-                          Text(
-                            "Bank A/C Type*",
-                            style: TextStyle(
-                                fontSize: FontConstants.f14,
-                                fontFamily: FontConstants.fontFamily,
-                                fontWeight: FontConstants.w500,
-                                color: ColorConstant.dashboardTextColor
-                            ),
-                          ),
-                          SizedBox(
-                            height: 6.0,
-                          ),
-                          bankAccountType(context)
-                        ],
-                      ),
-                    ),
-                  ),
-                )
+                Loan112Button(
+                    text: "Submit",
+                    onPressed: () async{
+                      if(formKey.currentState!.validate()){
+
+                        var otpModel = await MySharedPreferences.getUserSessionDataNode();
+                        VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
+                        var leadId = verifyOtpModel.data?.leadId ?? "";
+                        if (leadId == "") {
+                          leadId = await MySharedPreferences.getLeadId();
+                        }
+
+                        UpdateBankDetailsParamModel updateBankDetailsData =
+                        UpdateBankDetailsParamModel(
+                            custId: verifyOtpModel.data?.custId ?? "",
+                            leadId: leadId,
+                            account: bankAccount.text.trim(),
+                            confirmAccount: confirmBankAccount.text.trim(),
+                            ifsc: ifscCode.text.trim(),
+                            accountType: selectedBankType?.bankTypeId ?? "",
+                            type: "1"
+                        );
+                        context.read<LoanApplicationCubit>().updateBankDetailsApiCall(updateBankDetailsData.toJson());
+                      }
+                    }
+                ),
+                SizedBox(
+                  height: 24,
+                ),
               ],
-            )
-        ),
-      ),
-      bottomNavigationBar: SizedBox(
-        height: 100,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                height: 24,
-              ),
-              Loan112Button(text: "Submit",onPressed: (){}),
-              SizedBox(
-                height: 24,
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -197,67 +348,91 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
 
 
   Widget bankAccountType(BuildContext context){
-    return DropdownButtonHideUnderline(
-      child: DropdownButton2<String>(
-        isExpanded: true,
-        hint:  Text(
-          'Select Bank A/C Type*',
-          style: TextStyle(
-              fontSize: FontConstants.f14,
-              color: ColorConstant.blackTextColor,
-              fontWeight: FontConstants.w400,
-              fontFamily: FontConstants.fontFamily
-          ),
-        ),
-        items: items
-            .map((item) => DropdownMenuItem<String>(
-          value: item,
-          child: Text(
-            item,
-            style:  TextStyle(
-                fontSize: FontConstants.f14,
-                color: ColorConstant.blackTextColor,
-                fontWeight: FontConstants.w500,
-                fontFamily: FontConstants.fontFamily
+   return FormField<String>(
+      validator: (value) {
+        if (selectedBankType == null) {
+          return 'Please select your bank account type.';
+        }
+        return null;
+      },
+      builder: (FormFieldState<String> field) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DropdownButtonHideUnderline(
+              child: DropdownButton2<BankAccountTypeParamModel>(
+                isExpanded: true,
+                hint: Text(
+                  'Select Bank A/C Type*',
+                  style: TextStyle(
+                    fontSize: FontConstants.f14,
+                    color: ColorConstant.blackTextColor,
+                    fontWeight: FontConstants.w400,
+                    fontFamily: FontConstants.fontFamily,
+                  ),
+                ),
+                items: bankAccountTypeModel?.data
+                    ?.map((item) => DropdownMenuItem<BankAccountTypeParamModel>(
+                  value: item,
+                  child: Text(
+                    item.bankTypeName ?? "",
+                    style: TextStyle(
+                      fontSize: FontConstants.f14,
+                      color: ColorConstant.blackTextColor,
+                      fontWeight: FontConstants.w500,
+                      fontFamily: FontConstants.fontFamily,
+                    ),
+                  ),
+                ))
+                    .toList(),
+                value: selectedBankType,
+                onChanged: (value) {
+                  setState(() {
+                    selectedBankType = value;
+                    //field.didChange(value); // important to update validation state
+                  });
+                },
+                buttonStyleData: ButtonStyleData(
+                  height: 50,
+                  padding: const EdgeInsets.only(right: 12),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: ColorConstant.textFieldBorderColor,
+                    ),
+                    color: ColorConstant.appScreenBackgroundColor,
+                  ),
+                  elevation: 0,
+                ),
+                iconStyleData: IconStyleData(
+                  icon: Icon(
+                    Icons.keyboard_arrow_down,
+                    size: 20,
+                    color: ColorConstant.greyTextColor,
+                  ),
+                ),
+                dropdownStyleData: DropdownStyleData(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
             ),
-          ),
-        ))
-            .toList(),
-        value: selectedValue,
-        onChanged: (value) {
-          setState(() {
-            selectedValue = value;
-          });
-        },
-        buttonStyleData: ButtonStyleData(
-          height: 50,
-          padding: const EdgeInsets.only(right: 12),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: ColorConstant.textFieldBorderColor,
-            ),
-            color: ColorConstant.appScreenBackgroundColor,
-          ),
-          elevation: 0,
-        ),
-        iconStyleData:  IconStyleData(
-          icon: Icon(
-            Icons.keyboard_arrow_down,
-            size: 20,
-            color: ColorConstant.greyTextColor,
-          ),
-        ),
-        dropdownStyleData: DropdownStyleData(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-      ),
+            if (field.hasError)
+              Padding(
+                padding: const EdgeInsets.only(top: 6, left: 4),
+                child: Text(
+                  field.errorText ?? '',
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
-
-
-
 }
 

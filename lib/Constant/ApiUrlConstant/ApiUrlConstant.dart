@@ -23,8 +23,9 @@ const String getUtilityDoc = "get-current-address-docs";
 const String uploadResidenceDoc = "upload-residence-docs";
 const String uploadBankStatement = "journey-upload-docs";
 const String addReFeRance ="add-reference";
-
-
+const String updateBankingDetails = "customer-banking";
+const String verifyIfscCode = "getBankDetailsByIfsc$andRD";
+const String bankAccountType = "getMasterBankType$andRD";
 
 
 
@@ -75,3 +76,4 @@ const String addReFeRance ="add-reference";
 // const val AA_VERIFICATION =  "account-aggregator-verification"
 // const val GET_LEAD_ID = "get-lead-id"
 // const val DIS_CALCULATE = "calculate-distance"
+

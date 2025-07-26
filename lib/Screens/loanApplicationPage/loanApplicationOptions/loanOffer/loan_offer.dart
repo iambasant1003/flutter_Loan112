@@ -82,42 +82,74 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
           backgroundColor: Color(0xffE7F3FF),
         ),
         body: BlocListener<LoanApplicationCubit,LoanApplicationState>(
-          listener: (context,state){
-            if(state is LoanApplicationLoading){
+          listener: (context, state) {
+            if (!mounted) return;
+
+            if (state is LoanApplicationLoading || state is LoanAcceptanceLoading) {
               EasyLoading.show(status: "Please wait...");
-            }else if(state is GenerateLoanOfferSuccess){
+            }
+
+            else if (state is GenerateLoanOfferSuccess) {
               EasyLoading.dismiss();
-              DebugPrint.prt("Loan Offer Success Ui");
+
               generateLoanOfferModel = state.generateLoanOfferModel;
               getPurposeOfLoanModel = state.getPurposeOfLoanModel;
-                currentTenure = double.parse((generateLoanOfferModel?.data!.minLoanTenure ?? 0).toString());
-                maxTenure = double.parse((generateLoanOfferModel?.data!.maxLoanTenure ?? 0).toString());
-                currentValue = double.parse((generateLoanOfferModel?.data!.minLoanAmount ?? 0).toString());
-                maxValue = double.parse((generateLoanOfferModel?.data!.maxLoanAmount ?? 0).toString());
-                interestRate = generateLoanOfferModel?.data!.interestRate ?? 0;
 
-                DebugPrint.prt("Model data $generateLoanOfferModel, $getPurposeOfLoanModel");
+              currentTenure = double.parse((generateLoanOfferModel?.data?.minLoanTenure ?? 0).toString());
+              maxTenure = double.parse((generateLoanOfferModel?.data?.maxLoanTenure ?? 0).toString());
+              currentValue = double.parse((generateLoanOfferModel?.data?.minLoanAmount ?? 0).toString());
+              maxValue = double.parse((generateLoanOfferModel?.data?.maxLoanAmount ?? 0).toString());
+              interestRate = generateLoanOfferModel?.data?.interestRate ?? 0;
 
-                Future.delayed(const Duration(milliseconds: 500), () {
-                  calculateLoan(principal: currentValue, tenure: currentTenure,
-                      interestRate: double.parse((interestRate).toString())
-                  );
-                });
+              DebugPrint.prt("Model data $generateLoanOfferModel, $getPurposeOfLoanModel");
+
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!context.mounted) return;
+
+                calculateLoan(
+                  principal: currentValue,
+                  tenure: currentTenure,
+                  interestRate: double.parse((interestRate).toString()),
+                );
+
                 setState(() {});
-            }else if(state is GenerateLoanOfferError){
+              });
+            }
+
+            else if (state is GenerateLoanOfferError) {
               EasyLoading.dismiss();
-              openSnackBar(context, state.generateLoanOfferModel.message ?? "Unknown Error");
-            }else if(state is GetPurposeOfLoanFailed){
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (context.mounted) {
+                  openSnackBar(context, state.generateLoanOfferModel.message ?? "Unknown Error");
+                }
+              });
+            }
+
+            else if (state is GetPurposeOfLoanFailed) {
               EasyLoading.dismiss();
-              openSnackBar(context, state.getPurposeOfLoanModel.message ?? "Unknown Error");
-            } else if(state is LoanAcceptanceLoading){
-              EasyLoading.show(status: "Please wait...");
-            } else if(state is LoanAcceptanceSuccess){
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (context.mounted) {
+                  openSnackBar(context, state.getPurposeOfLoanModel.message ?? "Unknown Error");
+                }
+              });
+            }
+
+            else if (state is LoanAcceptanceSuccess) {
               EasyLoading.dismiss();
-              context.pop();
-            }else if(state is LoanAcceptanceError){
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (context.mounted) {
+                  context.pop();
+                }
+              });
+            }
+
+            else if (state is LoanAcceptanceError) {
               EasyLoading.dismiss();
-              openSnackBar(context, state.loanAcceptanceModel.message ?? "Unknown Error");
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (context.mounted) {
+                  openSnackBar(context, state.loanAcceptanceModel.message ?? "Unknown Error");
+                }
+              });
             }
           },
           child: SizedBox.expand(
@@ -174,50 +206,53 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
             ),
           ),
         ),
-        bottomNavigationBar: SizedBox(
-          height: 90,
-          width: MediaQuery.of(context).size.width,
-          child: Column(
-            children: [
-              Image.asset(ImageConstants.bottomDashLine,height: 4),
-              SizedBox(
-                height: 26,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 61
+        bottomNavigationBar: SafeArea(
+          bottom: true,
+          child: SizedBox(
+            height: 90,
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              children: [
+                Image.asset(ImageConstants.bottomDashLine,height: 4),
+                SizedBox(
+                  height: 26,
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        loanAcceptanceApiCall(context,2);
-                      },
-                      child: Text(
-                        "REJECT",
-                        style: TextStyle(
-                          fontSize: FontConstants.f16,
-                          fontFamily: FontConstants.fontFamily,
-                          fontWeight: FontConstants.w700,
-                          color: ColorConstant.brownColor,
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: 61
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          loanAcceptanceApiCall(context,2);
+                        },
+                        child: Text(
+                          "REJECT",
+                          style: TextStyle(
+                            fontSize: FontConstants.f16,
+                            fontFamily: FontConstants.fontFamily,
+                            fontWeight: FontConstants.w700,
+                            color: ColorConstant.brownColor,
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(width: 16), // optional spacing
-                    SizedBox(
-                      width: 150, // or any fixed width you want
-                      child: Loan112Button(
-                        text: "CONTINUE",
-                        onPressed: () {
-                          loanAcceptanceApiCall(context, 1);
-                        },
+                      SizedBox(width: 16), // optional spacing
+                      SizedBox(
+                        width: 150, // or any fixed width you want
+                        child: Loan112Button(
+                          text: "CONTINUE",
+                          onPressed: () {
+                            loanAcceptanceApiCall(context, 1);
+                          },
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              )
-            ],
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         ),
     );

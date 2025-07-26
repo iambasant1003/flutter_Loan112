@@ -1,6 +1,7 @@
 
 import 'package:dio/dio.dart';
 import 'package:loan112_app/Constant/ConstText/ConstText.dart';
+import 'package:loan112_app/Model/BankAccountTypeModel.dart';
 import 'package:loan112_app/Model/CreateLeadModel.dart';
 import 'package:loan112_app/Model/CustomerKycModel.dart';
 import 'package:loan112_app/Model/EkycVerifictionModel.dart';
@@ -9,6 +10,7 @@ import 'package:loan112_app/Model/GetCustomerDetailsModel.dart';
 import 'package:loan112_app/Model/GetPinCodeDetailsModel.dart';
 import 'package:loan112_app/Model/GetPurposeOfLoanModel.dart';
 import 'package:loan112_app/Model/GetUtilityDocTypeModel.dart';
+import 'package:loan112_app/Model/IfscCodeModel.dart';
 import 'package:loan112_app/Model/LoanAcceptanceModel.dart';
 import 'package:loan112_app/Model/UploadBankStatementModel.dart';
 import 'package:loan112_app/Model/UploadSelfieModel.dart';
@@ -16,6 +18,7 @@ import 'package:loan112_app/Model/UploadUtilityDocTypeModel.dart';
 import 'package:loan112_app/Services/http_client_php.dart';
 import '../Constant/ApiUrlConstant/ApiUrlConstant.dart';
 import '../Model/AddReferenceModel.dart';
+import '../Model/UpdateBankAccountModel.dart';
 import '../Services/ApiResponseStatus.dart';
 import '../Services/http_client.dart';
 import '../Utils/Debugprint.dart';
@@ -413,6 +416,94 @@ class LoanApplicationRepository {
       DebugPrint.prt("Exception in Add Reference : $e");
       final error = AddReferenceModel(
         statusCode: 500,
+        message: ConstText.exceptionError,
+      );
+      return ApiResponse.error(ApiResponseStatus.serverError, error: error);
+    }
+  }
+
+  Future<ApiResponse<UpdateBankAccountModel>> updateBankingDetailsApiCallFunction(Map<String,dynamic> dataObj) async{
+    try {
+      final response = await apiClass.post(updateBankingDetails,dataObj,isHeader: true);
+      DebugPrint.prt("API Response Update Banking data ${response.data}");
+
+      final Map<String, dynamic> responseData = response.data;
+
+
+      final ApiResponseStatus status = mapApiResponseStatus(responseData);
+
+      if (status == ApiResponseStatus.success) {
+        DebugPrint.prt("Update Bank Details Success Response Model $responseData}");
+        final data = UpdateBankAccountModel.fromJson(responseData);
+        return ApiResponse.success(data);
+      } else {
+        final error = UpdateBankAccountModel.fromJson(responseData);
+        DebugPrint.prt("Bank Details Error Message ${error.message}, ${error.statusCode}");
+        return ApiResponse.error(status, error: error);
+      }
+    } catch (e) {
+      DebugPrint.prt("Exception in Update Banking data : $e");
+      final error = UpdateBankAccountModel(
+        statusCode: 500,
+        message: ConstText.exceptionError,
+      );
+      return ApiResponse.error(ApiResponseStatus.serverError, error: error);
+    }
+  }
+
+  Future<ApiResponse<IfscCodeModel>> verifyIfscCodeApiCallFunction(Map<String,dynamic> dataObj) async{
+    try {
+      final response = await apiClassPhp.post(verifyIfscCode,dataObj,isHeader: true);
+      DebugPrint.prt("API Response Verify Ifsc Code data ${response.data}");
+
+      final Map<String, dynamic> responseData = response.data;
+
+
+      final ApiResponseStatus status = mapApiResponseStatusPhp(responseData);
+
+      if (status == ApiResponseStatus.success) {
+        DebugPrint.prt("Verify Ifsc Code Success Response Model $responseData}");
+        final data = IfscCodeModel.fromJson(responseData);
+        return ApiResponse.success(data);
+      } else {
+        final error = IfscCodeModel.fromJson(responseData);
+        DebugPrint.prt("Verify Ifsc Error Message ${error.message}, ${error.status}");
+        return ApiResponse.error(status, error: error);
+      }
+    } catch (e) {
+      DebugPrint.prt("Exception in Verify Ifsc Code data : $e");
+      final error = IfscCodeModel(
+        status: 500,
+        message: ConstText.exceptionError,
+      );
+      return ApiResponse.error(ApiResponseStatus.serverError, error: error);
+    }
+  }
+
+
+  Future<ApiResponse<BankAccountTypeModel>> bankAccountTypeApiCallFunction(Map<String,dynamic> dataObj) async{
+    try {
+      final response = await apiClassPhp.post(bankAccountType,dataObj,isHeader: true);
+      DebugPrint.prt("API Response bank Account Type data ${response.data}");
+
+      final Map<String, dynamic> responseData = response.data;
+
+
+      final ApiResponseStatus status = mapApiResponseStatusPhp(responseData);
+
+      if (status == ApiResponseStatus.success) {
+        DebugPrint.prt("Bank Account Type Success Response Model $responseData}");
+        final data = BankAccountTypeModel.fromJson(responseData);
+        return ApiResponse.success(data);
+      } else {
+        final error = BankAccountTypeModel.fromJson(responseData);
+        DebugPrint.prt("Bank Account Type Error Message ${error.message}, ${error.status}");
+        return ApiResponse.error(status, error: error);
+      }
+    } catch (e) {
+      DebugPrint.prt("Exception in Bank Account Type data : $e");
+      final error = BankAccountTypeModel(
+        status: 500,
         message: ConstText.exceptionError,
       );
       return ApiResponse.error(ApiResponseStatus.serverError, error: error);
