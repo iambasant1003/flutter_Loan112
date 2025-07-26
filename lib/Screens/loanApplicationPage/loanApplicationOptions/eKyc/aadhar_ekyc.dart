@@ -35,39 +35,58 @@ class _AadharKycScreen extends State<AadharKycScreen>{
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocListener<LoanApplicationCubit,LoanApplicationState>(
-        listener: (context,state){
-          if(state is LoanApplicationLoading){
+        listener: (context, state) {
+          if (state is LoanApplicationLoading) {
             EasyLoading.show(status: "Please Wait...");
           }
-          else if(state is CustomerKYCSuccess){
+
+          else if (state is CustomerKYCSuccess) {
             EasyLoading.dismiss();
-            context.push(AppRouterName.customerKYCWebview,extra: state.customerKycModel.data?.url).then((val)async{
-              var otpModel = await MySharedPreferences.getUserSessionDataNode();
-              VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
-              var leadId = verifyOtpModel.data?.leadId ?? "";
-              if(leadId == ""){
-                leadId =  await MySharedPreferences.getLeadId();
-              }
-              context.read<LoanApplicationCubit>().customerKycVerificationApiCall({
-                "custId":verifyOtpModel.data?.custId,
-                "leadId": leadId
+
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!context.mounted) return;
+
+              context.push(AppRouterName.customerKYCWebview, extra: state.customerKycModel.data?.url).then((val) async {
+                var otpModel = await MySharedPreferences.getUserSessionDataNode();
+                VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
+                var leadId = verifyOtpModel.data?.leadId ?? "";
+                if (leadId == "") {
+                  leadId = await MySharedPreferences.getLeadId();
+                }
+
+                if (!context.mounted) return;
+                context.read<LoanApplicationCubit>().customerKycVerificationApiCall({
+                  "custId": verifyOtpModel.data?.custId,
+                  "leadId": leadId
+                });
               });
             });
           }
-          else if(state is CustomerKYCError){
+
+          else if (state is CustomerKYCError) {
             EasyLoading.dismiss();
-            openSnackBar(context, state.customerKycModel.message ?? "Unknown Error");
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!context.mounted) return;
+              openSnackBar(context, state.customerKycModel.message ?? "Unknown Error");
+            });
           }
-          else if(state is CustomerKYCVerificationSuccess){
+
+          else if (state is CustomerKYCVerificationSuccess) {
             EasyLoading.dismiss();
-            context.pop();
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!context.mounted) return;
+              context.pop();
+            });
           }
-          else if(state is CustomerKYCVerificationError){
+
+          else if (state is CustomerKYCVerificationError) {
             EasyLoading.dismiss();
-            if (!mounted) return; // 👈 add this line
-            openSnackBar(context, state.ekycVerificationModel.message ?? "Unknown Error");
-            setState(() {
-              reInitiate = true;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!context.mounted) return;
+              openSnackBar(context, state.ekycVerificationModel.message ?? "Unknown Error");
+              setState(() {
+                reInitiate = true;
+              });
             });
           }
         },
@@ -216,45 +235,46 @@ class _AadharKycScreen extends State<AadharKycScreen>{
           ],
         ),
       ),
-      bottomNavigationBar: SizedBox(
-        height: 150,
-        child: Column(
-          children: [
-            Divider(
-              height: 8,
-              color: ColorConstant.greyTextColor,
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: FontConstants.horizontalPadding,
-                vertical: 24.0
+      bottomNavigationBar: SafeArea(
+        child:  SizedBox(
+          height: 135,
+          child: Column(
+            children: [
+              Divider(
+                height: 8,
+                color: ColorConstant.greyTextColor,
               ),
-              child: Column(
-                children: [
-                  Loan112Button(
-                  onPressed: () async {
-            if (adarOTPController.text.trim() != "" && adarOTPController.text.trim().length == 4) {
-            var otpModel = await MySharedPreferences.getUserSessionDataNode();
-            VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
-            var leadId = verifyOtpModel.data?.leadId ?? "";
-            if (leadId == "") {
-            leadId = await MySharedPreferences.getLeadId();
-            }
+              Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: FontConstants.horizontalPadding,
+                    vertical: FontConstants.horizontalPadding
+                ),
+                child: Column(
+                  children: [
+                    Loan112Button(
+                      onPressed: () async {
+                        if (adarOTPController.text.trim() != "" && adarOTPController.text.trim().length == 4) {
+                          var otpModel = await MySharedPreferences.getUserSessionDataNode();
+                          VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
+                          var leadId = verifyOtpModel.data?.leadId ?? "";
+                          if (leadId == "") {
+                            leadId = await MySharedPreferences.getLeadId();
+                          }
 
-            context.read<LoanApplicationCubit>().customerKycApiCall({
-            "custId": verifyOtpModel.data?.custId,
-            "leadId": leadId,
-            "requestSource": ConstText.requestSource,
-            "aadharNo": adarOTPController.text.trim(),
-            "type": 1
-            });
-            } else {
-            openSnackBar(context, "Please Enter last 4 digit of your aadhar number");
-            }
-            },
-              text: reInitiate ? "Reinitiate" : "Get Started",
-            ),
-                  /*
+                          context.read<LoanApplicationCubit>().customerKycApiCall({
+                            "custId": verifyOtpModel.data?.custId,
+                            "leadId": leadId,
+                            "requestSource": ConstText.requestSource,
+                            "aadharNo": adarOTPController.text.trim(),
+                            "type": 1
+                          });
+                        } else {
+                          openSnackBar(context, "Please Enter last 4 digit of your aadhar number");
+                        }
+                      },
+                      text: reInitiate ? "Reinitiate" : "Get Started",
+                    ),
+                    /*
                   Loan112Button(
                       onPressed: () async{
                         if(adarOTPController.text.trim() != "" && adarOTPController.text.trim().length == 4){
@@ -278,43 +298,44 @@ class _AadharKycScreen extends State<AadharKycScreen>{
                       text: "Get Started"
                   ),
                    */
-                  SizedBox(
-                    height: 23.0,
-                  ),
-                  Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Need  Help..?",
-                          style: TextStyle(
-                            color: Color(0xff2B3C74),
-                            fontSize: FontConstants.f14,
-                            fontWeight: FontConstants.w600,
-                            fontFamily: FontConstants.fontFamily
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10.0,
-                        ),
-                        Text(
-                          "contact us",
-                          style: TextStyle(
-                              color: Color(0xff000000),
-                              fontSize: FontConstants.f14,
-                              fontWeight: FontConstants.w600,
-                              fontFamily: FontConstants.fontFamily
-                          ),
-                        ),
-                      ],
+                    SizedBox(
+                      height: 23.0,
                     ),
-                  )
-                ],
-              ),
-            )
-          ],
+                    Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Need  Help..?",
+                            style: TextStyle(
+                                color: Color(0xff2B3C74),
+                                fontSize: FontConstants.f14,
+                                fontWeight: FontConstants.w600,
+                                fontFamily: FontConstants.fontFamily
+                            ),
+                          ),
+                          SizedBox(
+                            width: 10.0,
+                          ),
+                          Text(
+                            "contact us",
+                            style: TextStyle(
+                                color: Color(0xff000000),
+                                fontSize: FontConstants.f14,
+                                fontWeight: FontConstants.w600,
+                                fontFamily: FontConstants.fontFamily
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
-      ),
+      )
     );
   }
 

@@ -66,32 +66,49 @@ class _CheckEligibility extends State<CheckEligibility>{
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocListener<LoanApplicationCubit,LoanApplicationState>(
-          listener: (context,state){
-            if(state is LoanApplicationLoading){
-              EasyLoading.show(status: "Please Wait...");
-            }else if(state is CreateLeadSuccess){
-              EasyLoading.dismiss();
-              MySharedPreferences.setLeadId(state.createLeadModel.data?.leadId?? "");
-              context.replace(AppRouterName.eligibilityStatus,extra: state.createLeadModel);
-            }else if(state is GetPinCodeDetailsSuccess){
-              EasyLoading.dismiss();
+        listener: (context, state) {
+          if (state is LoanApplicationLoading) {
+            EasyLoading.show(status: "Please Wait...");
+          } else if (state is CreateLeadSuccess) {
+            EasyLoading.dismiss();
+            MySharedPreferences.setLeadId(state.createLeadModel.data?.leadId ?? "");
+
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!context.mounted) return;
+              context.replace(AppRouterName.eligibilityStatus, extra: state.createLeadModel);
+            });
+
+          } else if (state is GetPinCodeDetailsSuccess) {
+            EasyLoading.dismiss();
+
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!context.mounted) return;
               stateController.text = state.pinCodeDetailsModel.data?.stateName ?? "";
               cityController.text = state.pinCodeDetailsModel.data?.cityName ?? "";
               stateId = state.pinCodeDetailsModel.data?.stateId.toString() ?? "";
-              cityId =  "110";
-            } else if(state is CreateLeadError){
-              EasyLoading.dismiss();
-              if(
-              state.createLeadModel.message == "You are not eligible" &&
-              state.createLeadModel.statusCode == 402 && state.createLeadModel.success == false
-              ){
-                context.replace(AppRouterName.eligibilityStatus,extra: state.createLeadModel);
-              }
-            } else if(state is LoanApplicationError){
-              openSnackBar(context, state.message);
+              cityId = "110"; // You may want to avoid hardcoding this
+            });
+
+          } else if (state is CreateLeadError) {
+            EasyLoading.dismiss();
+
+            if (state.createLeadModel.message == "You are not eligible" &&
+                state.createLeadModel.statusCode == 402 &&
+                state.createLeadModel.success == false) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!context.mounted) return;
+                context.replace(AppRouterName.eligibilityStatus, extra: state.createLeadModel);
+              });
             }
-          },
-          child: Stack(
+
+          } else if (state is LoanApplicationError) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!context.mounted) return;
+              openSnackBar(context, state.message);
+            });
+          }
+        },
+        child: Stack(
             children: [
               /// Background image
               Positioned.fill(
@@ -320,79 +337,82 @@ class _CheckEligibility extends State<CheckEligibility>{
             ],
           ),
       ),
-      bottomNavigationBar: Container(
-        height: 140,
-        color: ColorConstant.whiteColor,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: 24.0,
-              ),
-              Loan112Button(
-                  onPressed: () async{
-                    setState(() {
-                      submitted = true;
-                    });
-                    if(_formKey.currentState!.validate()){
-                      var otpModel = await MySharedPreferences.getUserSessionDataNode();
-                      VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
-                      context.read<LoanApplicationCubit>().checkEligibilityApiCall(
-                        {
-                           "custId": verifyOtpModel.data?.custId,
-                           "employementType": employmentType,
-                            "pincode": pinCodeController.text.trim(),
-                           "pancard": panController.text.trim(),
-                            "personalEmail": emailController.text.trim(),
-                           "stateId": stateId,
-                           "cityId": cityId,
-                           "stateName": stateController.text.trim(),
-                           "cityName": cityController.text.trim(),
-                           "mobile": verifyOtpModel.data?.mobile.toString(),
-                           "requestSource": ConstText.requestSource,
-                           "salaryAmt": int.parse(netMonthlyIncome.text.trim()),
-                           "dob": dateOfBirth.text.trim().toString(),
-                           "gender":gender,
-                           "ip_web":"192.0.0.0",
-                           "empName": companyNameController.text.trim()
-                        }
-                      );
-                    }
-                  },
-                  text: "Check Eligibility"
-              ),
-              SizedBox(
-                height: 23,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Need  Help..?",
-                    style: TextStyle(
-                      fontFamily: FontConstants.fontFamily,
-                      fontSize: FontConstants.f14,
-                      fontWeight: FontConstants.w600,
-                      color: ColorConstant.blackTextColor
+      bottomNavigationBar: SafeArea(
+        bottom: true,
+        child: Container(
+          height: 125,
+          color: ColorConstant.whiteColor,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: 24.0,
+                ),
+                Loan112Button(
+                    onPressed: () async{
+                      setState(() {
+                        submitted = true;
+                      });
+                      if(_formKey.currentState!.validate()){
+                        var otpModel = await MySharedPreferences.getUserSessionDataNode();
+                        VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
+                        context.read<LoanApplicationCubit>().checkEligibilityApiCall(
+                            {
+                              "custId": verifyOtpModel.data?.custId,
+                              "employementType": employmentType,
+                              "pincode": pinCodeController.text.trim(),
+                              "pancard": panController.text.trim(),
+                              "personalEmail": emailController.text.trim(),
+                              "stateId": stateId,
+                              "cityId": cityId,
+                              "stateName": stateController.text.trim(),
+                              "cityName": cityController.text.trim(),
+                              "mobile": verifyOtpModel.data?.mobile.toString(),
+                              "requestSource": ConstText.requestSource,
+                              "salaryAmt": int.parse(netMonthlyIncome.text.trim()),
+                              "dob": dateOfBirth.text.trim().toString(),
+                              "gender":gender,
+                              "ip_web":"192.0.0.0",
+                              "empName": companyNameController.text.trim()
+                            }
+                        );
+                      }
+                    },
+                    text: "Check Eligibility"
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Need  Help..?",
+                      style: TextStyle(
+                          fontFamily: FontConstants.fontFamily,
+                          fontSize: FontConstants.f14,
+                          fontWeight: FontConstants.w600,
+                          color: ColorConstant.blackTextColor
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    width: 13.0,
-                  ),
-                  Text(
-                    "contact us",
-                    style: TextStyle(
-                        fontFamily: FontConstants.fontFamily,
-                        fontSize: FontConstants.f14,
-                        fontWeight: FontConstants.w800,
-                        color: ColorConstant.blackTextColor
+                    SizedBox(
+                      width: 13.0,
                     ),
-                  ),
-                ],
-              )
-            ],
+                    Text(
+                      "contact us",
+                      style: TextStyle(
+                          fontFamily: FontConstants.fontFamily,
+                          fontSize: FontConstants.f14,
+                          fontWeight: FontConstants.w800,
+                          color: ColorConstant.blackTextColor
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -536,3 +556,4 @@ class _CheckEligibility extends State<CheckEligibility>{
 
 
 }
+

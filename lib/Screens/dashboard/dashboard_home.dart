@@ -8,7 +8,6 @@ import 'package:loan112_app/Cubit/dashboard_cubit/DashboardState.dart';
 import 'package:loan112_app/Model/DashBoarddataModel.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
-import 'package:loan112_app/Utils/MysharePrefenceClass.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../Constant/ColorConst/ColorConstant.dart';
@@ -19,7 +18,6 @@ import '../../Widget/app_bar.dart';
 import '../../Widget/circular_progress.dart';
 import '../../Widget/common_button.dart';
 import '../drawer/drawer_page.dart';
-import 'dashboard_loan_details.dart';
 
 class DashBoardHome extends StatefulWidget{
   const DashBoardHome({super.key});
@@ -33,7 +31,6 @@ class _DashBoardHome extends State<DashBoardHome>{
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     context.read<DashboardCubit>().callDashBoardApi();
   }
@@ -44,6 +41,7 @@ class _DashBoardHome extends State<DashBoardHome>{
 
 
   DashBoarddataModel? dashBoarddataModel;
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<DashboardCubit,DashboardState>(
@@ -131,11 +129,15 @@ class _DashBoardHome extends State<DashBoardHome>{
                                     //This 2nd Positioned Contains Button
                                     Positioned(
                                         bottom: -15,
-                                        left: 100,
-                                        right: 100,
+                                        left: 80,
+                                        right: 80,
                                         child: GestureDetector(
                                           onTap: (){
-                                            context.push(AppRouterName.loanApplicationPage);
+                                            if(dashBoarddataModel?.data?.applicationSubmitted == 1){
+                                              context.push(AppRouterName.dashBoardStatus);
+                                            }else{
+                                              context.push(AppRouterName.loanApplicationPage);
+                                            }
                                           },
                                           child: Loan112Button(
                                               onPressed: null,
@@ -245,47 +247,9 @@ class _DashBoardHome extends State<DashBoardHome>{
 
   Widget commonScaffold(BuildContext context,{required Widget bodyPart,dashBoardModel}){
     return Scaffold(
-      drawer: Loan112Drawer(
-        dashBoarddataModel: dashBoardModel,
-      ),
-      appBar: Loan112AppBar(
-        leadingSpacing: 25,
-        title: Image.asset(
-          ImageConstants.loan112AppNameIcon,
-          height: 76,
-          width: 76,
-        ),
-        customLeading: Builder(
-          builder: (context) => Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: InkWell(
-              onTap: () {
-                Scaffold.of(context).openDrawer();
-              },
-              child: Icon(
-                Icons.menu,
-                color: ColorConstant.greyTextColor,
-              ),
-            ),
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 8.0),
-            child: InkWell(
-              onTap: (){
-                DebugPrint.prt("Headphone is tapped");
-              },
-              child: Image.asset(ImageConstants.dashBoardHeadphone,height: 24,width: 24),
-            ),
-          )
-        ],
-      ),
       body: bodyPart,
     );
   }
-
-
 
   Widget personalLoanApplyWidget(BuildContext context,DashBoarddataModel dashBoardModel){
     return Column(
@@ -352,13 +316,6 @@ class _DashBoardHome extends State<DashBoardHome>{
       ],
     );
   }
-
-
-
-
-
-
-
 }
 
 

@@ -84,43 +84,125 @@ class _Loan112Drawer extends State<Loan112Drawer> {
                           children: [
                             Row(
                               children: [
-                                CircularProgressWithText(
-                                  progress: (widget.dashBoarddataModel?.data?.applyLoanBanner?.appBannerProgressPercent ?? 0) / 100,
-                                  isDrawer: true,
-                                ),
-                                SizedBox(
-                                  width: 15,
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SizedBox(
-                                      height: 20,
-                                    ),
-                                    Text(
-                                      widget.dashBoarddataModel?.data?.fullName ?? "",
-                                      style: TextStyle(
-                                          fontFamily: FontConstants.fontFamily,
-                                          fontSize: FontConstants.f18,
-                                          fontWeight: FontConstants.w800,
-                                          color: ColorConstant.blackTextColor
+                                if(widget.dashBoarddataModel?.data?.profilePic != null)...[
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 80,
+                                        height: 80,
+                                        child: Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            // Progress arc with incomplete part in lightBlue
+                                            SizedBox(
+                                              width: 80,
+                                              height: 80,
+                                              child: CircularProgressIndicator(
+                                                value: 100,
+                                                strokeWidth: 10,
+                                                backgroundColor: Colors.lightBlue.shade100,
+                                                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue.shade700),
+                                              ),
+                                            ),
+                                            ClipOval(
+                                              child: Image.network(
+                                                widget.dashBoarddataModel?.data?.profilePic ?? "",
+                                                width: 50,
+                                                height: 50,
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (context, error, stackTrace) => Icon(Icons.person, size: 40, color: Colors.grey),
+                                                loadingBuilder: (context, child, loadingProgress) {
+                                                  if (loadingProgress == null) return child;
+                                                  return CircularProgressIndicator(
+                                                    strokeWidth: 2,
+                                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                                                  );
+                                                },
+                                              ),
+                                            ),
+
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Text(
-                                      widget.dashBoarddataModel?.data?.mobile ?? "",
-                                      //"9090000888",
-                                      style: TextStyle(
-                                          fontWeight: FontConstants.w600,
-                                          fontSize: FontConstants.f12,
-                                          fontFamily: FontConstants.fontFamily,
-                                          color: ColorConstant.blackTextColor
+                                      SizedBox(
+                                        width: 15,
                                       ),
-                                    )
-                                  ],
-                                )
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          SizedBox(
+                                            height: 20,
+                                          ),
+                                          Text(
+                                            widget.dashBoarddataModel?.data?.fullName ?? "",
+                                            style: TextStyle(
+                                                fontFamily: FontConstants.fontFamily,
+                                                fontSize: FontConstants.f18,
+                                                fontWeight: FontConstants.w800,
+                                                color: ColorConstant.blackTextColor
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                            widget.dashBoarddataModel?.data?.mobile ?? "",
+                                            //"9090000888",
+                                            style: TextStyle(
+                                                fontWeight: FontConstants.w600,
+                                                fontSize: FontConstants.f12,
+                                                fontFamily: FontConstants.fontFamily,
+                                                color: ColorConstant.blackTextColor
+                                            ),
+                                          )
+                                        ],
+                                      )
+                                    ]
+                                  )
+                                ]
+                                else...[
+                                  Row(
+                                    children: [
+                                      CircularProgressWithText(
+                                        progress: (widget.dashBoarddataModel?.data?.applyLoanBanner?.appBannerProgressPercent ?? 0) / 100,
+                                        isDrawer: true,
+                                      ),
+                                      SizedBox(
+                                        width: 15,
+                                      ),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          SizedBox(
+                                            height: 20,
+                                          ),
+                                          Text(
+                                            widget.dashBoarddataModel?.data?.fullName ?? "",
+                                            style: TextStyle(
+                                                fontFamily: FontConstants.fontFamily,
+                                                fontSize: FontConstants.f18,
+                                                fontWeight: FontConstants.w800,
+                                                color: ColorConstant.blackTextColor
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                            widget.dashBoarddataModel?.data?.mobile ?? "",
+                                            //"9090000888",
+                                            style: TextStyle(
+                                                fontWeight: FontConstants.w600,
+                                                fontSize: FontConstants.f12,
+                                                fontFamily: FontConstants.fontFamily,
+                                                color: ColorConstant.blackTextColor
+                                            ),
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  )
+                                ],
                               ],
                             ),
                             SizedBox(

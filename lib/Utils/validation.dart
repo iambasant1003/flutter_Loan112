@@ -68,3 +68,66 @@ String? validateEmail(String? value) {
   return null; // ✅ valid
 }
 
+
+String? validateMobileNumber(String? value){
+  if (value == null || value.isEmpty) {
+    return 'Mobile number cannot be empty';
+  }
+  if (!RegExp(r'^[6-9][0-9]{9}$')
+      .hasMatch(value)) {
+    return 'Enter valid 10-digit number';
+  }
+  return null;
+}
+
+String? validateName(String? value) {
+  if (value == null || value.trim().isEmpty) {
+    return 'Name is required';
+  }
+
+  // Trim and normalize multiple spaces
+  String normalized = value.trim().replaceAll(RegExp(r'\s+'), ' ');
+
+  // Match only letters, one space between words, allow dot & apostrophe
+  if (!RegExp(r"^[a-zA-Z.'']+( [a-zA-Z.'']+)*$").hasMatch(normalized)) {
+    return 'Enter a valid name';
+  }
+
+  if (normalized.length < 2) {
+    return 'Name must be at least 2 characters long';
+  }
+
+  return null;
+}
+
+String? validateIfsc(String input) {
+  final regex = RegExp(r'^[A-Z]{4}0[A-Z0-9]{6}$');
+   if(!regex.hasMatch(input.toUpperCase())){
+     return "Enter a valid ifsc";
+   }
+   else{
+     return null;
+   }
+}
+
+String? validateBankName(String? value) {
+  final RegExp bankNameRegExp = RegExp(r"^[A-Za-z .'-]{3,}$");
+  if (value == null || value.trim().isEmpty) {
+    return "Bank name is required";
+  } else if (!bankNameRegExp.hasMatch(value.trim())) {
+    return "Enter a valid bank name (letters, spaces, . ' - only)";
+  }
+  return null;
+}
+
+String? validateBankAccount(String? value) {
+  if (value == null || value.trim().isEmpty) {
+    return "Bank account number is required";
+  } else if (!RegExp(r'^[1-9][0-9]{8,17}$').hasMatch(value.trim())) {
+    return "Enter a valid bank account number (9–18 digits)";
+  }
+  return null;
+}
+
+
+

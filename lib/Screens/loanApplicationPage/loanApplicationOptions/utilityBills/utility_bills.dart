@@ -129,21 +129,47 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
     return Scaffold(
       body: BlocListener<LoanApplicationCubit,LoanApplicationState>(
         listener: (BuildContext context, LoanApplicationState state) {
-          if(state is LoanApplicationLoading){
+          if (!context.mounted) return;
+
+          if (state is LoanApplicationLoading) {
             EasyLoading.show(status: "Please wait...");
-          }else if(state is GetUtilityDocTypeLoaded){
+          }
+
+          else if (state is GetUtilityDocTypeLoaded) {
             EasyLoading.dismiss();
             DebugPrint.prt("List data length ${state.getUtilityDocTypeModel.data?.length}");
-          }else if(state is LoanApplicationError){
+          }
+
+          else if (state is LoanApplicationError) {
             EasyLoading.dismiss();
-            openSnackBar(context, state.message);
-          }else if(state is UploadUtilityDocSuccess){
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted) {
+                openSnackBar(context, state.message);
+              }
+            });
+          }
+
+          else if (state is UploadUtilityDocSuccess) {
             EasyLoading.dismiss();
-            openSnackBar(context, state.uploadUtilityDocTypeModel.message ?? "",backGroundColor: ColorConstant.appThemeColor);
-            context.pop();
-          }else if(state is UploadUtilityDocError){
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted) {
+                openSnackBar(
+                  context,
+                  state.uploadUtilityDocTypeModel.message ?? "",
+                  backGroundColor: ColorConstant.appThemeColor,
+                );
+                context.pop();
+              }
+            });
+          }
+
+          else if (state is UploadUtilityDocError) {
             EasyLoading.dismiss();
-            openSnackBar(context, state.errorMessage ?? "");
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted) {
+                openSnackBar(context, state.errorMessage ?? "");
+              }
+            });
           }
         },
         child: GradientBackground(

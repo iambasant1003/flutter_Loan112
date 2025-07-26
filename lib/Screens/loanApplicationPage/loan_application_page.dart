@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
+import 'package:loan112_app/Cubit/dashboard_cubit/DashboardState.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
 import 'package:loan112_app/Model/SendPhpOTPModel.dart';
@@ -15,6 +16,7 @@ import 'package:loan112_app/Widget/app_bar.dart';
 import 'package:loan112_app/Widget/circular_progress.dart';
 import '../../Constant/ColorConst/ColorConstant.dart';
 import '../../Constant/ImageConstant/ImageConstants.dart';
+import '../../Cubit/dashboard_cubit/DashboardCubit.dart';
 import '../../Cubit/loan_application_cubit/JourneyCubit.dart';
 import '../../Model/VerifyOTPModel.dart';
 import '../../Utils/MysharePrefenceClass.dart';
@@ -65,6 +67,7 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
 
 
   getCustomerDetailsApiCall() async{
+    context.read<DashboardCubit>().callDashBoardApi();
     var otpModel = await MySharedPreferences.getPhpOTPModel();
     SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
     context.read<LoanApplicationCubit>().getCustomerDetailsApiCall({
@@ -140,31 +143,40 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Row(
-                          children: [
-                            SizedBox(
-                              height: 90,
-                              width: 90,
-                              child: CircularProgressWithText(
-                                progress: 0.1,
-                                isDrawer: false,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 10.0,
-                            ),
-                            Expanded(
-                              child: Text(
-                                "Begin your journey to financial empowerment-provide the necessary details to initiate your loan application.",
-                                style: TextStyle(
-                                    fontFamily: FontConstants.fontFamily,
-                                    fontWeight: FontConstants.w500,
-                                    fontSize: FontConstants.f14,
-                                    color: ColorConstant.dashboardTextColor
-                                ),
-                              ),
-                            )
-                          ],
+                        BlocBuilder<DashboardCubit,DashboardState>(
+                          builder: (context,state){
+                            if(state is DashBoardSuccess){
+                              return Row(
+                                children: [
+                                  SizedBox(
+                                    height: 90,
+                                    width: 90,
+                                    child: CircularProgressWithText(
+                                      progress: (state.dashBoardModel.data?.applyLoanBanner?.appBannerProgressPercent ?? 0) / 100,
+                                      isDrawer: false,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 10.0,
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      state.dashBoardModel.data?.applyLoanBanner?.appBannerText?? "",
+                                      //"Begin your journey to financial empowerment-provide the necessary details to initiate your loan application.",
+                                      style: TextStyle(
+                                          fontFamily: FontConstants.fontFamily,
+                                          fontWeight: FontConstants.w500,
+                                          fontSize: FontConstants.f14,
+                                          color: ColorConstant.dashboardTextColor
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              );
+                            }else{
+                              return SizedBox();
+                            }
+                          },
                         ),
                         const SizedBox(height: 16),
                         // 👇 Wrap with Expanded

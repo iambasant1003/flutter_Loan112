@@ -1,5 +1,7 @@
 
 
+import 'package:loan112_app/Model/AddReferenceModel.dart';
+import 'package:loan112_app/Model/BankAccountTypeModel.dart';
 import 'package:loan112_app/Model/CreateLeadModel.dart';
 import 'package:loan112_app/Model/CustomerKycModel.dart';
 import 'package:loan112_app/Model/EkycVerifictionModel.dart';
@@ -8,10 +10,11 @@ import 'package:loan112_app/Model/GetCustomerDetailsModel.dart';
 import 'package:loan112_app/Model/GetPinCodeDetailsModel.dart';
 import 'package:loan112_app/Model/GetPurposeOfLoanModel.dart';
 import 'package:loan112_app/Model/GetUtilityDocTypeModel.dart';
+import 'package:loan112_app/Model/IfscCodeModel.dart';
 import 'package:loan112_app/Model/LoanAcceptanceModel.dart';
 import 'package:loan112_app/Model/UploadSelfieModel.dart';
 import 'package:loan112_app/Model/UploadUtilityDocTypeModel.dart';
-
+import '../../Model/UpdateBankAccountModel.dart';
 import '../../Model/UploadBankStatementModel.dart';
 
 abstract class LoanApplicationState {}
@@ -144,6 +147,48 @@ class UploadBankStatementFailed extends LoanApplicationState{
   final UploadBankStatementModel uploadBankStatementModel;
   UploadBankStatementFailed(this.uploadBankStatementModel);
 }
+
+class AddReferenceSuccess extends LoanApplicationState{
+  final AddReferenceModel addReferenceModel;
+  AddReferenceSuccess(this.addReferenceModel);
+}
+
+class AddReferenceFailed extends LoanApplicationState{
+  final AddReferenceModel addReferenceModel;
+  AddReferenceFailed(this.addReferenceModel);
+}
+
+class UpdateBankDetailsSuccess extends LoanApplicationState{
+  final UpdateBankAccountModel updateBankAccountModel;
+  UpdateBankDetailsSuccess(this.updateBankAccountModel);
+}
+
+class UpdateBankDetailsFailed extends LoanApplicationState{
+  final UpdateBankAccountModel updateBankAccountModel;
+  UpdateBankDetailsFailed(this.updateBankAccountModel);
+}
+
+class VerifyIfscCodeSuccess extends LoanApplicationState{
+  final IfscCodeModel ifscCodeModel;
+  VerifyIfscCodeSuccess(this.ifscCodeModel);
+}
+
+class VerifyIfscCodeFailed extends LoanApplicationState{
+  final IfscCodeModel ifscCodeModel;
+  VerifyIfscCodeFailed(this.ifscCodeModel);
+}
+
+class BankAccountTypeSuccess extends LoanApplicationState{
+  final BankAccountTypeModel bankAccountTypeModel;
+  BankAccountTypeSuccess(this.bankAccountTypeModel);
+}
+
+class BankAccountTypeFailed extends LoanApplicationState{
+  final BankAccountTypeModel bankAccountTypeModel;
+  BankAccountTypeFailed(this.bankAccountTypeModel);
+}
+
+
 
 
 

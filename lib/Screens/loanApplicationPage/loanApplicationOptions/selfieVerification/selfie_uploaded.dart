@@ -53,37 +53,44 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage>{
         listenWhen: (prev,current){
           return prev != current;
         },
-        listener: (context,state){
+        listener: (context, state) {
           if (!mounted) return;
 
           if (state is LoanApplicationLoading) {
             EasyLoading.show(status: "Please Wait...");
-          } else if (state is UploadSelfieSuccess) {
+          }
+
+          else if (state is UploadSelfieSuccess) {
             EasyLoading.dismiss();
 
-            if (mounted) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!context.mounted) return;
+
               openSnackBar(
                 context,
                 state.uploadSelfieModel.message ?? "Selfie uploaded successfully",
               );
-              // Delay pop to allow snackbar to show
-              Future.delayed(Duration(milliseconds: 500), () {
-                if (mounted) {
-                  context.pop();
-                }
-              });
-              getCustomerDetailsApiCall();
-            }
 
-          } else if (state is UploadSelfieError) {
+              Future.delayed(Duration(milliseconds: 500), () {
+                if (!context.mounted) return;
+                context.pop();
+              });
+
+              getCustomerDetailsApiCall();
+            });
+          }
+
+          else if (state is UploadSelfieError) {
             EasyLoading.dismiss();
 
-            if (mounted) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!context.mounted) return;
+
               openSnackBar(
                 context,
                 state.uploadSelfieModel.message ?? "Unknown Error",
               );
-            }
+            });
           }
         },
         child: Stack(
