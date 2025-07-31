@@ -74,6 +74,8 @@ class _LogInPageState extends State<LogInPage> {
 
                 /// Form + Button
                 SafeArea(
+                  bottom: true,
+                  top: true,
                   child: Form(
                     key: _formKey,
                     child: Column(

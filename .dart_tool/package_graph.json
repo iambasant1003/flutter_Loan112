@@ -13,9 +13,11 @@
         "device_info_plus",
         "dio",
         "dropdown_button2",
+        "equatable",
         "file_picker",
         "flutter",
         "flutter_bloc",
+        "flutter_cashfree_pg_sdk",
         "flutter_easyloading",
         "flutter_image_compress",
         "flutter_screenutil",
@@ -31,6 +33,7 @@
         "path_provider",
         "permission_handler",
         "pin_code_fields",
+        "razorpay_flutter",
         "share_plus",
         "shared_preferences",
         "smooth_page_indicator",
@@ -44,6 +47,19 @@
         "flutter_lints",
         "flutter_native_splash",
         "flutter_test"
+      ]
+    },
+    {
+      "name": "flutter_launcher_icons",
+      "version": "0.14.4",
+      "dependencies": [
+        "args",
+        "checked_yaml",
+        "cli_util",
+        "image",
+        "json_annotation",
+        "path",
+        "yaml"
       ]
     },
     {
@@ -96,6 +112,26 @@
         "test_api",
         "vector_math",
         "vm_service"
+      ]
+    },
+    {
+      "name": "flutter_cashfree_pg_sdk",
+      "version": "2.2.9+47",
+      "dependencies": [
+        "flutter",
+        "flutter_web_plugins",
+        "http",
+        "js",
+        "plugin_platform_interface"
+      ]
+    },
+    {
+      "name": "razorpay_flutter",
+      "version": "1.4.0",
+      "dependencies": [
+        "eventify",
+        "flutter",
+        "fluttertoast"
       ]
     },
     {
@@ -442,11 +478,6 @@
       ]
     },
     {
-      "name": "ansicolor",
-      "version": "2.0.3",
-      "dependencies": []
-    },
-    {
       "name": "yaml",
       "version": "3.1.3",
       "dependencies": [
@@ -454,6 +485,40 @@
         "source_span",
         "string_scanner"
       ]
+    },
+    {
+      "name": "json_annotation",
+      "version": "4.9.0",
+      "dependencies": [
+        "meta"
+      ]
+    },
+    {
+      "name": "cli_util",
+      "version": "0.4.2",
+      "dependencies": [
+        "meta",
+        "path"
+      ]
+    },
+    {
+      "name": "checked_yaml",
+      "version": "2.0.4",
+      "dependencies": [
+        "json_annotation",
+        "source_span",
+        "yaml"
+      ]
+    },
+    {
+      "name": "args",
+      "version": "2.7.0",
+      "dependencies": []
+    },
+    {
+      "name": "ansicolor",
+      "version": "2.0.3",
+      "dependencies": []
     },
     {
       "name": "xml",
@@ -497,11 +562,6 @@
         "meta",
         "vector_math"
       ]
-    },
-    {
-      "name": "args",
-      "version": "2.7.0",
-      "dependencies": []
     },
     {
       "name": "lints",
@@ -657,6 +717,44 @@
       ]
     },
     {
+      "name": "http",
+      "version": "1.4.0",
+      "dependencies": [
+        "async",
+        "http_parser",
+        "meta",
+        "web"
+      ]
+    },
+    {
+      "name": "js",
+      "version": "0.6.7",
+      "dependencies": [
+        "meta"
+      ]
+    },
+    {
+      "name": "plugin_platform_interface",
+      "version": "2.1.8",
+      "dependencies": [
+        "meta"
+      ]
+    },
+    {
+      "name": "fluttertoast",
+      "version": "8.2.12",
+      "dependencies": [
+        "flutter",
+        "flutter_web_plugins",
+        "web"
+      ]
+    },
+    {
+      "name": "eventify",
+      "version": "1.0.1",
+      "dependencies": []
+    },
+    {
       "name": "image_picker_windows",
       "version": "0.2.1+1",
       "dependencies": [
@@ -743,16 +841,6 @@
         "flutter",
         "meta",
         "plugin_platform_interface"
-      ]
-    },
-    {
-      "name": "http",
-      "version": "1.4.0",
-      "dependencies": [
-        "async",
-        "http_parser",
-        "meta",
-        "web"
       ]
     },
     {
@@ -1183,13 +1271,6 @@
       ]
     },
     {
-      "name": "plugin_platform_interface",
-      "version": "2.1.8",
-      "dependencies": [
-        "meta"
-      ]
-    },
-    {
       "name": "gap",
       "version": "3.0.1",
       "dependencies": [
@@ -1488,40 +1569,11 @@
       "dependencies": []
     },
     {
-      "name": "flutter_launcher_icons",
-      "version": "0.14.4",
+      "name": "equatable",
+      "version": "2.0.7",
       "dependencies": [
-        "args",
-        "checked_yaml",
-        "cli_util",
-        "image",
-        "json_annotation",
-        "path",
-        "yaml"
-      ]
-    },
-    {
-      "name": "json_annotation",
-      "version": "4.9.0",
-      "dependencies": [
+        "collection",
         "meta"
-      ]
-    },
-    {
-      "name": "cli_util",
-      "version": "0.4.2",
-      "dependencies": [
-        "meta",
-        "path"
-      ]
-    },
-    {
-      "name": "checked_yaml",
-      "version": "2.0.4",
-      "dependencies": [
-        "json_annotation",
-        "source_span",
-        "yaml"
       ]
     }
   ],

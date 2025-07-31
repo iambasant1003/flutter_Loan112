@@ -10,6 +10,7 @@ import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.da
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
 import 'package:loan112_app/ParamModel/AddReferenceParamModel.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
+import 'package:loan112_app/Widget/bottom_dashline.dart';
 import 'package:loan112_app/Widget/common_button.dart';
 import 'package:loan112_app/Widget/common_screen_background.dart';
 import 'package:loan112_app/Widget/common_textField.dart';
@@ -178,7 +179,10 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
           height: 100,
           child: Column(
             children: [
-              Image.asset(ImageConstants.bottomDashLine),
+              BottomDashLine(),
+              SizedBox(
+                height: 8.0,
+              ),
               Padding(
                 padding: EdgeInsets.only(bottom: 22,left: 16,right: 16,top: 10),
                 child: Loan112Button(

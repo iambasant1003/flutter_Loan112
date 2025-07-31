@@ -4,6 +4,7 @@ import 'package:loan112_app/Cubit/dashboard_cubit/DashboardCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/AddMoreReferenceCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/JourneyCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
+import 'package:loan112_app/Cubit/repayment_cubit/RepaymentCubit.dart';
 
 import '../Cubit/auth_cubit/AuthCubit.dart';
 import '../Repository/auth_Repository.dart';
@@ -29,5 +30,8 @@ final List<BlocProvider> appBlocProviders = [
   ),
   BlocProvider<ConnectivityCubit>(
     create: (_) => locator<ConnectivityCubit>(),
+  ),
+  BlocProvider<RePaymentCubit>(
+    create: (_) => locator<RePaymentCubit>(),
   ),
 ];

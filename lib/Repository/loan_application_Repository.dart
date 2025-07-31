@@ -2,11 +2,13 @@
 import 'package:dio/dio.dart';
 import 'package:loan112_app/Constant/ConstText/ConstText.dart';
 import 'package:loan112_app/Model/BankAccountTypeModel.dart';
+import 'package:loan112_app/Model/CalculateDistanceResponseModel.dart';
 import 'package:loan112_app/Model/CreateLeadModel.dart';
 import 'package:loan112_app/Model/CustomerKycModel.dart';
 import 'package:loan112_app/Model/EkycVerifictionModel.dart';
 import 'package:loan112_app/Model/GenerateLoanOfferModel.dart';
 import 'package:loan112_app/Model/GetCustomerDetailsModel.dart';
+import 'package:loan112_app/Model/GetLoanHistoryModel.dart';
 import 'package:loan112_app/Model/GetPinCodeDetailsModel.dart';
 import 'package:loan112_app/Model/GetPurposeOfLoanModel.dart';
 import 'package:loan112_app/Model/GetUtilityDocTypeModel.dart';
@@ -18,7 +20,9 @@ import 'package:loan112_app/Model/UploadUtilityDocTypeModel.dart';
 import 'package:loan112_app/Services/http_client_php.dart';
 import '../Constant/ApiUrlConstant/ApiUrlConstant.dart';
 import '../Model/AddReferenceModel.dart';
+import '../Model/CheckBankStatementStatusModel.dart';
 import '../Model/UpdateBankAccountModel.dart';
+import '../Model/UploadOnlineBankStatementModel.dart';
 import '../Services/ApiResponseStatus.dart';
 import '../Services/http_client.dart';
 import '../Utils/Debugprint.dart';
@@ -510,6 +514,122 @@ class LoanApplicationRepository {
     }
   }
 
+  Future<ApiResponse<UploadOnlineBankStatementModel>> fetchAccountAggregatorApiCallFunction(Map<String,dynamic> dataObj) async{
+    try {
+      final response = await apiClass.post(uploadOnlineBankStatement,dataObj,isHeader: true);
+      DebugPrint.prt("API Response Account Aggregator ${response.data}");
+
+      final Map<String, dynamic> responseData = response.data;
+
+
+      final ApiResponseStatus status = mapApiResponseStatus(responseData);
+
+      if (status == ApiResponseStatus.success) {
+        DebugPrint.prt("Account Aggregator Success Response Model $responseData}");
+        final data =UploadOnlineBankStatementModel.fromJson(responseData);
+        return ApiResponse.success(data);
+      } else {
+        final error = UploadOnlineBankStatementModel.fromJson(responseData);
+        DebugPrint.prt("Account Aggregator Type Error Message ${error.message}, ${error.statusCode}");
+        return ApiResponse.error(status, error: error);
+      }
+    } catch (e) {
+      DebugPrint.prt("Exception in Account Aggregator data : $e");
+      final error = UploadOnlineBankStatementModel(
+        statusCode: 500,
+        message: ConstText.exceptionError,
+      );
+      return ApiResponse.error(ApiResponseStatus.serverError, error: error);
+    }
+  }
+
+  Future<ApiResponse<CheckBankStatementStatusModel>> checkBankStatementStatusApiCallFunction({required String leadId,required String customerId}) async{
+    try {
+      final response = await apiClass.get("$checkBankStatementStatus?custId=$customerId&leadId=$leadId",isHeader: true);
+      DebugPrint.prt("API Response Check BankStatement Status ${response.data}");
+
+      final Map<String, dynamic> responseData = response.data;
+
+
+      final ApiResponseStatus status = mapApiResponseStatus(responseData);
+
+      if (status == ApiResponseStatus.success) {
+        DebugPrint.prt("Check Bank Account Status Success Response Model $responseData}");
+        final data =CheckBankStatementStatusModel.fromJson(responseData);
+        return ApiResponse.success(data);
+      } else {
+        final error = CheckBankStatementStatusModel.fromJson(responseData);
+        DebugPrint.prt("Check Bank Account Status Error Message ${error.message}, ${error.statusCode}");
+        return ApiResponse.error(status, error: error);
+      }
+    } catch (e) {
+      DebugPrint.prt("Exception in Bank Account Status data : $e");
+      final error = CheckBankStatementStatusModel(
+        statusCode: 500,
+        message: ConstText.exceptionError,
+      );
+      return ApiResponse.error(ApiResponseStatus.serverError, error: error);
+    }
+  }
+
+
+  Future<ApiResponse<GetLoanHistoryModel>> getLoanHistoryApiCallFunction(Map<String,dynamic> dataObj) async{
+    try {
+      final response = await apiClassPhp.post(getLoanHistory,dataObj,isHeader: true);
+      DebugPrint.prt("API Response Get Loan History ${response.data}");
+
+      final Map<String, dynamic> responseData = response.data;
+
+
+      final ApiResponseStatus status = mapApiResponseStatusPhp(responseData);
+
+      if (status == ApiResponseStatus.success) {
+        DebugPrint.prt("Get Loan History Success Response Model $responseData}");
+        final data =GetLoanHistoryModel.fromJson(responseData);
+        return ApiResponse.success(data);
+      } else {
+        final error = GetLoanHistoryModel.fromJson(responseData);
+        DebugPrint.prt("Get Loan History Type Error Message ${error.message}, ${error.status}");
+        return ApiResponse.error(status, error: error);
+      }
+    } catch (e) {
+      DebugPrint.prt("Exception in Get Loan History data : $e");
+      final error = GetLoanHistoryModel(
+        status: 500,
+        message: ConstText.exceptionError,
+      );
+      return ApiResponse.error(ApiResponseStatus.serverError, error: error);
+    }
+  }
+
+  Future<ApiResponse<CalculateDistanceResponseModel>> calculateDistanceApiCallFunction(Map<String,dynamic> dataObj) async{
+    try {
+      final response = await apiClass.post(calculateDistance,dataObj,isHeader: true);
+      DebugPrint.prt("API Response Calculate Distance ${response.data}");
+
+      final Map<String, dynamic> responseData = response.data;
+
+
+      final ApiResponseStatus status = mapApiResponseStatus(responseData);
+
+      if (status == ApiResponseStatus.success) {
+        DebugPrint.prt("Calculate Distance Success Response Model $responseData}");
+        final data =CalculateDistanceResponseModel.fromJson(responseData);
+        return ApiResponse.success(data);
+      } else {
+        final error = CalculateDistanceResponseModel.fromJson(responseData);
+        DebugPrint.prt("Calculate Distance Error Message ${error.message}, ${error.statusCode}");
+        return ApiResponse.error(status, error: error);
+      }
+    } catch (e) {
+      DebugPrint.prt("Exception in Calculate Distance data : $e");
+      final error = CalculateDistanceResponseModel(
+        statusCode: 500,
+        message: ConstText.exceptionError,
+      );
+      return ApiResponse.error(ApiResponseStatus.serverError, error: error);
+    }
+  }
 
 
 }

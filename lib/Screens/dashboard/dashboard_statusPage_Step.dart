@@ -57,114 +57,116 @@ class _DashboardStatusPageStep extends State<DashboardStatusPageStep> {
   }
 
 
+  GetCustomerDetailsModel? model;
+  Map<String, dynamic>? status;
+  List<String> stepKeys = [
+    "application_submitted",
+    "application_in_review",
+    "sanction",
+    "esign",
+    "disbursement"
+  ];
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<LoanApplicationCubit,LoanApplicationState>(
         builder: (context, state) {
           if (state is GetCustomerDetailsSuccess) {
-            GetCustomerDetailsModel model = state.getCustomerDetailsModel;
-            Map<String, dynamic> status = model.data?.applicationStatus?.toJson() ?? {};
-            currentStep = getCurrentStepDynamic(status);
+           model = state.getCustomerDetailsModel;
+            status = model!.data?.applicationStatus?.toJson() ?? {};
+            currentStep = getCurrentStepDynamic(status!);
 
-            List<String> stepKeys = [
-              "application_submitted",
-              "application_in_review",
-              "sanction",
-              "esign",
-              "disbursement"
-            ];
 
-            return Column(
-              children: List.generate(steps.length, (index) {
-                final stepKey = stepKeys[index];
-                final int stepStatus = status[stepKey] ?? 0;
-
-                // Determine width factor
-                double widthFactor;
-                if (stepStatus == 2) {
-                  widthFactor = 1.0;
-                } else if (stepStatus == 1) {
-                  widthFactor = 0.7;
-                } else {
-                  widthFactor = 0.6;
-                }
-
-                // Determine colors
-                Color bgColor = (stepStatus == 1 || stepStatus == 2)
-                    ? Colors.blue.shade50
-                    : Colors.grey.shade100;
-
-                Color textColor = (stepStatus == 1 || stepStatus == 2)
-                    ? Colors.black
-                    : ColorConstant.greyTextColor;
-
-                return Container(
-                  margin: const EdgeInsets.symmetric(vertical: 6),
-                  child: Stack(
-                    children: [
-                      // Base layer
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      // Progress step with dynamic width and styles
-                      Container(
-                        width: MediaQuery.of(context).size.width * widthFactor,
-                        decoration: BoxDecoration(
-                          color: bgColor,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 3,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                        child: Row(
-                          children: [
-                            Text(
-                              "${index + 1}",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: textColor,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                steps[index],
-                                style: TextStyle(
-                                  fontWeight: FontConstants.w700,
-                                  fontSize: FontConstants.f16,
-                                  fontFamily: FontConstants.fontFamily,
-                                  color: textColor,
-                                ),
-                              ),
-                            ),
-                            CircleAvatar(
-                              backgroundColor: ColorConstant.drawerHeaderColor,
-                              radius: 18,
-                              child: Image.asset(
-                                icons[index],
-                                color: textColor,
-                                height: 20,
-                                width: 20,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }),
-            );
           }
-          return const SizedBox(); // fallback when no state
+          return  Column(
+            children: List.generate(steps.length, (index) {
+              final stepKey = stepKeys[index];
+              final int stepStatus = status?[stepKey] ?? 0;
+
+              // Determine width factor
+              double widthFactor;
+              if (stepStatus == 2) {
+                widthFactor = 1.0;
+              } else if (stepStatus == 1) {
+                widthFactor = 0.7;
+              } else {
+                widthFactor = 0.6;
+              }
+
+              // Determine colors
+              Color bgColor = (stepStatus == 1 || stepStatus == 2)
+                  ? Colors.blue.shade50
+                  : Colors.grey.shade100;
+
+              Color textColor = (stepStatus == 1 || stepStatus == 2)
+                  ? Colors.black
+                  : ColorConstant.greyTextColor;
+
+              return Container(
+                margin: const EdgeInsets.symmetric(vertical: 6),
+                child: Stack(
+                  children: [
+                    // Base layer
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    // Progress step with dynamic width and styles
+                    Container(
+                      width: MediaQuery.of(context).size.width * widthFactor,
+                      decoration: BoxDecoration(
+                        color: bgColor,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 3,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                      child: Row(
+                        children: [
+                          Text(
+                            "${index + 1}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: textColor,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              steps[index],
+                              style: TextStyle(
+                                fontWeight: FontConstants.w700,
+                                fontSize: FontConstants.f16,
+                                fontFamily: FontConstants.fontFamily,
+                                color: textColor,
+                              ),
+                            ),
+                          ),
+                          CircleAvatar(
+                            backgroundColor: ColorConstant.drawerHeaderColor,
+                            radius: 18,
+                            child: Image.asset(
+                              icons[index],
+                              color: textColor,
+                              height: 20,
+                              width: 20,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ); // fallback when no state
         },
         listener: (context,state){
           if(state is LoanApplicationLoading){

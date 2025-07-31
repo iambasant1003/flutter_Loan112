@@ -32,7 +32,7 @@ class Data {
   int? registrationSuccessful;
   ApplyLoanBanner? applyLoanBanner;
   int? profileEditFlag;
-  Null? activeLoanDetails;
+  ActiveLoanDetails? activeLoanDetails;
   int? showLoanHistoryBtnFlag;
   int? applicationSubmitted;
   int? applicationFilledPercent;
@@ -46,25 +46,25 @@ class Data {
 
   Data(
       {this.appBanners,
-      this.leftSidePanel,
-      this.mobile,
-      this.fullName,
-      this.profileFilledPercent,
-      this.profilePic,
-      this.registrationSuccessful,
-      this.applyLoanBanner,
-      this.profileEditFlag,
-      this.activeLoanDetails,
-      this.showLoanHistoryBtnFlag,
-      this.applicationSubmitted,
-      this.applicationFilledPercent,
-      this.journeyWhitelistedFlag,
-      this.executiveContact,
-      this.journeyVideoUrl,
-      this.warningMessage,
-      this.contactUsNumber,
-      this.contactUsWhatsappNumber,
-      this.contactUsEmail});
+        this.leftSidePanel,
+        this.mobile,
+        this.fullName,
+        this.profileFilledPercent,
+        this.profilePic,
+        this.registrationSuccessful,
+        this.applyLoanBanner,
+        this.profileEditFlag,
+        this.activeLoanDetails,
+        this.showLoanHistoryBtnFlag,
+        this.applicationSubmitted,
+        this.applicationFilledPercent,
+        this.journeyWhitelistedFlag,
+        this.executiveContact,
+        this.journeyVideoUrl,
+        this.warningMessage,
+        this.contactUsNumber,
+        this.contactUsWhatsappNumber,
+        this.contactUsEmail});
 
   Data.fromJson(Map<String, dynamic> json) {
     if (json['app_banners'] != null) {
@@ -83,7 +83,9 @@ class Data {
         ? new ApplyLoanBanner.fromJson(json['apply_loan_banner'])
         : null;
     profileEditFlag = json['profile_edit_flag'];
-    activeLoanDetails = json['active_loan_details'];
+    activeLoanDetails = json['active_loan_details'] != null
+        ? new ActiveLoanDetails.fromJson(json['active_loan_details'])
+        : null;
     showLoanHistoryBtnFlag = json['show_loan_history_btn_flag'];
     applicationSubmitted = json['application_submitted'];
     applicationFilledPercent = json['application_filled_percent'];
@@ -113,7 +115,9 @@ class Data {
       data['apply_loan_banner'] = this.applyLoanBanner!.toJson();
     }
     data['profile_edit_flag'] = this.profileEditFlag;
-    data['active_loan_details'] = this.activeLoanDetails;
+    if (this.activeLoanDetails != null) {
+      data['active_loan_details'] = this.activeLoanDetails!.toJson();
+    }
     data['show_loan_history_btn_flag'] = this.showLoanHistoryBtnFlag;
     data['application_submitted'] = this.applicationSubmitted;
     data['application_filled_percent'] = this.applicationFilledPercent;
@@ -162,11 +166,11 @@ class ApplyLoanBanner {
 
   ApplyLoanBanner(
       {this.appBannerProgressPercent,
-      this.appBannerTitle,
-      this.appBannerText,
-      this.appBannerBtnText,
-      this.appBannerBtnActiveFlag,
-      this.appBannerBtnGotoFlag});
+        this.appBannerTitle,
+        this.appBannerText,
+        this.appBannerBtnText,
+        this.appBannerBtnActiveFlag,
+        this.appBannerBtnGotoFlag});
 
   ApplyLoanBanner.fromJson(Map<String, dynamic> json) {
     appBannerProgressPercent = json['app_banner_progress_percent'];
@@ -189,6 +193,39 @@ class ApplyLoanBanner {
   }
 }
 
+class ActiveLoanDetails {
+  String? loanNo;
+  int? repaymentAmount;
+  String? repaymentDate;
+  int? remainingDays;
+  int? totalDue;
+
+  ActiveLoanDetails(
+      {this.loanNo,
+        this.repaymentAmount,
+        this.repaymentDate,
+        this.remainingDays,
+        this.totalDue});
+
+  ActiveLoanDetails.fromJson(Map<String, dynamic> json) {
+    loanNo = json['loan_no'];
+    repaymentAmount = json['repayment_amount'];
+    repaymentDate = json['repayment_date'];
+    remainingDays = json['remaining_days'];
+    totalDue = json['total_due'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['loan_no'] = this.loanNo;
+    data['repayment_amount'] = this.repaymentAmount;
+    data['repayment_date'] = this.repaymentDate;
+    data['remaining_days'] = this.remainingDays;
+    data['total_due'] = this.totalDue;
+    return data;
+  }
+}
+
 class ExecutiveContact {
   int? executiveContactFlag;
   String? executiveContactHeader;
@@ -200,12 +237,12 @@ class ExecutiveContact {
 
   ExecutiveContact(
       {this.executiveContactFlag,
-      this.executiveContactHeader,
-      this.executiveContactTitle,
-      this.executiveContactName,
-      this.executiveContactEmail,
-      this.executiveContactMobile,
-      this.executiveContactImage});
+        this.executiveContactHeader,
+        this.executiveContactTitle,
+        this.executiveContactName,
+        this.executiveContactEmail,
+        this.executiveContactMobile,
+        this.executiveContactImage});
 
   ExecutiveContact.fromJson(Map<String, dynamic> json) {
     executiveContactFlag = json['executive_contact_flag'];

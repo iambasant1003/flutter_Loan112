@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
 import 'package:loan112_app/Cubit/dashboard_cubit/DashboardCubit.dart';
 import 'package:loan112_app/Cubit/dashboard_cubit/DashboardState.dart';
+import 'package:loan112_app/Model/DashBoarddataModel.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
 import '../../Constant/FontConstant/FontConstant.dart';
@@ -26,8 +27,8 @@ class _DashBoardPage extends State<DashBoardPage>{
 
 
   int selectedIndex = 0;
-
-
+  DashBoarddataModel? dashBoardModel;
+  DashBoarddataModel? dashBoardModelVar;
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -36,10 +37,16 @@ class _DashBoardPage extends State<DashBoardPage>{
         },
         child: Scaffold(
             backgroundColor: ColorConstant.appScreenBackgroundColor,
-            drawer: Loan112Drawer(
-              dashBoarddataModel: context.read<DashboardCubit>().state is DashBoardSuccess
-                  ? (context.read<DashboardCubit>().state as DashBoardSuccess).dashBoardModel
-                  : null,
+            drawer: BlocBuilder<DashboardCubit,DashboardState>(
+              builder: (context,state){
+                if(state is DashBoardSuccess){
+                  dashBoardModelVar = state.dashBoardModel;
+                }
+                return Loan112Drawer(
+                    rootContext: context,
+                    dashBoarddataModel: dashBoardModelVar
+                );
+              },
             ),
             appBar: Loan112AppBar(
               leadingSpacing: 25,
@@ -68,6 +75,7 @@ class _DashBoardPage extends State<DashBoardPage>{
                   child: InkWell(
                     onTap: () {
                       DebugPrint.prt("Headphone is tapped");
+                      context.push(AppRouterName.customerSupport);
                     },
                     child: Image.asset(
                       ImageConstants.dashBoardHeadphone,
@@ -90,97 +98,97 @@ class _DashBoardPage extends State<DashBoardPage>{
     return BlocBuilder<DashboardCubit,DashboardState>(
       builder: (context,state){
         if(state is DashBoardSuccess){
-          return SafeArea(
-            bottom: true,
-            child: Padding(
-              padding: EdgeInsets.only(
-                  bottom: 10.0,
-                  left: FontConstants.horizontalPadding,
-                  right: FontConstants.horizontalPadding
-              ),
-              child: Container(
-                  width: double.infinity,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(100.0)),
-                    gradient: LinearGradient(
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                      colors: [
-                        Color(0xFF2B3C74),
-                        Color(0xFF5171DA),
-                      ],
-                    ),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(FontConstants.horizontalPadding),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        InkWell(
-                          onTap: (){
-
-                          },
-                          child: Column(
-                            children: [
-                              Image.asset(
-                                  ImageConstants.homeIcon,
-                                  color: selectedIndex ==0? ColorConstant.whiteColor:ColorConstant.greyTextColor,
-                                  width: 24,height: 24),
-                              SizedBox(
-                                height: 5.0,
-                              ),
-                              Text(
-                                "Home",
-                                style: TextStyle(
-                                  fontSize: FontConstants.f12,
-                                  fontFamily: FontConstants.fontFamily,
-                                  fontWeight: FontConstants.w500,
-                                  color: selectedIndex ==0? ColorConstant.whiteColor:ColorConstant.greyTextColor,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        InkWell(
-                          onTap: (){
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (!context.mounted) return; // this is more precise in newer Flutter
-                              if(state.dashBoardModel.data?.applicationSubmitted ==1){
-                                context.push(AppRouterName.dashBoardStatus);
-                              }else{
-                                openSnackBar(context, "Loan application is not completed");
-                              }
-                            });
-                          },
-                          child: Column(
-                            children: [
-                              Image.asset(ImageConstants.dashboardStatusIcon,
-                                  color: state.dashBoardModel.data?.applicationSubmitted ==1? ColorConstant.whiteColor:ColorConstant.greyTextColor,
-                                  width: 24,height: 24),
-                              SizedBox(
-                                height: 5.0,
-                              ),
-                              Text(
-                                "Status",
-                                style: TextStyle(
-                                  fontSize: FontConstants.f12,
-                                  fontFamily: FontConstants.fontFamily,
-                                  fontWeight: FontConstants.w500,
-                                  color: state.dashBoardModel.data?.applicationSubmitted ==1? ColorConstant.whiteColor:ColorConstant.greyTextColor,
-                                ),
-                              )
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  )
-              ),
-            ),
-          );
+            dashBoardModel = state.dashBoardModel;
         }
-        return SizedBox();
+        return SafeArea(
+          bottom: true,
+          child: Padding(
+            padding: EdgeInsets.only(
+                bottom: 10.0,
+                left: FontConstants.horizontalPadding,
+                right: FontConstants.horizontalPadding
+            ),
+            child: Container(
+                width: double.infinity,
+                height: 70,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(100.0)),
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      Color(0xFF2B3C74),
+                      Color(0xFF5171DA),
+                    ],
+                  ),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal:FontConstants.horizontalPadding,vertical: 12.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      InkWell(
+                        onTap: (){
+
+                        },
+                        child: Column(
+                          children: [
+                            Image.asset(
+                                ImageConstants.homeIcon,
+                                color: selectedIndex ==0? ColorConstant.whiteColor:ColorConstant.greyTextColor,
+                                width: 24,height: 24),
+                            SizedBox(
+                              height: 5.0,
+                            ),
+                            Text(
+                              "Home",
+                              style: TextStyle(
+                                fontSize: FontConstants.f12,
+                                fontFamily: FontConstants.fontFamily,
+                                fontWeight: FontConstants.w500,
+                                color: selectedIndex ==0? ColorConstant.whiteColor:ColorConstant.greyTextColor,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      InkWell(
+                        onTap: (){
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (!context.mounted) return; // this is more precise in newer Flutter
+                            if(dashBoardModel?.data?.applicationSubmitted ==1){
+                              context.push(AppRouterName.dashBoardStatus);
+                            }else{
+                              openSnackBar(context, "Loan application is not completed");
+                            }
+                          });
+                        },
+                        child: Column(
+                          children: [
+                            Image.asset(ImageConstants.dashboardStatusIcon,
+                                color: dashBoardModel?.data?.applicationSubmitted ==1? ColorConstant.whiteColor:ColorConstant.greyTextColor,
+                                width: 24,height: 24),
+                            SizedBox(
+                              height: 5.0,
+                            ),
+                            Text(
+                              "Status",
+                              style: TextStyle(
+                                fontSize: FontConstants.f12,
+                                fontFamily: FontConstants.fontFamily,
+                                fontWeight: FontConstants.w500,
+                                color: dashBoardModel?.data?.applicationSubmitted ==1? ColorConstant.whiteColor:ColorConstant.greyTextColor,
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                )
+            ),
+          ),
+        );
       },
     );
   }

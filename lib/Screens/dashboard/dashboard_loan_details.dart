@@ -4,10 +4,12 @@ import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
 import 'package:loan112_app/Widget/common_button.dart';
 
+import '../../Model/DashBoarddataModel.dart';
 import '../../Routes/app_router_name.dart';
 
 class DashboardLoanDetails extends StatelessWidget {
-  DashboardLoanDetails({super.key});
+  final  ActiveLoanDetails? activeLoanDetails;
+  DashboardLoanDetails({super.key,required this.activeLoanDetails});
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +70,7 @@ class DashboardLoanDetails extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children:  [
                           Text(
-                            '23436788456435',
+                            activeLoanDetails?.loanNo ?? "",
                             style: TextStyle(
                                 fontSize: FontConstants.f16,
                                 fontWeight:FontConstants.w500,
@@ -107,7 +109,7 @@ class DashboardLoanDetails extends StatelessWidget {
                                   ),
                                   SizedBox(height: 4),
                                   Text(
-                                      'Rs. 1,27,000/-',
+                                      'Rs. ${activeLoanDetails?.repaymentAmount}/-',
                                       style: tabValueStyle
                                   ),
                                 ],
@@ -137,7 +139,7 @@ class DashboardLoanDetails extends StatelessWidget {
                                   ),
                                   SizedBox(height: 4),
                                   Text(
-                                      '29/12/2023',
+                                      '${activeLoanDetails?.repaymentDate}',
                                       style: tabValueStyle
                                   ),
                                 ],
@@ -172,7 +174,7 @@ class DashboardLoanDetails extends StatelessWidget {
                                   ),
                                   SizedBox(height: 4),
                                   Text(
-                                      '1',
+                                      '${activeLoanDetails?.totalDue}',
                                       style: tabValueStyle
                                   ),
                                 ],
@@ -202,7 +204,7 @@ class DashboardLoanDetails extends StatelessWidget {
                                   ),
                                   SizedBox(height: 4),
                                   Text(
-                                      '10 Days',
+                                      '${activeLoanDetails?.remainingDays} Days',
                                       style: tabValueStyle
                                   ),
                                 ],
@@ -222,7 +224,9 @@ class DashboardLoanDetails extends StatelessWidget {
                 child: SizedBox(
                   width: 150,
                   child: Loan112Button(
-                    onPressed: () {},
+                    onPressed: () {
+                      context.push(AppRouterName.repaymentPage);
+                    },
                     text: "REPAY LOAN",
                   ),
                 ),

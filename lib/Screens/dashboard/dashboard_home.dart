@@ -14,10 +14,9 @@ import '../../Constant/ColorConst/ColorConstant.dart';
 import '../../Constant/FontConstant/FontConstant.dart';
 import '../../Constant/ImageConstant/ImageConstants.dart';
 import '../../Cubit/dashboard_cubit/DashboardCubit.dart';
-import '../../Widget/app_bar.dart';
 import '../../Widget/circular_progress.dart';
 import '../../Widget/common_button.dart';
-import '../drawer/drawer_page.dart';
+import 'dashboard_loan_details.dart';
 
 class DashBoardHome extends StatefulWidget{
   const DashBoardHome({super.key});
@@ -35,17 +34,21 @@ class _DashBoardHome extends State<DashBoardHome>{
     context.read<DashboardCubit>().callDashBoardApi();
   }
 
-  final PageController _controller = PageController();
+  final PageController _controller = PageController(
+    viewportFraction: 1.0,
+  );
 
   List<String> imageData = ["Ram","Shyam"];
 
 
   DashBoarddataModel? dashBoarddataModel;
 
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<DashboardCubit,DashboardState>(
       listenWhen: (prev,next){
+        DebugPrint.prt("Previous State $prev, Current State $next");
         return prev != next;
       },
       listener: (context,state){
@@ -54,23 +57,25 @@ class _DashBoardHome extends State<DashBoardHome>{
           EasyLoading.show(status: "Please Wait");
         }else if(state is DashBoardSuccess){
           EasyLoading.dismiss();
+          dashBoarddataModel = state.dashBoardModel;
         }else if(state is DashBoardError){
           DebugPrint.prt("DashBoard Is facing Error");
           EasyLoading.dismiss();
           openSnackBar(context, state.dashBoardModel.message ?? "Unknown Error");
         }else if(state is DeleteCustomerSuccess){
+          DebugPrint.prt("Delete Customer Success");
           EasyLoading.dismiss();
+          Navigator.of(context).pop();
           context.push(AppRouterName.dashBoardOTP);
         }else if(state is DeleteCustomerFailed){
+          DebugPrint.prt("Delete Customer Failed");
+          Navigator.of(context).pop();
           EasyLoading.dismiss();
           openSnackBar(context, state.deleteCustomerModel.message ?? "Unexpected Error");
         }
       },
       child: BlocBuilder<DashboardCubit,DashboardState>(
           builder: (context,state){
-            if(state is DashBoardSuccess){
-              dashBoarddataModel = state.dashBoardModel;
-            }
             if(dashBoarddataModel != null){
               return commonScaffold(
                   context,
@@ -133,9 +138,11 @@ class _DashBoardHome extends State<DashBoardHome>{
                                         right: 80,
                                         child: GestureDetector(
                                           onTap: (){
-                                            if(dashBoarddataModel?.data?.applicationSubmitted == 1){
+                                            if(dashBoarddataModel?.data?.applicationSubmitted == 1 && dashBoarddataModel?.data?.showLoanHistoryBtnFlag != 1){
                                               context.push(AppRouterName.dashBoardStatus);
-                                            }else{
+                                            } else if(dashBoarddataModel?.data?.showLoanHistoryBtnFlag == 1){
+                                              context.push(AppRouterName.repaymentPage);
+                                            } else{
                                               context.push(AppRouterName.loanApplicationPage);
                                             }
                                           },
@@ -151,67 +158,72 @@ class _DashBoardHome extends State<DashBoardHome>{
                                 SizedBox(
                                   height: 40.0,
                                 ),
-                                // DashboardLoanDetails(),
-                                Padding(
-                                  padding: EdgeInsets.only(left: FontConstants.horizontalPadding),
-                                  child: Text(
-                                    "We Provide",
-                                    style: TextStyle(
-                                        fontSize: FontConstants.f18,
-                                        fontWeight: FontConstants.w800,
-                                        fontFamily: FontConstants.fontFamily,
-                                        color: ColorConstant.blackTextColor
-                                    ),
-                                  ),
+                                (
+                                    dashBoarddataModel?.data?.activeLoanDetails != null &&
+                                        (dashBoarddataModel?.data?.activeLoanDetails?.loanNo != null || dashBoarddataModel?.data?.activeLoanDetails?.loanNo !=  "")
+                                )?
+                                DashboardLoanDetails(activeLoanDetails: dashBoarddataModel?.data!.activeLoanDetails):
+                                SizedBox.shrink(),
+                                Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(left: FontConstants.horizontalPadding),
+                              child: Text(
+                                "We Provide",
+                                style: TextStyle(
+                                  fontSize: FontConstants.f18,
+                                  fontWeight: FontConstants.w800,
+                                  fontFamily: FontConstants.fontFamily,
+                                  color: ColorConstant.blackTextColor,
                                 ),
-                                SizedBox(
-                                  height: 220,
-                                  child: PageView.builder(
-                                    controller: _controller,
-                                    itemCount: dashBoarddataModel?.data?.appBanners?.length,
-                                    itemBuilder: (context, index) {
-                                      final item = dashBoarddataModel?.data?.appBanners?[index];
-                                      return Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
-                                          child: Image.network(item?.imgUrl ??"" ,height: 156)
-                                        /*
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            image: NetworkImage(item?.imgUrl ??"" ),
-                                            fit: BoxFit.fill
-                                        ),
-                                        borderRadius: BorderRadius.circular(16),
-                                        color: Colors.white,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black12,
-                                            blurRadius: 4,
-                                          )
-                                        ],
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
+                              child: SizedBox(
+                                height: 150,
+                                child: PageView.builder(
+                                  controller: _controller,
+                                  itemCount: dashBoarddataModel?.data?.appBanners?.length ?? 0,
+                                  padEnds: false,
+                                  itemBuilder: (context, index) {
+                                    final item = dashBoarddataModel?.data?.appBanners?[index];
+                                    return ClipRRect(
+                                      borderRadius: BorderRadius.circular(0),
+                                      child: Image.network(
+                                        item?.imgUrl ?? "",
+                                        height: 150,
+                                        loadingBuilder: (context, child, loadingProgress) {
+                                          if (loadingProgress == null) return child;
+                                          return const Center(child: CircularProgressIndicator());
+                                        },
+                                        errorBuilder: (context, error, stackTrace) =>
+                                        const Center(child: Icon(Icons.broken_image)),
                                       ),
-                                      // child: Image.asset(ImageConstants.emergencyLoanPoster)
-                                    ),
-
-                                         */
-                                      );
-                                    },
-                                  ),
+                                    );
+                                  },
                                 ),
-                                Center(
-                                  child: SmoothPageIndicator(
-                                    controller: _controller,
-                                    count: dashBoarddataModel?.data?.appBanners!.length ?? 0,
-                                    effect: const WormEffect(
-                                      dotHeight: 8,
-                                      dotWidth: 8,
-                                      spacing: 8,
-                                      dotColor: Colors.grey,
-                                      activeDotColor: Colors.blue,
-                                    ),
-                                  ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Center(
+                              child: SmoothPageIndicator(
+                                controller: _controller,
+                                count: dashBoarddataModel?.data?.appBanners?.length ?? 0,
+                                effect: const WormEffect(
+                                  dotHeight: 8,
+                                  dotWidth: 8,
+                                  spacing: 8,
+                                  dotColor: Colors.grey,
+                                  activeDotColor: Colors.blue,
                                 ),
-                                SizedBox(
+                              ),
+                            ),
+                          ],
+                        ),
+                               SizedBox(
                                   height: 20,
                                 )
                               ],
@@ -317,6 +329,7 @@ class _DashBoardHome extends State<DashBoardHome>{
     );
   }
 }
+
 
 
 

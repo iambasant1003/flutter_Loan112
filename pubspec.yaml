@@ -64,6 +64,9 @@ dependencies:
   image:
   package_info_plus:
   image_picker:
+  razorpay_flutter:
+  flutter_cashfree_pg_sdk: ^2.2.9+45
+  equatable:
 
 
 dev_dependencies:

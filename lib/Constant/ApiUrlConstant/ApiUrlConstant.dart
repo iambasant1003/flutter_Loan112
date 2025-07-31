@@ -26,6 +26,19 @@ const String addReFeRance ="add-reference";
 const String updateBankingDetails = "customer-banking";
 const String verifyIfscCode = "getBankDetailsByIfsc$andRD";
 const String bankAccountType = "getMasterBankType$andRD";
+const String uploadOnlineBankStatement = "whatsapp/journey-upload-docs";
+const String checkBankStatementStatus = "wati-bank-statement-status";
+const String getLoanHistory = "getLoanHistory$andRD";
+const String initiateCashFreePayment = "initiateCashfreeRequest$andRD";
+const String completeCashFreePayment = "completeCashfreePayment$andRD";
+const String initiateRazorpayPayment = "initiateRazorRequest$andRD";
+const String completeRazorpayPayment = "completeRazorRequest$andRD";
+const String calculateDistance = "calculate-distance";
+
+
+
+
+//'https://uat-node.loan112fintech.com/journey-service/api/v1/whatsapp/journey-upload-docs'
 
 
 
