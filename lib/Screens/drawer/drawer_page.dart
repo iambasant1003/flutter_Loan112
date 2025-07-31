@@ -15,12 +15,14 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../Widget/circular_progress.dart';
+import '../../Widget/delete_bottom_sheet.dart';
 
 
 class Loan112Drawer extends StatefulWidget{
 
   final DashBoarddataModel? dashBoarddataModel;
-  const Loan112Drawer({super.key,this.dashBoarddataModel});
+  final BuildContext rootContext; // ✅ add this
+  const Loan112Drawer({super.key,this.dashBoarddataModel,required this.rootContext});
 
   @override
   State<StatefulWidget> createState() => _Loan112Drawer();
@@ -37,6 +39,7 @@ class _Loan112Drawer extends State<Loan112Drawer> {
   @override
   void initState() {
     super.initState();
+    DebugPrint.prt("Profile User Name ${widget.dashBoarddataModel?.data?.fullName}, Mobile Number ${widget.dashBoarddataModel?.data?.mobile}");
     getPackageInformation();
   }
 
@@ -51,7 +54,6 @@ class _Loan112Drawer extends State<Loan112Drawer> {
 
   @override
   Widget build(BuildContext context) {
-
     return Drawer(
       child: Container(
         color: ColorConstant.appScreenBackgroundColor,
@@ -99,7 +101,7 @@ class _Loan112Drawer extends State<Loan112Drawer> {
                                               height: 80,
                                               child: CircularProgressIndicator(
                                                 value: 100,
-                                                strokeWidth: 10,
+                                                strokeWidth: 4,
                                                 backgroundColor: Colors.lightBlue.shade100,
                                                 valueColor: AlwaysStoppedAnimation<Color>(Colors.blue.shade700),
                                               ),
@@ -107,8 +109,8 @@ class _Loan112Drawer extends State<Loan112Drawer> {
                                             ClipOval(
                                               child: Image.network(
                                                 widget.dashBoarddataModel?.data?.profilePic ?? "",
-                                                width: 50,
-                                                height: 50,
+                                                width: 70,
+                                                height: 70,
                                                 fit: BoxFit.cover,
                                                 errorBuilder: (context, error, stackTrace) => Icon(Icons.person, size: 40, color: Colors.grey),
                                                 loadingBuilder: (context, child, loadingProgress) {
@@ -120,7 +122,6 @@ class _Loan112Drawer extends State<Loan112Drawer> {
                                                 },
                                               ),
                                             ),
-
                                           ],
                                         ),
                                       ),
@@ -257,7 +258,8 @@ class _Loan112Drawer extends State<Loan112Drawer> {
                     ),
                     _buildMenuItem(ImageConstants.dashBoardHeadphone, "Support",
                       onClick: (){
-                        DebugPrint.prt("Support Icon Pressed");
+                        context.pop();
+                        context.push(AppRouterName.customerSupport);
                       }
                     ),
                     _buildMenuItem(ImageConstants.drawerShareApp, "Share App",
@@ -300,10 +302,27 @@ class _Loan112Drawer extends State<Loan112Drawer> {
               Padding(
                 padding: EdgeInsets.only(left: FontConstants.horizontalPadding,top: 10.0),
                 child: InkWell(
-                  onTap: (){
-                    showDeleteAccountDialog(context);
-                  },
-                  child: Row(
+                    onTap: () {
+                      context.pop(); // Close Drawer
+
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        showModalBottomSheet(
+                          context: context, // Now it's safe
+                          isScrollControlled: true,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                          ),
+                          builder: (ctx) {
+                            return DeleteProfileBottomSheet(
+                              onConfirm: () {
+                                ctx.read<DashboardCubit>().callDeleteCustomerProfileApi();
+                              },
+                            );
+                          },
+                        );
+                      });
+                    },
+                    child: Row(
                     children: [
                       Image.asset(ImageConstants.drawerDelete,height: 20,width: 20),
                       SizedBox(

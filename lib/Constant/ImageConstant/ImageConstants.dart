@@ -41,5 +41,11 @@ class ImageConstants {
   static const String applicationSubmitted = "assets/icons/application_submitted.png";
   static const String applicationDisbursement = "assets/icons/disbursement_icon.png";
   static const String failedIcon = "assets/icons/failed_icon.png";
+  static const String razorPayImage = "assets/images/razorpay_image.png";
+  static const String cashFreeImage = "assets/images/cashfree_image.png";
+  static const String visaCardIcon = "assets/icons/visa_card_icon.png";
+  static const String deleteProfileIcon = "assets/icons/drawer/delete_profile_icon.png";
+  static const String deleteProfileInformation = "assets/icons/drawer/delete_profile_info.png";
+  static const String deleteProfileInstruction = "assets/icons/drawer/delete_profile_instruction.png";
 
 }

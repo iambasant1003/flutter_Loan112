@@ -213,6 +213,54 @@ class LoanApplicationCubit extends Cubit<LoanApplicationState> {
     }
   }
 
+  Future<void> fetchOnlineAccountAggregatorApiCall(Map<String,dynamic> dataObj) async{
+    emit(LoanApplicationLoading());
+    final response = await loanApplicationRepository.fetchAccountAggregatorApiCallFunction(dataObj);
+    DebugPrint.prt("Fetch Account Aggregator Response Status ${response.status}");
+    if (response.status == ApiResponseStatus.success) {
+      emit(OnlineAccountAggregatorSuccess(response.data!));
+    } else {
+      DebugPrint.prt("Inside Else Block of response");
+      emit(OnlineAccountAggregatorFailed(response.error!));
+    }
+  }
+
+  Future<void> fetchBankStatementStatusApiCall(String leadId,String customerId) async{
+    emit(LoanApplicationLoading());
+    final response = await loanApplicationRepository.checkBankStatementStatusApiCallFunction(leadId: leadId, customerId: customerId);
+    DebugPrint.prt("Fetch Bank Statement Status Response Status ${response.status}");
+    if (response.status == ApiResponseStatus.success) {
+      emit(CheckBankStatementStatusSuccess(response.data!));
+    } else {
+      DebugPrint.prt("Inside Else Block of response");
+      emit(CheckBankStatementStatusFailed(response.error!));
+    }
+  }
+
+  Future<void> getLoanHistoryApiCall(Map<String,dynamic> dataObj) async{
+    emit(LoanApplicationLoading());
+    final response = await loanApplicationRepository.getLoanHistoryApiCallFunction(dataObj);
+    DebugPrint.prt("Get Loan History Response Status ${response.status}");
+    if (response.status == ApiResponseStatus.success) {
+      emit(GetLoanHistorySuccess(response.data!));
+    } else {
+      DebugPrint.prt("Inside Else Block of response");
+      emit(GetLoanHistoryFailed(response.error!));
+    }
+  }
+
+  Future<void> calculateDistanceApiCall(Map<String,dynamic> dataObj) async{
+    emit(LoanApplicationLoading());
+    final response = await loanApplicationRepository.calculateDistanceApiCallFunction(dataObj);
+    DebugPrint.prt("Calculate Distance Response Status ${response.status}");
+    if (response.status == ApiResponseStatus.success) {
+      emit(CalculateDistanceSuccess(response.data!));
+    } else {
+      DebugPrint.prt("Inside Else Block of response");
+      emit(CalculateDistanceFailed(response.error!));
+    }
+  }
+
 
 
 

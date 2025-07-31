@@ -14,8 +14,12 @@ import 'package:loan112_app/Model/IfscCodeModel.dart';
 import 'package:loan112_app/Model/LoanAcceptanceModel.dart';
 import 'package:loan112_app/Model/UploadSelfieModel.dart';
 import 'package:loan112_app/Model/UploadUtilityDocTypeModel.dart';
+import '../../Model/CalculateDistanceResponseModel.dart';
+import '../../Model/CheckBankStatementStatusModel.dart';
+import '../../Model/GetLoanHistoryModel.dart';
 import '../../Model/UpdateBankAccountModel.dart';
 import '../../Model/UploadBankStatementModel.dart';
+import '../../Model/UploadOnlineBankStatementModel.dart';
 
 abstract class LoanApplicationState {}
 
@@ -188,6 +192,45 @@ class BankAccountTypeFailed extends LoanApplicationState{
   BankAccountTypeFailed(this.bankAccountTypeModel);
 }
 
+class OnlineAccountAggregatorSuccess extends LoanApplicationState{
+  final UploadOnlineBankStatementModel uploadOnlineBankStatementModel;
+  OnlineAccountAggregatorSuccess(this.uploadOnlineBankStatementModel);
+}
+
+class OnlineAccountAggregatorFailed extends LoanApplicationState{
+  final UploadOnlineBankStatementModel uploadOnlineBankStatementModel;
+  OnlineAccountAggregatorFailed(this.uploadOnlineBankStatementModel);
+}
+
+class CheckBankStatementStatusSuccess extends LoanApplicationState{
+  final CheckBankStatementStatusModel checkBankStatementStatusModel;
+  CheckBankStatementStatusSuccess(this.checkBankStatementStatusModel);
+}
+
+class CheckBankStatementStatusFailed extends LoanApplicationState{
+  final CheckBankStatementStatusModel checkBankStatementStatusModel;
+  CheckBankStatementStatusFailed(this.checkBankStatementStatusModel);
+}
+
+class GetLoanHistorySuccess extends LoanApplicationState{
+  final GetLoanHistoryModel getLoanHistoryModel;
+  GetLoanHistorySuccess(this.getLoanHistoryModel);
+}
+
+class GetLoanHistoryFailed extends LoanApplicationState{
+  final GetLoanHistoryModel getLoanHistoryModel;
+  GetLoanHistoryFailed(this.getLoanHistoryModel);
+}
+
+class CalculateDistanceSuccess extends LoanApplicationState{
+  final CalculateDistanceResponseModel calculateDistanceResponseModel;
+  CalculateDistanceSuccess(this.calculateDistanceResponseModel);
+}
+
+class CalculateDistanceFailed extends LoanApplicationState{
+  final CalculateDistanceResponseModel calculateDistanceResponseModel;
+  CalculateDistanceFailed(this.calculateDistanceResponseModel);
+}
 
 
 

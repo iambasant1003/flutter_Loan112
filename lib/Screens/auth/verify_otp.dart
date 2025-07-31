@@ -109,6 +109,8 @@ class _VerifyOTP extends State<VerifyOTP>{
                     }
                   },
                  child: SafeArea(
+                   top: true,
+                   bottom: true,
                    child: Column(
                      children: [
                        /// Scrollable form content

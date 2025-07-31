@@ -10,6 +10,7 @@ import 'package:loan112_app/Model/GenerateLoanOfferModel.dart';
 import 'package:loan112_app/Model/GetPurposeOfLoanModel.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
+import 'package:loan112_app/Widget/bottom_dashline.dart';
 import 'package:loan112_app/Widget/common_button.dart';
 import '../../../../Constant/ColorConst/ColorConstant.dart';
 import '../../../../Constant/FontConstant/FontConstant.dart';
@@ -213,7 +214,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
             width: MediaQuery.of(context).size.width,
             child: Column(
               children: [
-                Image.asset(ImageConstants.bottomDashLine,height: 4),
+                BottomDashLine(),
                 SizedBox(
                   height: 26,
                 ),

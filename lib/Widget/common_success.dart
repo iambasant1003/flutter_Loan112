@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loan112_app/Widget/bottom_dashline.dart';
 import 'package:loan112_app/Widget/common_button.dart';
 import '../Constant/ColorConst/ColorConstant.dart';
 import '../Constant/FontConstant/FontConstant.dart';
@@ -14,9 +15,11 @@ final String statusType;
 final String statusMessage;
 final String iconTypePath;
 final Loan112Button loan112button;
+final VoidCallback? onBackPress;
 
 const Loan112VerifyStatusPage({
   super.key,
+  this.onBackPress,
   required this.isSuccess,required this.statusType,required this.statusMessage,
   required this.iconTypePath,required this.loan112button
 });
@@ -28,7 +31,8 @@ const Loan112VerifyStatusPage({
       appBar: Loan112AppBar(
         backgroundColor: Color(0xffE7F3FF),
         customLeading: InkWell(
-          onTap: (){
+          onTap: onBackPress ??
+              (){
             context.pop();
           },
           child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
@@ -98,14 +102,22 @@ const Loan112VerifyStatusPage({
             ),
           ),
           // 👇 Buttons pinned to bottom
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
-            child: Column(
-              children: [
-                loan112button,
-                const SizedBox(height: 16.0),
-              ],
-            ),
+          Column(
+            children: [
+              BottomDashLine(),
+              SizedBox(
+                height: 18.0,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
+                child: Column(
+                  children: [
+                    loan112button,
+                    const SizedBox(height: 16.0),
+                  ],
+                ),
+              )
+            ],
           ),
         ],
       ),

@@ -4,9 +4,11 @@ import 'package:loan112_app/Cubit/dashboard_cubit/DashboardCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/AddMoreReferenceCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/JourneyCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
+import 'package:loan112_app/Cubit/repayment_cubit/RepaymentCubit.dart';
 import 'package:loan112_app/Repository/auth_Repository.dart';
 import 'package:loan112_app/Repository/dashboard_repository.dart';
 import 'package:loan112_app/Repository/loan_application_Repository.dart';
+import 'package:loan112_app/Repository/repayment_repository.dart';
 import 'package:loan112_app/Services/http_client_php.dart';
 import '../Cubit/auth_cubit/AuthCubit.dart';
 import '../Services/http_client.dart';
@@ -26,5 +28,8 @@ void setupLocator() {
   locator.registerFactory(()=> JourneyCubit());
   locator.registerFactory(()=> AddMoreReferenceCubit());
   locator.registerFactory(()=> ConnectivityCubit());
+
+  locator.registerLazySingleton<RepaymentRepository>(()=> RepaymentRepository(locator<ApiClassPhp>()));
+  locator.registerFactory(()=> RePaymentCubit(locator<RepaymentRepository>()));
 
 }

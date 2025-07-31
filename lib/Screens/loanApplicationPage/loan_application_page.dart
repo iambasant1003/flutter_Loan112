@@ -18,8 +18,10 @@ import '../../Constant/ColorConst/ColorConstant.dart';
 import '../../Constant/ImageConstant/ImageConstants.dart';
 import '../../Cubit/dashboard_cubit/DashboardCubit.dart';
 import '../../Cubit/loan_application_cubit/JourneyCubit.dart';
+import '../../Model/GetCustomerDetailsModel.dart';
 import '../../Model/VerifyOTPModel.dart';
 import '../../Utils/MysharePrefenceClass.dart';
+import '../../Utils/validation.dart';
 import '../../Widget/common_step.dart';
 
 class LoanApplicationPage extends StatefulWidget{
@@ -109,12 +111,14 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
               context.read<JourneyCubit>().updateJourneyTabs(
                   state.getCustomerDetailsModel.data?.screenDetails!.toJson() as Map<String,dynamic>
               );
-              // setState(() {
-              //   journeyTabs = state.getCustomerDetailsModel.data?.journeyScreenTabs!.toJson() as Map<String,dynamic>;
-              // });
+              checkConditionCalculateDistanceApiCall(state.getCustomerDetailsModel.data!.screenDetails!);
             }else if(state is GetCustomerDetailsError){
               EasyLoading.dismiss();
               openSnackBar(context, state.getCustomerDetailsModel.message ?? "Unknown Error");
+            }else if(state is CalculateDistanceSuccess){
+              EasyLoading.dismiss();
+            }else if(state is CalculateDistanceFailed){
+              EasyLoading.dismiss();
             }
           },
           child: SizedBox.expand(
@@ -277,6 +281,37 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
           ),
       )
     );
+  }
+
+
+  void checkConditionCalculateDistanceApiCall(ScreenDetails screenDetails) async{
+    if((
+            screenDetails.checkEligibility ==1 && screenDetails.ekycVerified == 1 &&
+            screenDetails.selfieUpload == 1 && screenDetails.bankStatementUpload == 1 &&
+            screenDetails.loanQuote == 1
+        ) &&  (screenDetails.residenceProofUpload == 2 && screenDetails.customerReferences == 0
+              && screenDetails.bankingDetails == 0)
+    ){
+      final position = await getCurrentPosition();
+      final geoLat = position.latitude.toString();
+      final geoLong = position.longitude.toString();
+
+      var otpModel = await MySharedPreferences.getUserSessionDataNode();
+      VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
+      var leadId = verifyOtpModel.data?.leadId ?? "";
+      if (leadId == "") {
+        leadId = await MySharedPreferences.getLeadId();
+      }
+      if (!context.mounted) return;
+          var dataObj =  {
+                         "custId":verifyOtpModel.data?.custId,
+                         "leadId":leadId,
+                         "sourceLatitude":geoLat,
+                         "sourceLongitude":geoLong
+                      };
+          context.read<LoanApplicationCubit>().calculateDistanceApiCall(dataObj);
+    }
+
   }
 
 

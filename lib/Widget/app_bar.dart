@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
 
 class Loan112AppBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget? title;
@@ -28,9 +30,10 @@ class Loan112AppBar extends StatelessWidget implements PreferredSizeWidget {
       leadingWidget = customLeading;
     } else if (showBackButton) {
       leadingWidget = IconButton(
-        icon: const Icon(Icons.arrow_back),
+        icon: const Icon(Icons.arrow_back_ios),
+        color: ColorConstant.blackTextColor,
         onPressed: () {
-          Navigator.of(context).pop();
+          context.pop();
         },
       );
     }

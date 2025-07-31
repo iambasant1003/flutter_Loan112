@@ -12,6 +12,7 @@ import 'package:loan112_app/Model/VerifyOTPModel.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:loan112_app/Widget/app_bar.dart';
+import 'package:loan112_app/Widget/bottom_dashline.dart';
 import 'package:loan112_app/Widget/common_button.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../../../Constant/ConstText/ConstText.dart';
@@ -75,7 +76,8 @@ class _AadharKycScreen extends State<AadharKycScreen>{
             EasyLoading.dismiss();
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!context.mounted) return;
-              context.pop();
+              //context.pop();
+              context.replace(AppRouterName.eKycMessageScreen);
             });
           }
 
@@ -240,9 +242,9 @@ class _AadharKycScreen extends State<AadharKycScreen>{
           height: 135,
           child: Column(
             children: [
-              Divider(
-                height: 8,
-                color: ColorConstant.greyTextColor,
+              BottomDashLine(),
+              SizedBox(
+                height: 8.0,
               ),
               Padding(
                 padding: EdgeInsets.symmetric(

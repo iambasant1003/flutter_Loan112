@@ -1,9 +1,17 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
+import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
+import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
+import 'package:loan112_app/Model/GetLoanHistoryModel.dart';
 import 'package:loan112_app/Widget/app_bar.dart';
 import '../../Constant/ColorConst/ColorConstant.dart';
 import '../../Constant/ImageConstant/ImageConstants.dart';
+import '../../Model/SendPhpOTPModel.dart';
+import '../../Utils/MysharePrefenceClass.dart';
 import 'loan_list_page.dart';
 
 
@@ -15,6 +23,24 @@ class RepaymentPage extends StatefulWidget{
 }
 
 class _RepaymentPage extends State<RepaymentPage>{
+
+
+  GetLoanHistoryModel? getLoanHistoryModel = GetLoanHistoryModel();
+
+  @override
+  void initState() {
+    super.initState();
+    getLoanHistory();
+  }
+
+
+  getLoanHistory() async{
+    var otpModel = await MySharedPreferences.getPhpOTPModel();
+    SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
+    context.read<LoanApplicationCubit>().getLoanHistoryApiCall({
+      "cust_profile_id": sendPhpOTPModel.data?.custProfileId
+    });
+  }
 
 
   @override
@@ -42,24 +68,44 @@ class _RepaymentPage extends State<RepaymentPage>{
             ),
           ),
         ),
-        body: SizedBox.expand(
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: Image.asset(
-                  ImageConstants.permissionScreenBackground,
-                  fit: BoxFit.cover, // Optional: to scale and crop nicely
+        body: BlocListener<LoanApplicationCubit,LoanApplicationState>(
+          listener: (context,state){
+            if(state is LoanApplicationLoading){
+              EasyLoading.show(status: "Please wait...");
+            }else if(state is GetLoanHistorySuccess){
+              EasyLoading.dismiss();
+            }else if(state is GetLoanHistoryFailed){
+              EasyLoading.dismiss();
+            }
+          },
+          child: BlocBuilder<LoanApplicationCubit,LoanApplicationState>(
+            builder: (context,state){
+              if(state is GetLoanHistorySuccess){
+               // setState(() {
+                  getLoanHistoryModel = state.getLoanHistoryModel;
+               // });
+              }
+              return SizedBox.expand(
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Image.asset(
+                        ImageConstants.permissionScreenBackground,
+                        fit: BoxFit.cover, // Optional: to scale and crop nicely
+                      ),
+                    ),
+                    Positioned(
+                      top: 50,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: loanHistoryContainerWidget(context),
+                    ),
+                  ],
                 ),
-              ),
-              Positioned(
-                top: 60,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: loanHistoryContainerWidget(context),
-              ),
-            ],
-          ),
+              );
+            },
+          )
         )
     );
   }
@@ -71,7 +117,6 @@ class _RepaymentPage extends State<RepaymentPage>{
       margin: const EdgeInsets.symmetric(
         horizontal: 16,
       ),
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
@@ -98,7 +143,7 @@ class _RepaymentPage extends State<RepaymentPage>{
           ),
           SizedBox(height: 14.0),
           Expanded(    // 🔷 Added
-            child: LoanListPage(),
+            child: LoanListPage(loanHistoryModel: getLoanHistoryModel ?? GetLoanHistoryModel()),
           ),
           SizedBox(height: 24.0),
         ],
@@ -107,3 +152,4 @@ class _RepaymentPage extends State<RepaymentPage>{
   }
 
 }
+

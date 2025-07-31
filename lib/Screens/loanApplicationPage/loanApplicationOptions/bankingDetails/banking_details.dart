@@ -8,7 +8,9 @@ import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
 import 'package:loan112_app/ParamModel/UpdateBankDetailsParamModel.dart';
+import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
+import 'package:loan112_app/Widget/bottom_dashline.dart';
 import 'package:loan112_app/Widget/common_button.dart';
 import 'package:loan112_app/Widget/common_textField.dart';
 import '../../../../Constant/ColorConst/ColorConstant.dart';
@@ -61,6 +63,7 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
          if (!context.mounted) return;
 
          if (state is LoanApplicationLoading) {
+           context.pop();
            EasyLoading.show(status: "Please wait...");
          }
 
@@ -86,7 +89,7 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
            EasyLoading.dismiss();
            WidgetsBinding.instance.addPostFrameCallback((_) {
              if (context.mounted && (state.updateBankAccountModel.success ?? false)) {
-               context.pop();
+               context.replace(AppRouterName.loanApplicationSubmit,extra: state.updateBankAccountModel.data);
              }
            });
          }
@@ -300,46 +303,56 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
      ),
       bottomNavigationBar: SafeArea(
         child: SizedBox(
-          height: 100,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  height: 24,
-                ),
-                Loan112Button(
+          height: 101,
+          child: Column(
+            children: [
+              BottomDashLine(),
+              SizedBox(
+                height: 24,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
+                child: Loan112Button(
                     text: "Submit",
                     onPressed: () async{
-                      if(formKey.currentState!.validate()){
+                      //context.push(AppRouterName.loanApplicationSubmit);
+                      //if(formKey.currentState!.validate()){
 
-                        var otpModel = await MySharedPreferences.getUserSessionDataNode();
-                        VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
-                        var leadId = verifyOtpModel.data?.leadId ?? "";
-                        if (leadId == "") {
-                          leadId = await MySharedPreferences.getLeadId();
-                        }
+                      showBankVerificationBottomSheet(
+                        context,
+                        onYesTap: () async{
+                          var otpModel = await MySharedPreferences.getUserSessionDataNode();
+                          VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
+                          var leadId = verifyOtpModel.data?.leadId ?? "";
+                          if (leadId == "") {
+                            leadId = await MySharedPreferences.getLeadId();
+                          }
 
-                        UpdateBankDetailsParamModel updateBankDetailsData =
-                        UpdateBankDetailsParamModel(
-                            custId: verifyOtpModel.data?.custId ?? "",
-                            leadId: leadId,
-                            account: bankAccount.text.trim(),
-                            confirmAccount: confirmBankAccount.text.trim(),
-                            ifsc: ifscCode.text.trim(),
-                            accountType: selectedBankType?.bankTypeId ?? "",
-                            type: "1"
-                        );
-                        context.read<LoanApplicationCubit>().updateBankDetailsApiCall(updateBankDetailsData.toJson());
-                      }
+                          UpdateBankDetailsParamModel updateBankDetailsData =
+                          UpdateBankDetailsParamModel(
+                              custId: verifyOtpModel.data?.custId ?? "",
+                              leadId: leadId,
+                              account: bankAccount.text.trim(),
+                              confirmAccount: confirmBankAccount.text.trim(),
+                              ifsc: ifscCode.text.trim(),
+                              accountType: selectedBankType?.bankTypeId ?? "",
+                              type: "1"
+                          );
+                          context.read<LoanApplicationCubit>().updateBankDetailsApiCall(updateBankDetailsData.toJson());
+                        },
+                        onNoTap: () async{
+                          // Your NO logic here
+                          Navigator.pop(context);
+                        },
+                      );
+                      //}
                     }
                 ),
-                SizedBox(
-                  height: 24,
-                ),
-              ],
-            ),
+              ),
+              SizedBox(
+                height: 24,
+              ),
+            ],
           ),
         ),
       ),
@@ -434,5 +447,105 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
       },
     );
   }
+
+
+
+
+  Future<dynamic> showBankVerificationBottomSheet(BuildContext context,{required Future<void> Function() onYesTap,required Future<void> Function() onNoTap}) {
+   return showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) {
+        return SafeArea(
+          bottom: true,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 24,bottom: 32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Icon section
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
+                  child:  Column(
+                    children: [
+                      Image.asset("assets/icons/bankverify_icon.png",height: 50,width: 50),
+                      const SizedBox(height: 20),
+
+                      // Title / Warning Text
+                      Text(
+                        "This is your final attempt to verify your bank details",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontWeight: FontConstants.w800,
+                            fontSize: FontConstants.f18,
+                            fontFamily: FontConstants.fontFamily,
+                            color: ColorConstant.blackTextColor
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                Container(
+                  height: 1,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD1EAFF),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFD1EAFF).withOpacity(0.5),
+                        blurRadius: 4,
+                        spreadRadius: 1,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Action Buttons
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      // NO Button
+                      TextButton(
+                        onPressed: onNoTap,
+                        child:  Text(
+                          "NO",
+                          style: TextStyle(
+                              color: ColorConstant.errorRedColor,
+                              fontSize: FontConstants.f16,
+                              fontFamily: FontConstants.fontFamily,
+                              fontWeight: FontConstants.w700
+                          ),
+                        ),
+                      ),
+
+                      // YES Button
+                      SizedBox(
+                        width: 85,
+                        height: 55,
+                        child: Loan112Button(
+                          text: "Yes",
+                          onPressed: onYesTap,
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
 }
 

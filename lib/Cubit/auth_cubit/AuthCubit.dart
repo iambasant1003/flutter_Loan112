@@ -13,6 +13,7 @@ import 'package:loan112_app/Services/ApiResponseStatus.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
 import 'package:loan112_app/Utils/MysharePrefenceClass.dart';
 import '../../Repository/auth_Repository.dart';
+import '../../Utils/validation.dart';
 import 'AuthState.dart';
 
 class AuthCubit extends Cubit<AuthState> {
@@ -153,16 +154,7 @@ class AuthCubit extends Cubit<AuthState> {
    */
 
 
-  Future<Position> getCurrentPosition() async {
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-    }
 
-    return await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-  }
 
   Future<String> getDeviceId() async {
     final deviceInfoPlugin = DeviceInfoPlugin();
