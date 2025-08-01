@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
+import 'package:loan112_app/Model/DashBoarddataModel.dart';
+import 'package:loan112_app/Utils/Debugprint.dart';
+import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:loan112_app/Widget/app_bar.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CustomerSupportUiScreen extends StatefulWidget {
-  const CustomerSupportUiScreen({super.key});
+   final  DashBoarddataModel dashBoarddataModel;
+  const CustomerSupportUiScreen({super.key,required this.dashBoarddataModel});
 
   @override
   State<StatefulWidget> createState() => _CustomerSupportUiScreen();
@@ -27,6 +32,8 @@ class _CustomerSupportUiScreen extends State<CustomerSupportUiScreen> {
       'label': 'CHAT WITH US',
     },
   ];
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -89,34 +96,45 @@ class _CustomerSupportUiScreen extends State<CustomerSupportUiScreen> {
                               : Radius.zero,
                         ),
                       ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            contactOptions[index]['icon'],
-                            color: Colors.blue,
-                          ),
-                          SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              contactOptions[index]['label'],
-                              style: TextStyle(
-                                fontWeight: FontConstants.w700,
-                                fontSize: FontConstants.f14,
-                                fontFamily: FontConstants.fontFamily,
-                                color: ColorConstant.blackTextColor,
-                              ),
-                            ),
-                          ),
-                          CircleAvatar(
-                            radius: 14,
-                            backgroundColor: Colors.blue.shade50,
-                            child: Icon(
-                              Icons.arrow_forward_ios,
-                              size: 14,
+                      child: InkWell(
+                        onTap: (){
+                          if(index ==0){
+                            launchEmail(toEmail:widget.dashBoarddataModel.data?.contactUsEmail?? "");
+                          }else if(index == 1){
+                            dialPhoneNumber(widget.dashBoarddataModel.data?.contactUsNumber ?? "");
+                          }else{
+                            openWhatsAppChat(widget.dashBoarddataModel.data?.contactUsWhatsappNumber ?? "");
+                          }
+                        },
+                        child:Row(
+                          children: [
+                            Icon(
+                              contactOptions[index]['icon'],
                               color: Colors.blue,
                             ),
-                          ),
-                        ],
+                            SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                contactOptions[index]['label'],
+                                style: TextStyle(
+                                  fontWeight: FontConstants.w700,
+                                  fontSize: FontConstants.f14,
+                                  fontFamily: FontConstants.fontFamily,
+                                  color: ColorConstant.blackTextColor,
+                                ),
+                              ),
+                            ),
+                            CircleAvatar(
+                              radius: 14,
+                              backgroundColor: Colors.blue.shade50,
+                              child: Icon(
+                                Icons.arrow_forward_ios,
+                                size: 14,
+                                color: Colors.blue,
+                              ),
+                            ),
+                          ],
+                        )
                       ),
                     );
                   }),
@@ -129,4 +147,49 @@ class _CustomerSupportUiScreen extends State<CustomerSupportUiScreen> {
       ),
     );
   }
+
+  Future<void> dialPhoneNumber(String phoneNumber) async {
+    final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
+
+    if (await canLaunchUrl(phoneUri)) {
+      await launchUrl(phoneUri);
+    } else {
+       openSnackBar(context, 'Could not launch $phoneUri');
+    }
+  }
+
+
+  Future<void> launchEmail({
+    required String toEmail,
+    String subject = '',
+    String body = '',
+  }) async {
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: toEmail,
+      queryParameters: {
+        if (subject.isNotEmpty) 'subject': subject,
+        if (body.isNotEmpty) 'body': body,
+      },
+    );
+
+    if (await canLaunchUrl(emailUri)) {
+      await launchUrl(emailUri);
+    } else {
+      openSnackBar(context,'Could not launch $emailUri');
+    }
+  }
+
+
+  Future<void> openWhatsAppChat(String phoneNumber) async {
+    final Uri whatsappUri = Uri.parse("https://wa.me/$phoneNumber");
+
+    if (await canLaunchUrl(whatsappUri)) {
+      await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
+    } else {
+      openSnackBar(context,'Could not open WhatsApp for number: $phoneNumber');
+    }
+  }
+
+
 }

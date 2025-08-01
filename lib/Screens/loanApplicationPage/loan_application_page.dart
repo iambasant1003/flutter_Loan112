@@ -111,7 +111,6 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
               context.read<JourneyCubit>().updateJourneyTabs(
                   state.getCustomerDetailsModel.data?.screenDetails!.toJson() as Map<String,dynamic>
               );
-              checkConditionCalculateDistanceApiCall(state.getCustomerDetailsModel.data!.screenDetails!);
             }else if(state is GetCustomerDetailsError){
               EasyLoading.dismiss();
               openSnackBar(context, state.getCustomerDetailsModel.message ?? "Unknown Error");
@@ -284,35 +283,7 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
   }
 
 
-  void checkConditionCalculateDistanceApiCall(ScreenDetails screenDetails) async{
-    if((
-            screenDetails.checkEligibility ==1 && screenDetails.ekycVerified == 1 &&
-            screenDetails.selfieUpload == 1 && screenDetails.bankStatementUpload == 1 &&
-            screenDetails.loanQuote == 1
-        ) &&  (screenDetails.residenceProofUpload == 2 && screenDetails.customerReferences == 0
-              && screenDetails.bankingDetails == 0)
-    ){
-      final position = await getCurrentPosition();
-      final geoLat = position.latitude.toString();
-      final geoLong = position.longitude.toString();
 
-      var otpModel = await MySharedPreferences.getUserSessionDataNode();
-      VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
-      var leadId = verifyOtpModel.data?.leadId ?? "";
-      if (leadId == "") {
-        leadId = await MySharedPreferences.getLeadId();
-      }
-      if (!context.mounted) return;
-          var dataObj =  {
-                         "custId":verifyOtpModel.data?.custId,
-                         "leadId":leadId,
-                         "sourceLatitude":geoLat,
-                         "sourceLongitude":geoLong
-                      };
-          context.read<LoanApplicationCubit>().calculateDistanceApiCall(dataObj);
-    }
-
-  }
 
 
 }

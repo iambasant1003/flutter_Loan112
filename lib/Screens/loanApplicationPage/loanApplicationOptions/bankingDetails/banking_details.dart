@@ -63,7 +63,6 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
          if (!context.mounted) return;
 
          if (state is LoanApplicationLoading) {
-           context.pop();
            EasyLoading.show(status: "Please wait...");
          }
 

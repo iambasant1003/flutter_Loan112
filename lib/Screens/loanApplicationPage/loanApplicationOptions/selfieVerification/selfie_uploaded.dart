@@ -69,6 +69,7 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage>{
               openSnackBar(
                 context,
                 state.uploadSelfieModel.message ?? "Selfie uploaded successfully",
+                backGroundColor: ColorConstant.appThemeColor
               );
 
               Future.delayed(Duration(milliseconds: 500), () {

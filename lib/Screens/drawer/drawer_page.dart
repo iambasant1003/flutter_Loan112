@@ -259,7 +259,7 @@ class _Loan112Drawer extends State<Loan112Drawer> {
                     _buildMenuItem(ImageConstants.dashBoardHeadphone, "Support",
                       onClick: (){
                         context.pop();
-                        context.push(AppRouterName.customerSupport);
+                        context.push(AppRouterName.customerSupport,extra: widget.dashBoarddataModel);
                       }
                     ),
                     _buildMenuItem(ImageConstants.drawerShareApp, "Share App",

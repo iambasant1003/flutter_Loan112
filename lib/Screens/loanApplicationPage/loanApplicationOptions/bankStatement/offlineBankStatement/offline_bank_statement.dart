@@ -122,21 +122,27 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
   @override
   Widget build(BuildContext context) {
     return BlocListener<LoanApplicationCubit,LoanApplicationState>(
-      listener: (context,state){
-        if (!context.mounted) return; // extra safeguard
+      listener: (context, state) {
+        if (!context.mounted) return; // safeguard for unmounted context
 
-        if(state is LoanApplicationLoading){
-          EasyLoading.show(status: "Please wait...");
-        }else if(state is UploadBankStatementSuccess){
-          EasyLoading.dismiss();
-          openSnackBar(context, state.uploadBankStatementModel.message?? "Success",backGroundColor: ColorConstant.appThemeColor);
-          context.pop();
-          context.pop();
-        }else if(state is UploadBankStatementFailed){
-          EasyLoading.dismiss();
-          DebugPrint.prt("Upload Bank Statement Failed");
-          openSnackBar(context,state.uploadBankStatementModel.message ?? "Filed");
-        }
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (state is LoanApplicationLoading) {
+            EasyLoading.show(status: "Please wait...");
+          } else if (state is UploadBankStatementSuccess) {
+            EasyLoading.dismiss();
+            openSnackBar(
+              context,
+              state.uploadBankStatementModel.message ?? "Success",
+              backGroundColor: ColorConstant.appThemeColor,
+            );
+            context.pop();
+            context.pop();
+          } else if (state is UploadBankStatementFailed) {
+            EasyLoading.dismiss();
+            DebugPrint.prt("Upload Bank Statement Failed");
+            openSnackBar(context, state.uploadBankStatementModel.message ?? "Failed");
+          }
+        });
       },
       child: Stack(
         children: [

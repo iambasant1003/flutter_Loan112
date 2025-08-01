@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Model/CheckBankStatementStatusModel.dart';
 import 'package:loan112_app/Model/CreateLeadModel.dart';
+import 'package:loan112_app/Model/DashBoarddataModel.dart';
 import 'package:loan112_app/Model/UpdateBankAccountModel.dart';
 import 'package:loan112_app/Screens/Repayment/payment_screen.dart';
 import 'package:loan112_app/Screens/auth/login_page.dart';
@@ -91,7 +92,10 @@ final GoRouter appRouter = GoRouter(
           partAmount: amount
       );
     }),
-    GoRoute(path: AppRouterName.customerSupport,builder: (context,state) => CustomerSupportUiScreen()),
+    GoRoute(path: AppRouterName.customerSupport,builder: (context,state){
+      DashBoarddataModel dashBoardData = state.extra as DashBoarddataModel;
+      return CustomerSupportUiScreen(dashBoarddataModel: dashBoardData);
+    }),
     GoRoute(path: AppRouterName.paymentStatusPage,builder: (context,state) {
       return PaymentStatusPage();
     }),
