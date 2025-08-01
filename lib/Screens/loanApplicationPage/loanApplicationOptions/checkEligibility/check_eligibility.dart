@@ -11,11 +11,14 @@ import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.da
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
 import 'package:loan112_app/Model/VerifyOTPModel.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
+import 'package:loan112_app/Utils/Debugprint.dart';
 import 'package:loan112_app/Utils/MysharePrefenceClass.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:loan112_app/Widget/app_bar.dart';
+import 'package:loan112_app/Widget/bottom_dashline.dart';
 import 'package:loan112_app/Widget/common_button.dart';
 import 'package:loan112_app/Widget/common_textField.dart';
+import 'package:network_info_plus/network_info_plus.dart';
 import '../../../../Constant/ColorConst/ColorConstant.dart';
 import '../../../../Constant/ImageConstant/ImageConstants.dart';
 import '../../../../Utils/UpperCaseTextFormatter.dart';
@@ -46,6 +49,7 @@ class _CheckEligibility extends State<CheckEligibility>{
   TextEditingController panController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController companyNameController = TextEditingController();
+  String dateOfBirthPassed = "";
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -99,6 +103,8 @@ class _CheckEligibility extends State<CheckEligibility>{
                 if (!context.mounted) return;
                 context.replace(AppRouterName.eligibilityStatus, extra: state.createLeadModel);
               });
+            }else{
+              openSnackBar(context, state.createLeadModel.message ?? "UnExpected Error");
             }
 
           } else if (state is LoanApplicationError) {
@@ -342,24 +348,26 @@ class _CheckEligibility extends State<CheckEligibility>{
         child: Container(
           height: 125,
           color: ColorConstant.whiteColor,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: 24.0,
-                ),
-                Loan112Button(
-                    onPressed: () async{
-                      setState(() {
-                        submitted = true;
-                      });
-                      if(_formKey.currentState!.validate()){
-                        var otpModel = await MySharedPreferences.getUserSessionDataNode();
-                        VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
-                        context.read<LoanApplicationCubit>().checkEligibilityApiCall(
-                            {
+          child: Column(
+            children: [
+              BottomDashLine(),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 24.0,
+                    ),
+                    Loan112Button(
+                        onPressed: () async{
+                          setState(() {
+                            submitted = true;
+                          });
+                          if(_formKey.currentState!.validate()){
+                            var otpModel = await MySharedPreferences.getUserSessionDataNode();
+                            VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
+                            var dataObj = {
                               "custId": verifyOtpModel.data?.custId,
                               "employementType": employmentType,
                               "pincode": pinCodeController.text.trim(),
@@ -372,47 +380,51 @@ class _CheckEligibility extends State<CheckEligibility>{
                               "mobile": verifyOtpModel.data?.mobile.toString(),
                               "requestSource": ConstText.requestSource,
                               "salaryAmt": int.parse(netMonthlyIncome.text.trim()),
-                              "dob": dateOfBirth.text.trim().toString(),
+                              "dob": dateOfBirthPassed,
                               "gender":gender,
-                              "ip_web":"192.0.0.0",
+                              "ip_web": "192.0.0.0",
                               "empName": companyNameController.text.trim()
-                            }
-                        );
-                      }
-                    },
-                    text: "Check Eligibility"
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Need  Help..?",
-                      style: TextStyle(
-                          fontFamily: FontConstants.fontFamily,
-                          fontSize: FontConstants.f14,
-                          fontWeight: FontConstants.w600,
-                          color: ColorConstant.blackTextColor
-                      ),
+                            };
+                            DebugPrint.prt("Data Obj To Api $dataObj");
+
+                            context.read<LoanApplicationCubit>().checkEligibilityApiCall(dataObj);
+                          }
+                        },
+                        text: "Check Eligibility"
                     ),
                     SizedBox(
-                      width: 13.0,
+                      height: 20,
                     ),
-                    Text(
-                      "contact us",
-                      style: TextStyle(
-                          fontFamily: FontConstants.fontFamily,
-                          fontSize: FontConstants.f14,
-                          fontWeight: FontConstants.w800,
-                          color: ColorConstant.blackTextColor
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Need  Help..?",
+                          style: TextStyle(
+                              fontFamily: FontConstants.fontFamily,
+                              fontSize: FontConstants.f14,
+                              fontWeight: FontConstants.w600,
+                              color: ColorConstant.blackTextColor
+                          ),
+                        ),
+                        SizedBox(
+                          width: 13.0,
+                        ),
+                        Text(
+                          "contact us",
+                          style: TextStyle(
+                              fontFamily: FontConstants.fontFamily,
+                              fontSize: FontConstants.f14,
+                              fontWeight: FontConstants.w800,
+                              color: ColorConstant.blackTextColor
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
+              )
+            ],
           ),
         ),
       ),
@@ -429,8 +441,9 @@ class _CheckEligibility extends State<CheckEligibility>{
     );
 
     if (pickedDate != null) {
-      final formatted = DateFormat('yyyy-MM-dd').format(pickedDate);
-      dateOfBirth.text = formatted;
+      dateOfBirthPassed = DateFormat('yyyy-MM-dd').format(pickedDate);
+      final formattedUi = DateFormat('dd-MM-yyyy').format(pickedDate);
+      dateOfBirth.text = formattedUi;
     }
   }
 

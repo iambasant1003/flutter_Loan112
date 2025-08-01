@@ -43,7 +43,8 @@ class AuthCubit extends Cubit<AuthState> {
 
 
   Future<void> sendBothOtp(String phoneNumber) async {
-
+    DebugPrint.prt("Indide Method");
+    emit(AuthLoading());
     final position = await getCurrentPosition();
     final geoLat = position.latitude.toString();
     final geoLong = position.longitude.toString();
@@ -74,7 +75,7 @@ class AuthCubit extends Cubit<AuthState> {
 
 
 
-    emit(AuthLoading());
+
     try {
      var responseList = await Future.wait([
       authRepository.sendOTPNodeApiCallFunction(sendOTPPramNodeModel.toJson()),

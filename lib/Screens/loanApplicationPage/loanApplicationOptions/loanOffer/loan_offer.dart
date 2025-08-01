@@ -18,6 +18,7 @@ import '../../../../Constant/ImageConstant/ImageConstants.dart';
 import '../../../../Model/VerifyOTPModel.dart';
 import '../../../../ParamModel/LoanAcceptanceParamModel.dart';
 import '../../../../Utils/MysharePrefenceClass.dart';
+import '../../../../Utils/validation.dart';
 import '../../../../Widget/app_bar.dart';
 
 class LoanOfferScreen extends StatefulWidget{
@@ -140,6 +141,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (context.mounted) {
                   context.pop();
+                  checkConditionCalculateDistanceApiCall();
                 }
               });
             }
@@ -804,6 +806,30 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
           ? totalPayable.toInt().toString()
           : totalPayable.toStringAsFixed(2);
     });
+  }
+
+
+  void checkConditionCalculateDistanceApiCall() async{
+      final position = await getCurrentPosition();
+      final geoLat = position.latitude.toString();
+      final geoLong = position.longitude.toString();
+
+      var otpModel = await MySharedPreferences.getUserSessionDataNode();
+      VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
+      var leadId = verifyOtpModel.data?.leadId ?? "";
+      if (leadId == "") {
+        leadId = await MySharedPreferences.getLeadId();
+      }
+      if (!context.mounted) return;
+      var dataObj =  {
+        "custId":verifyOtpModel.data?.custId,
+        "leadId":leadId,
+        "sourceLatitude":geoLat,
+        "sourceLongitude":geoLong
+      };
+      context.read<LoanApplicationCubit>().calculateDistanceApiCall(dataObj);
+      Future.delayed(Duration(milliseconds: 300));
+
   }
 
 }

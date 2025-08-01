@@ -138,12 +138,20 @@ class _DashBoardHome extends State<DashBoardHome>{
                                         right: 80,
                                         child: GestureDetector(
                                           onTap: (){
-                                            if(dashBoarddataModel?.data?.applicationSubmitted == 1 && dashBoarddataModel?.data?.showLoanHistoryBtnFlag != 1){
-                                              context.push(AppRouterName.dashBoardStatus);
-                                            } else if(dashBoarddataModel?.data?.showLoanHistoryBtnFlag == 1){
-                                              context.push(AppRouterName.repaymentPage);
-                                            } else{
+                                            DebugPrint.prt("application Submitted ${dashBoarddataModel?.data?.applicationSubmitted}");
+                                            DebugPrint.prt("application loan History ${dashBoarddataModel?.data?.showLoanHistoryBtnFlag}");
+                                            if(dashBoarddataModel?.data?.applyLoanBanner?.appBannerBtnActiveFlag == 1
+                                                && dashBoarddataModel?.data?.applicationSubmitted != 1&& dashBoarddataModel?.data?.showLoanHistoryBtnFlag != 1){
                                               context.push(AppRouterName.loanApplicationPage);
+                                            }
+                                            if(dashBoarddataModel?.data?.applicationSubmitted == 1
+                                                && dashBoarddataModel?.data?.showLoanHistoryBtnFlag != 1){
+                                              context.push(AppRouterName.dashBoardStatus);
+                                            } else if(
+                                            dashBoarddataModel?.data?.showLoanHistoryBtnFlag == 1&&
+                                                dashBoarddataModel?.data?.applyLoanBanner?.appBannerBtnActiveFlag != 1
+                                            ){
+                                              context.push(AppRouterName.repaymentPage);
                                             }
                                           },
                                           child: Loan112Button(
@@ -165,65 +173,65 @@ class _DashBoardHome extends State<DashBoardHome>{
                                 DashboardLoanDetails(activeLoanDetails: dashBoarddataModel?.data!.activeLoanDetails):
                                 SizedBox.shrink(),
                                 Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(left: FontConstants.horizontalPadding),
-                              child: Text(
-                                "We Provide",
-                                style: TextStyle(
-                                  fontSize: FontConstants.f18,
-                                  fontWeight: FontConstants.w800,
-                                  fontFamily: FontConstants.fontFamily,
-                                  color: ColorConstant.blackTextColor,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
-                              child: SizedBox(
-                                height: 150,
-                                child: PageView.builder(
-                                  controller: _controller,
-                                  itemCount: dashBoarddataModel?.data?.appBanners?.length ?? 0,
-                                  padEnds: false,
-                                  itemBuilder: (context, index) {
-                                    final item = dashBoarddataModel?.data?.appBanners?[index];
-                                    return ClipRRect(
-                                      borderRadius: BorderRadius.circular(0),
-                                      child: Image.network(
-                                        item?.imgUrl ?? "",
-                                        height: 150,
-                                        loadingBuilder: (context, child, loadingProgress) {
-                                          if (loadingProgress == null) return child;
-                                          return const Center(child: CircularProgressIndicator());
-                                        },
-                                        errorBuilder: (context, error, stackTrace) =>
-                                        const Center(child: Icon(Icons.broken_image)),
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(left: FontConstants.horizontalPadding),
+                                      child: Text(
+                                        "We Provide",
+                                        style: TextStyle(
+                                          fontSize: FontConstants.f18,
+                                          fontWeight: FontConstants.w800,
+                                          fontFamily: FontConstants.fontFamily,
+                                          color: ColorConstant.blackTextColor,
+                                        ),
                                       ),
-                                    );
-                                  },
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
+                                      child: SizedBox(
+                                        height: 150,
+                                        child: PageView.builder(
+                                          controller: _controller,
+                                          itemCount: dashBoarddataModel?.data?.appBanners?.length ?? 0,
+                                          padEnds: false,
+                                          itemBuilder: (context, index) {
+                                            final item = dashBoarddataModel?.data?.appBanners?[index];
+                                            return ClipRRect(
+                                              borderRadius: BorderRadius.circular(0),
+                                              child: Image.network(
+                                                item?.imgUrl ?? "",
+                                                height: 150,
+                                                loadingBuilder: (context, child, loadingProgress) {
+                                                  if (loadingProgress == null) return child;
+                                                  return const Center(child: CircularProgressIndicator());
+                                                },
+                                                errorBuilder: (context, error, stackTrace) =>
+                                                const Center(child: Icon(Icons.broken_image)),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Center(
+                                      child: SmoothPageIndicator(
+                                        controller: _controller,
+                                        count: dashBoarddataModel?.data?.appBanners?.length ?? 0,
+                                        effect: const WormEffect(
+                                          dotHeight: 8,
+                                          dotWidth: 8,
+                                          spacing: 8,
+                                          dotColor: Colors.grey,
+                                          activeDotColor: Colors.blue,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Center(
-                              child: SmoothPageIndicator(
-                                controller: _controller,
-                                count: dashBoarddataModel?.data?.appBanners?.length ?? 0,
-                                effect: const WormEffect(
-                                  dotHeight: 8,
-                                  dotWidth: 8,
-                                  spacing: 8,
-                                  dotColor: Colors.grey,
-                                  activeDotColor: Colors.blue,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                               SizedBox(
+                                SizedBox(
                                   height: 20,
                                 )
                               ],

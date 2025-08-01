@@ -67,7 +67,9 @@ dependencies:
   razorpay_flutter:
   flutter_cashfree_pg_sdk: ^2.2.9+45
   equatable:
-
+  network_info_plus:
+  firebase_core: ^3.0.0
+  firebase_crashlytics: ^4.0.0
 
 dev_dependencies:
   flutter_test:

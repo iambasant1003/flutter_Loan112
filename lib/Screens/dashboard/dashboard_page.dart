@@ -1,4 +1,5 @@
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -31,64 +32,69 @@ class _DashBoardPage extends State<DashBoardPage>{
   DashBoarddataModel? dashBoardModelVar;
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () async{
-          return false;
+    return RefreshIndicator(
+        onRefresh: () async{
+          context.read<DashboardCubit>().callDashBoardApi();
         },
-        child: Scaffold(
-            backgroundColor: ColorConstant.appScreenBackgroundColor,
-            drawer: BlocBuilder<DashboardCubit,DashboardState>(
-              builder: (context,state){
-                if(state is DashBoardSuccess){
-                  dashBoardModelVar = state.dashBoardModel;
-                }
-                return Loan112Drawer(
-                    rootContext: context,
-                    dashBoarddataModel: dashBoardModelVar
-                );
-              },
-            ),
-            appBar: Loan112AppBar(
-              leadingSpacing: 25,
-              title: Image.asset(
-                ImageConstants.loan112AppNameIcon,
-                height: 76,
-                width: 76,
-              ),
-              customLeading: Builder(
-                builder: (context) => Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: InkWell(
-                    onTap: () {
-                      Scaffold.of(context).openDrawer();
-                    },
-                    child: Icon(
-                      Icons.menu,
-                      color: ColorConstant.greyTextColor,
-                    ),
-                  ),
+        child: WillPopScope(
+            onWillPop: () async{
+              return false;
+            },
+            child: Scaffold(
+                backgroundColor: ColorConstant.appScreenBackgroundColor,
+                drawer: BlocBuilder<DashboardCubit,DashboardState>(
+                  builder: (context,state){
+                    if(state is DashBoardSuccess){
+                      dashBoardModelVar = state.dashBoardModel;
+                    }
+                    return Loan112Drawer(
+                        rootContext: context,
+                        dashBoarddataModel: dashBoardModelVar
+                    );
+                  },
                 ),
-              ),
-              actions: [
-                Padding(
-                  padding: EdgeInsets.only(right: 8.0),
-                  child: InkWell(
-                    onTap: () {
-                      DebugPrint.prt("Headphone is tapped");
-                      context.push(AppRouterName.customerSupport);
-                    },
-                    child: Image.asset(
-                      ImageConstants.dashBoardHeadphone,
-                      height: 24,
-                      width: 24,
+                appBar: Loan112AppBar(
+                  leadingSpacing: 25,
+                  title: Image.asset(
+                    ImageConstants.loan112AppNameIcon,
+                    height: 76,
+                    width: 76,
+                  ),
+                  customLeading: Builder(
+                    builder: (context) => Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: InkWell(
+                        onTap: () {
+                          Scaffold.of(context).openDrawer();
+                        },
+                        child: Icon(
+                          Icons.menu,
+                          color: ColorConstant.greyTextColor,
+                        ),
+                      ),
                     ),
                   ),
-                )
-              ],
-            ),
-            body: DashBoardHome(),
-            bottomNavigationBar: bottomNavigationWidget(context)
-        )
+                  actions: [
+                    Padding(
+                      padding: EdgeInsets.only(right: 8.0),
+                      child: InkWell(
+                        onTap: () {
+                          DebugPrint.prt("Headphone is tapped");
+                          context.push(AppRouterName.customerSupport,extra: dashBoardModel);
+                        },
+                        child: Image.asset(
+                          ImageConstants.dashBoardHeadphone,
+                          height: 24,
+                          width: 24,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                body: DashBoardHome(),
+                bottomNavigationBar: bottomNavigationWidget(context)
+            )
+        ),
     );
   }
 
@@ -128,9 +134,7 @@ class _DashBoardPage extends State<DashBoardPage>{
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       InkWell(
-                        onTap: (){
-
-                        },
+                        onTap: (){},
                         child: Column(
                           children: [
                             Image.asset(
@@ -192,6 +196,5 @@ class _DashBoardPage extends State<DashBoardPage>{
       },
     );
   }
-
 }
 
