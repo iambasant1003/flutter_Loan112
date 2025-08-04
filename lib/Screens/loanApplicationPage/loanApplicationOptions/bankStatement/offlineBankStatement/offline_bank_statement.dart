@@ -220,39 +220,62 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
                                 children: [
                                   Center(
                                     child: (fileNamePath != null && fileNamePath != "")
-                                        ? Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Image.asset(ImageConstants.pdfIcon, height: 25, width: 25),
-                                        const SizedBox(width: 8.0),
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              fileName ?? "",
-                                              style: TextStyle(
-                                                fontSize: FontConstants.f14,
-                                                fontFamily: FontConstants.fontFamily,
-                                                fontWeight: FontConstants.w700,
-                                                color: ColorConstant.blackTextColor,
-                                              ),
+                                        ? Container(
+                                        padding: EdgeInsets.all(10.0),
+                                       decoration: BoxDecoration(
+                                         borderRadius: BorderRadius.all(Radius.circular(6.0)),
+                                         border: Border.all(color: ColorConstant.textFieldBorderColor)
+                                       ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Image.asset(ImageConstants.pdfIcon, height: 25, width: 25),
+                                          const SizedBox(width: 8.0),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  fileName ?? "",
+                                                  style: TextStyle(
+                                                    fontSize: FontConstants.f14,
+                                                    fontFamily: FontConstants.fontFamily,
+                                                    fontWeight: FontConstants.w700,
+                                                    color: ColorConstant.blackTextColor,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 2.0),
+                                                Text(
+                                                  "$fileSize KB",
+                                                  style: TextStyle(
+                                                    fontSize: FontConstants.f12,
+                                                    fontFamily: FontConstants.fontFamily,
+                                                    fontWeight: FontConstants.w400,
+                                                    color: ColorConstant.greyTextColor,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                            const SizedBox(height: 2.0),
-                                            Text(
-                                              "$fileSize KB",
-                                              style: TextStyle(
-                                                fontSize: FontConstants.f12,
-                                                fontFamily: FontConstants.fontFamily,
-                                                fontWeight: FontConstants.w400,
-                                                color: ColorConstant.greyTextColor,
-                                              ),
-                                            ),
-                                          ],
-                                        )
-                                      ],
+                                          ),
+                                          SizedBox(
+                                            width: 8.0,
+                                          ),
+                                          InkWell(
+                                            onTap: (){
+                                              setState(() {
+                                                fileNamePath = "";
+                                                fileName = "";
+                                                fileSize = "";
+                                                pdfBytes = null;
+                                              });
+                                            },
+                                            child: Image.asset(ImageConstants.crossActionIcon,height: 24,width: 24),
+                                          )
+                                        ],
+                                      ),
                                     )
                                         : Image.asset(ImageConstants.bankStatementUploadIcon, height: 50, width: 50),
                                   ),

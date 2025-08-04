@@ -9,10 +9,12 @@ import 'package:loan112_app/Constant/ConstText/ConstText.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
+import 'package:loan112_app/Model/GetCustomerDetailsModel.dart';
 import 'package:loan112_app/Model/VerifyOTPModel.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
 import 'package:loan112_app/Utils/MysharePrefenceClass.dart';
+import 'package:loan112_app/Utils/PanInputFormatter.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:loan112_app/Widget/app_bar.dart';
 import 'package:loan112_app/Widget/bottom_dashline.dart';
@@ -52,6 +54,13 @@ class _CheckEligibility extends State<CheckEligibility>{
   String dateOfBirthPassed = "";
   final _formKey = GlobalKey<FormState>();
 
+
+  @override
+  void initState() {
+    super.initState();
+    getCustomerDetails();
+  }
+
   @override
   void dispose() {
     netMonthlyIncome.dispose();
@@ -63,6 +72,29 @@ class _CheckEligibility extends State<CheckEligibility>{
     emailController.dispose();
     companyNameController.dispose();
     super.dispose();
+  }
+
+
+  void getCustomerDetails() async{
+    String? customerData = await MySharedPreferences.getCustomerDetails();
+    DebugPrint.prt("Data on eligibility check $customerData");
+    if(customerData != null){
+      CustomerDetails customerDetails = CustomerDetails.fromJson(jsonDecode(customerData));
+      setState(() {
+        employmentType = int.parse(customerDetails.incomeTypeId ?? "1");
+        netMonthlyIncome.text = customerDetails.monthlyIncome ?? "";
+        companyNameController.text = customerDetails.empCompanyName ?? "";
+        gender = int.parse(customerDetails.gender ?? "1");
+        dateOfBirth.text = customerDetails.dob ?? "";
+        pinCodeController.text = customerDetails.empPincode ?? "";
+        stateController.text = customerDetails.residenceStateName ?? "";
+        cityController.text = customerDetails.residenceCityName ?? "";
+        stateId = customerDetails.residenceStateId ?? "";
+        cityId = customerDetails.residenceCityId ?? "";
+        panController.text = customerDetails.pancard ?? "";
+        emailController.text = customerDetails.personalEmail ?? "";
+      });
+    }
   }
 
 
@@ -203,12 +235,20 @@ class _CheckEligibility extends State<CheckEligibility>{
                                 inputFormatters: [
                                   FilteringTextInputFormatter.digitsOnly,
                                 ],
-                                validator: (val){
-                                  if(val!.trim().isEmpty){
+                                validator: (val) {
+                                  if (val == null || val.trim().isEmpty) {
                                     return "Please enter your net monthly income";
                                   }
+
+                                  final income = int.tryParse(val.trim());
+
+                                  if (income! <= 0) {
+                                    return "Income must be greater than zero";
+                                  }
+
                                   return null;
                                 },
+
                               ),
                               SizedBox(height: 12.0),
                               labelTypeWidget("Company Name"),
@@ -221,6 +261,8 @@ class _CheckEligibility extends State<CheckEligibility>{
                                 validator: (val){
                                   if(val!.trim().isEmpty){
                                     return "Please enter your company name";
+                                  }else if(val.trim().length <3){
+                                    return "Please enter valid company name";
                                   }
                                   return null;
                                 },
@@ -317,7 +359,7 @@ class _CheckEligibility extends State<CheckEligibility>{
                                 keyboardType: TextInputType.text,
                                 inputFormatters: [
                                   LengthLimitingTextInputFormatter(10),
-                                  UpperCaseTextFormatter(),
+                                  PanInputFormatter()
                                 ],
                                 validator: validatePanCard,
                               ),

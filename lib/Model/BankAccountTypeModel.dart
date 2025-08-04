@@ -29,8 +29,8 @@ class BankAccountTypeModel {
 }
 
 class BankAccountTypeParamModel {
-  final String? bankTypeId;
-  final String? bankTypeName;
+   String? bankTypeId;
+   String? bankTypeName;
 
   BankAccountTypeParamModel({
     this.bankTypeId,

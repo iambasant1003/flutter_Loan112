@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +9,7 @@ import 'package:loan112_app/Constant/ImageConstant/ImageConstants.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/AddMoreReferenceCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
+import 'package:loan112_app/Model/GetCustomerDetailsModel.dart';
 import 'package:loan112_app/ParamModel/AddReferenceParamModel.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:loan112_app/Widget/bottom_dashline.dart';
@@ -58,6 +60,20 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
   void initState() {
     super.initState();
     context.read<AddMoreReferenceCubit>().clear();
+    getReferenceData();
+  }
+
+
+  void getReferenceData() async{
+    String? data = await MySharedPreferences.getCustomerDetails();
+    if(data != null){
+      CustomerDetails customerDetails = CustomerDetails.fromJson(jsonDecode(data));
+      setState(() {
+        referAnceNameController.text = customerDetails.refrenceName ?? "";
+        selectedValue = customerDetails.refrenceType ?? "";
+        referAnceNumberController.text = customerDetails.refrenceMobile ?? "";
+      });
+    }
   }
 
 
@@ -258,6 +274,10 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
         CommonTextField(
             controller: referAnceNumberController,
             hintText: "Enter mobile number",
+          keyboardType: TextInputType.phone,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+          ],
             validator: (value) {
               return validateMobileNumber(value);
             },
@@ -325,7 +345,14 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
         ),
         CommonTextField(
             controller: referAnceNumberController2,
+            keyboardType: TextInputType.phone,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+            ],
             validator: (value) {
+              if(referAnceNumberController.text.trim() == referAnceNameController2.text.trim()){
+                return "Please enter different reference";
+              }
               return validateMobileNumber(value);
             },
             hintText: "Enter mobile number"

@@ -108,6 +108,7 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
               EasyLoading.show(status: "Please wait...");
             }else if(state is GetCustomerDetailsSuccess){
               EasyLoading.dismiss();
+              MySharedPreferences.setCustomerDetails(jsonEncode(state.getCustomerDetailsModel.data?.customerDetails));
               context.read<JourneyCubit>().updateJourneyTabs(
                   state.getCustomerDetailsModel.data?.screenDetails!.toJson() as Map<String,dynamic>
               );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loan112_app/Constant/ApiUrlConstant/WebviewUrl.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
 import 'package:loan112_app/Constant/ImageConstant/ImageConstants.dart';
@@ -253,7 +254,8 @@ class _Loan112Drawer extends State<Loan112Drawer> {
                     ),
                     _buildMenuItem(ImageConstants.drawerFaq, "FAQs",
                       onClick: (){
-                        DebugPrint.prt("FAQ Icon Pressed");
+                        context.pop();
+                        context.push(AppRouterName.termsAndConditionWebview,extra: UrlsNods.FAQ);
                       }
                     ),
                     _buildMenuItem(ImageConstants.dashBoardHeadphone, "Support",
