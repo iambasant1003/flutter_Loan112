@@ -37,10 +37,6 @@ class _DashBoardHome extends State<DashBoardHome>{
   final PageController _controller = PageController(
     viewportFraction: 1.0,
   );
-
-  List<String> imageData = ["Ram","Shyam"];
-
-
   DashBoarddataModel? dashBoarddataModel;
 
 
@@ -147,10 +143,7 @@ class _DashBoardHome extends State<DashBoardHome>{
                                             if(dashBoarddataModel?.data?.applicationSubmitted == 1
                                                 && dashBoarddataModel?.data?.showLoanHistoryBtnFlag != 1){
                                               context.push(AppRouterName.dashBoardStatus);
-                                            } else if(
-                                            dashBoarddataModel?.data?.showLoanHistoryBtnFlag == 1&&
-                                                dashBoarddataModel?.data?.applyLoanBanner?.appBannerBtnActiveFlag != 1
-                                            ){
+                                            } else if(dashBoarddataModel?.data?.showLoanHistoryBtnFlag == 1){
                                               context.push(AppRouterName.repaymentPage);
                                             }
                                           },

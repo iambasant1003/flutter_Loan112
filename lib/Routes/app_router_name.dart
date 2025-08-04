@@ -49,4 +49,5 @@ class AppRouterName{
   static var paymentOptionScreen = "/paymentOptionScreen";
   static var customerSupport = "/customerSupport";
   static var paymentStatusPage = "/paymentStatusPage";
+  static var termsAndConditionWebview = "/termsAndConditionWebview";
 }

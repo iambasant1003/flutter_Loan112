@@ -8,12 +8,6 @@
       "languageVersion": "3.2"
     },
     {
-      "name": "ansicolor",
-      "rootUri": "file:///home/basant/.pub-cache/hosted/pub.dev/ansicolor-2.0.3",
-      "packageUri": "lib/",
-      "languageVersion": "3.0"
-    },
-    {
       "name": "archive",
       "rootUri": "file:///home/basant/.pub-cache/hosted/pub.dev/archive-4.0.7",
       "packageUri": "lib/",
@@ -132,12 +126,6 @@
       "rootUri": "file:///home/basant/.pub-cache/hosted/pub.dev/crypto-3.0.6",
       "packageUri": "lib/",
       "languageVersion": "3.4"
-    },
-    {
-      "name": "csslib",
-      "rootUri": "file:///home/basant/.pub-cache/hosted/pub.dev/csslib-1.0.2",
-      "packageUri": "lib/",
-      "languageVersion": "3.1"
     },
     {
       "name": "cupertino_icons",
@@ -272,6 +260,24 @@
       "languageVersion": "3.2"
     },
     {
+      "name": "firebase_messaging",
+      "rootUri": "file:///home/basant/.pub-cache/hosted/pub.dev/firebase_messaging-15.2.10",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
+      "name": "firebase_messaging_platform_interface",
+      "rootUri": "file:///home/basant/.pub-cache/hosted/pub.dev/firebase_messaging_platform_interface-4.6.10",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
+      "name": "firebase_messaging_web",
+      "rootUri": "file:///home/basant/.pub-cache/hosted/pub.dev/firebase_messaging_web-3.10.10",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
+    {
       "name": "fixnum",
       "rootUri": "file:///home/basant/.pub-cache/hosted/pub.dev/fixnum-1.1.1",
       "packageUri": "lib/",
@@ -354,12 +360,6 @@
       "rootUri": "file:///home/basant/.pub-cache/hosted/pub.dev/flutter_lints-5.0.0",
       "packageUri": "lib/",
       "languageVersion": "3.5"
-    },
-    {
-      "name": "flutter_native_splash",
-      "rootUri": "file:///home/basant/.pub-cache/hosted/pub.dev/flutter_native_splash-2.4.6",
-      "packageUri": "lib/",
-      "languageVersion": "3.0"
     },
     {
       "name": "flutter_plugin_android_lifecycle",
@@ -474,12 +474,6 @@
       "rootUri": "file:///home/basant/.pub-cache/hosted/pub.dev/gsettings-0.2.8",
       "packageUri": "lib/",
       "languageVersion": "2.12"
-    },
-    {
-      "name": "html",
-      "rootUri": "file:///home/basant/.pub-cache/hosted/pub.dev/html-0.15.6",
-      "packageUri": "lib/",
-      "languageVersion": "3.2"
     },
     {
       "name": "http",
@@ -912,12 +906,6 @@
       "rootUri": "file:///home/basant/.pub-cache/hosted/pub.dev/typed_data-1.4.0",
       "packageUri": "lib/",
       "languageVersion": "3.5"
-    },
-    {
-      "name": "universal_io",
-      "rootUri": "file:///home/basant/.pub-cache/hosted/pub.dev/universal_io-2.2.2",
-      "packageUri": "lib/",
-      "languageVersion": "2.17"
     },
     {
       "name": "url_launcher",

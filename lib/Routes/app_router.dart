@@ -4,6 +4,7 @@ import 'package:loan112_app/Model/CreateLeadModel.dart';
 import 'package:loan112_app/Model/DashBoarddataModel.dart';
 import 'package:loan112_app/Model/UpdateBankAccountModel.dart';
 import 'package:loan112_app/Screens/Repayment/payment_screen.dart';
+import 'package:loan112_app/Screens/TermsAndCondition/terms_and_condition.dart';
 import 'package:loan112_app/Screens/auth/login_page.dart';
 import 'package:loan112_app/Screens/auth/verify_otp.dart';
 import 'package:loan112_app/Screens/dashboard/dashboard_page.dart';
@@ -98,6 +99,10 @@ final GoRouter appRouter = GoRouter(
     }),
     GoRoute(path: AppRouterName.paymentStatusPage,builder: (context,state) {
       return PaymentStatusPage();
+    }),
+    GoRoute(path: AppRouterName.termsAndConditionWebview,builder: (context,state){
+      String webUrl = state.extra as String;
+      return TermsAndConditionScreen(webUrl: webUrl);
     }),
   ],
 );

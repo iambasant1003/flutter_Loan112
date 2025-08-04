@@ -248,6 +248,42 @@ class _SelfieCameraPageState extends State<SelfieCameraPage> with WidgetsBinding
                               ),
                             ),
                             SizedBox(
+                              height: 10.0,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: FontConstants.horizontalPadding),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Note:-",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: FontConstants.f14,
+                                        fontWeight: FontConstants.w500,
+                                        fontFamily: FontConstants.fontFamily,
+                                        color: ColorConstant.dashboardTextColor
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      "Please remove spectacle & cap before capturing your selfie.",
+                                      //textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: FontConstants.f14,
+                                          fontWeight: FontConstants.w500,
+                                          fontFamily: FontConstants.fontFamily,
+                                          color: ColorConstant.dashboardTextColor
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                            SizedBox(
                               height: 30,
                             ),
                             Center(

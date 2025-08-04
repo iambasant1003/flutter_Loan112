@@ -1,5 +1,4 @@
 
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -110,7 +109,7 @@ class _DashBoardPage extends State<DashBoardPage>{
           bottom: true,
           child: Padding(
             padding: EdgeInsets.only(
-                bottom: 10.0,
+                bottom: FontConstants.horizontalPadding,
                 left: FontConstants.horizontalPadding,
                 right: FontConstants.horizontalPadding
             ),

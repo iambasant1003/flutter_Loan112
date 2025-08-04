@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,9 +33,29 @@ class _SplashScreenState extends State<SplashScreen> {
     );
 
     Future.delayed(Duration.zero, () {
+     // requestNotificationPermissions();
       _initAsync(context);
     });
   }
+
+  void requestNotificationPermissions() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    DebugPrint.prt('User granted permission: ${settings.authorizationStatus}');
+    FirebaseMessaging.instance.getToken().then((token) {
+      DebugPrint.prt("✅ FCM Token: $token");
+    });
+
+  }
+
+
+
 
   Future<void> _initAsync(BuildContext context) async {
     var isPermissionGiven = await MySharedPreferences.getPermissionStatus();

@@ -111,7 +111,7 @@ class _DashboardStatusScreen extends State<DashboardStatusScreen> {
       bottomNavigationBar: SafeArea(
         bottom: true,
         child: Padding(
-          padding: EdgeInsets.only(bottom: 10.0),
+          padding: EdgeInsets.only(bottom: FontConstants.horizontalPadding),
           child: SizedBox(
             height: 50,
             child: Center(

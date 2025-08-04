@@ -9,6 +9,7 @@ class MySharedPreferences {
   static const userSessionDataPhp = "useSessionDataPhp";
   static const savePhpOtpModel = 'savePhpOtpModel';
   static const saveLeadId = 'saveLeadId';
+  static const saveCustomerDetails = "saveCustomerDetails";
 
 
   static Future<SharedPreferences> _getPreferences() async {
@@ -125,6 +126,25 @@ class MySharedPreferences {
     }
   }
 
+  static Future<void> setCustomerDetails(String customerData) async {
+    String data = customerData;
+    final prefs = await _getPreferences();
+    await prefs.setString(data, saveCustomerDetails);
+  }
+
+  static Future<dynamic> getCustomerDetails() async {
+    final prefs = await _getPreferences();
+    String? customerDetails = prefs.getString(saveCustomerDetails);
+
+    if (customerDetails != null) {
+      return customerDetails;
+    } else {
+      return null;
+    }
+  }
+
+
+
 
 
 
@@ -135,7 +155,10 @@ class MySharedPreferences {
     final removedNode = await prefs.remove(userSessionDataNode);
     final removedPhp = await prefs.remove(userSessionDataPhp);
     final removedOtp = await prefs.remove(savePhpOtpModel);
+    final removeCustomerDetails = await prefs.remove(saveCustomerDetails);
 
-    return removedLogin || removedNode || removedPhp || removedOtp;
+    return removedLogin || removedNode || removedPhp || removedOtp || removeCustomerDetails;
   }
+
+
 }

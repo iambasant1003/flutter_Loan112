@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:loan112_app/Constant/PageKeyConstant/PageKeyConstant.dart';
 import 'package:loan112_app/Model/SendOTPModel.dart';
 import 'package:loan112_app/Model/SendPhpOTPModel.dart';

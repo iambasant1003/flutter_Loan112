@@ -8,6 +8,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/url_launcher_ios-6.3.3" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/geolocator_apple-2.3.13" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/url_launcher_android-6.3.16" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_messaging_web-3.10.10" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/camera_avfoundation-0.9.20+1" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/shared_preferences_foundation-2.5.4" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/widgets_easier-0.0.10" />
@@ -31,7 +32,6 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_image_compress_common-1.0.6" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/image_picker_ios-0.8.12+2" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_image_compress_web-0.1.5" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_native_splash-2.4.6" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/file_selector_macos-0.9.4+3" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/shared_preferences_linux-2.4.1" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_android-2.2.17" />
@@ -61,6 +61,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/razorpay_flutter-1.4.0" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/file_selector_linux-0.9.3+2" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/url_launcher-6.3.2" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_messaging-15.2.10" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/package_info_plus-8.3.0" />
     </CLASSES>
     <JAVADOC />

@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loan112_app/Constant/ApiUrlConstant/WebviewUrl.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
 import 'package:loan112_app/Constant/ImageConstant/ImageConstants.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
@@ -48,7 +49,7 @@ class _PermissionPage extends State<PermissionPage> {
                       children: [
                         const SizedBox(height: 15),
                         permissionContainerWidget(context),
-                        const SizedBox(height: 60), // leave space for button
+                        //const SizedBox(height: 60), // leave space for button
                       ],
                     ),
                     Positioned(
@@ -79,6 +80,7 @@ class _PermissionPage extends State<PermissionPage> {
                         ),
                       ),
                     ),
+                    /*
                     Positioned(
                       bottom: 40,
                       left: 0,
@@ -99,11 +101,33 @@ class _PermissionPage extends State<PermissionPage> {
                         ),
                       ),
                     ),
+
+                     */
                   ],
                 ),
               ),
             ),
           ],
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        bottom: true,
+        child: SizedBox(
+          width: 162,
+          height: 85,
+          child: Padding(
+            padding: EdgeInsets.all(FontConstants.horizontalPadding),
+            child: Loan112Button(
+              onPressed: () {
+                if (allPermissionAccepted) {
+                  takeAllRequiredPermission(context);
+                }else{
+                  openSnackBar(context, "Please accept our Terms & Conditions and Privacy Policy.");
+                }
+              },
+              text: "Allow",
+            ),
+          ),
         ),
       ),
     );
@@ -242,7 +266,7 @@ class _PermissionPage extends State<PermissionPage> {
                 context,
                 title: 'Location',
                 subtitle:
-                'To begin, we need to know where you live to access servicing of products to you.',
+                'This app collects location details one-time to fetch your current location (latitude/longitude) to identify serviceability, verify your current address expediting the KYC process and prevent fraud. We do not collect location when the app is in the background.',
                 imagePath: ImageConstants.permissionScreenLocation,
               ),
               SizedBox(height: 12),
@@ -250,14 +274,14 @@ class _PermissionPage extends State<PermissionPage> {
                 context,
                 title: 'Device',
                 subtitle:
-                'To collect your primary and social account information to verify your identify',
+                'To call Company customer care executive directly through the application, allow us to make and manage phone/video calls. With this permission, the customer is able to call (Phone/Video) Company customer care executive directly through the application.',
                 imagePath: ImageConstants.permissionScreenDevice,
               ),
               SizedBox(height: 12),
               permissionTypeWidget(
                 context,
                 title: 'SMS',
-                subtitle: 'To send and read sms for authentication',
+                subtitle: 'The app periodically collects and transmits SMS data like sender names, SMS body and received time to our servers and third parties. This data is used to assess your income, spending patterns and your loan affordability. This helps us in quick credit assessment and help us in facilitating best offers to customers easily and at the same time prevent fraud.',
                 imagePath: ImageConstants.permissionScreenSMS,
               ),
               SizedBox(height: 12),
@@ -315,10 +339,7 @@ class _PermissionPage extends State<PermissionPage> {
                   recognizer:
                   TapGestureRecognizer()
                     ..onTap = () {
-                      // TODO: Navigate to Terms & Conditions page
-                      print(
-                        'Terms & Conditions clicked',
-                      );
+                      context.push(AppRouterName.termsAndConditionWebview,extra: UrlsNods.TermAndCondition);
                     },
                 ),
                 TextSpan(
@@ -341,8 +362,7 @@ class _PermissionPage extends State<PermissionPage> {
                   recognizer:
                   TapGestureRecognizer()
                     ..onTap = () {
-                      // TODO: Navigate to Privacy Policy page
-                      print('Privacy Policy clicked');
+                      context.push(AppRouterName.termsAndConditionWebview,extra: UrlsNods.privacy);
                     },
                 ),
                 TextSpan(

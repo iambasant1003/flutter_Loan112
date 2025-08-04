@@ -7,6 +7,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
+import 'package:loan112_app/Model/GetCustomerDetailsModel.dart';
 import 'package:loan112_app/ParamModel/UpdateBankDetailsParamModel.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
@@ -44,13 +45,29 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
   //String? selectedValue;
   BankAccountTypeModel? bankAccountTypeModel;
   BankAccountTypeParamModel? selectedBankType;
-  
-  
+
+
   
   @override
   void initState() {
     super.initState();
     context.read<LoanApplicationCubit>().getBankAccountTypeApiCall({});
+    getBankDetails();
+  }
+
+  void getBankDetails() async{
+    var data = await MySharedPreferences.getCustomerDetails();
+    if(data != null){
+      CustomerDetails customerDetails = CustomerDetails.fromJson(jsonDecode(data));
+       setState(() {
+         selectedBankType?.bankTypeId = customerDetails.bankAccountTypeId ?? "";
+         selectedBankType?.bankTypeName = customerDetails.bankAccountTypeName ?? "";
+         bankName.text = customerDetails.bankAccountName ?? "";
+         confirmBankAccount.text = customerDetails.cnfBankAccountNumber ?? "";
+         bankAccount.text = customerDetails.bankAccountNumber ?? "";
+         ifscCode.text = customerDetails.bankAccountIfsc ?? "";
+       });
+    }
   }
 
 
@@ -88,6 +105,7 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
            EasyLoading.dismiss();
            WidgetsBinding.instance.addPostFrameCallback((_) {
              if (context.mounted && (state.updateBankAccountModel.success ?? false)) {
+               context.pop();
                context.replace(AppRouterName.loanApplicationSubmit,extra: state.updateBankAccountModel.data);
              }
            });
@@ -97,6 +115,7 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
            EasyLoading.dismiss();
            WidgetsBinding.instance.addPostFrameCallback((_) {
              if (context.mounted) {
+               context.pop();
                openSnackBar(context, state.updateBankAccountModel.message ?? "Unexpected Error");
              }
            });

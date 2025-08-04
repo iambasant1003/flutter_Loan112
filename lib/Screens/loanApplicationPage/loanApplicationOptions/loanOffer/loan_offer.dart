@@ -212,13 +212,13 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
         bottomNavigationBar: SafeArea(
           bottom: true,
           child: SizedBox(
-            height: 90,
+            height: 80,
             width: MediaQuery.of(context).size.width,
             child: Column(
               children: [
                 BottomDashLine(),
                 SizedBox(
-                  height: 26,
+                  height: 12,
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(
@@ -234,9 +234,9 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
                         child: Text(
                           "REJECT",
                           style: TextStyle(
-                            fontSize: FontConstants.f16,
+                            fontSize: FontConstants.f14,
                             fontFamily: FontConstants.fontFamily,
-                            fontWeight: FontConstants.w700,
+                            fontWeight: FontConstants.w600,
                             color: ColorConstant.brownColor,
                           ),
                         ),
@@ -246,6 +246,9 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
                         width: 150, // or any fixed width you want
                         child: Loan112Button(
                           text: "CONTINUE",
+                          fontSize: FontConstants.f14,
+                          fontWeight: FontConstants.w600,
+                          fontFamily: FontConstants.fontFamily,
                           onPressed: () {
                             loanAcceptanceApiCall(context, 1);
                           },
@@ -253,7 +256,10 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
                       ),
                     ],
                   ),
-                )
+                ),
+                SizedBox(
+                  height: 12,
+                ),
               ],
             ),
           ),
@@ -262,37 +268,33 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
   }
 
 
+  void loanAcceptanceApiCall(BuildContext context, int loanAcceptedId) async {
+    if (purposeOfLoanId != "") {
+      var otpModel = await MySharedPreferences.getUserSessionDataNode();
+      VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
+      var leadIdData = verifyOtpModel.data?.leadId;
 
+      if (leadIdData == "" || leadIdData == null) {
+        leadIdData = await MySharedPreferences.getLeadId();
+      }
 
-  // {
-  // "custId":"ZGIwZTNiYzQxMGM3YzE2MTM3Mzg3MTk2MjM0MGUxODY=",
-  // "leadId":"NzM3NWY2YzAzOThiNTY2NGIzMzVhMzQ1NDk1NzJiMzg=",
-  // "loanAmount":"",
-  // "tenure":"",
-  // "loanAcceptId":""
-  // }
+      if (!context.mounted) return; // ✅ make sure context is valid
 
-  void loanAcceptanceApiCall(BuildContext context,int loanAcceptedId) async{
-     if(purposeOfLoanId != ""){
-       var otpModel = await MySharedPreferences.getUserSessionDataNode();
-       VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
-       var leadIdData = verifyOtpModel.data?.leadId;
-       if(leadIdData == "" || leadIdData == null){
-         leadIdData = await MySharedPreferences.getLeadId();
-       }
-       Loanacceptanceparammodel loanacceptanceparammodel = Loanacceptanceparammodel();
-       loanacceptanceparammodel.custId = verifyOtpModel.data?.custId;
-       loanacceptanceparammodel.leadId = leadIdData;
-       loanacceptanceparammodel.loanAmount = currentValue.toInt();
-       loanacceptanceparammodel.tenure = currentTenure.toInt();
-       loanacceptanceparammodel.loanPurposeId = int.parse(purposeOfLoanId);
-       loanacceptanceparammodel.loanAcceptId = loanAcceptedId;
+      Loanacceptanceparammodel loanacceptanceparammodel = Loanacceptanceparammodel();
+      loanacceptanceparammodel.custId = verifyOtpModel.data?.custId;
+      loanacceptanceparammodel.leadId = leadIdData;
+      loanacceptanceparammodel.loanAmount = currentValue.toInt();
+      loanacceptanceparammodel.tenure = currentTenure.toInt();
+      loanacceptanceparammodel.loanPurposeId = int.parse(purposeOfLoanId);
+      loanacceptanceparammodel.loanAcceptId = loanAcceptedId;
 
-       context.read<LoanApplicationCubit>().loanAcceptanceApiCall(loanacceptanceparammodel.toJson());
-     }else{
-       openSnackBar(context, "Please select purpose of loan");
-     }
+      context.read<LoanApplicationCubit>().loanAcceptanceApiCall(loanacceptanceparammodel.toJson());
+    } else {
+      if (!context.mounted) return; // ✅ context check before showing snackbar
+      openSnackBar(context, "Please select purpose of loan");
+    }
   }
+
 
 
 
@@ -442,7 +444,19 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
                              ),
                            ),
                            SizedBox(
-                             height: 150.0,
+                             height: 16,
+                           ),
+                           Loan112Button(
+          text: "Request to Enhance Offer",
+          fontSize: FontConstants.f14,
+          fontWeight: FontConstants.w600,
+          fontFamily: FontConstants.fontFamily,
+          onPressed: (){
+          loanAcceptanceApiCall(context,3);
+          },
+          ),
+                           SizedBox(
+                             height: 130.0,
                            )
                          ],
                        ),
