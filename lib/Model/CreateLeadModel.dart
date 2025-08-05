@@ -29,13 +29,19 @@ class Data {
   int? leadStatusId;
   String? leadStatus;
   String? leadId;
+  bool? credauLoanOfferPage;
 
-  Data({this.leadStatusId, this.leadStatus, this.leadId});
+  Data(
+      {this.leadStatusId,
+        this.leadStatus,
+        this.leadId,
+        this.credauLoanOfferPage});
 
   Data.fromJson(Map<String, dynamic> json) {
     leadStatusId = json['leadStatusId'];
     leadStatus = json['leadStatus'];
     leadId = json['leadId'];
+    credauLoanOfferPage = json['credauLoanOfferPage'];
   }
 
   Map<String, dynamic> toJson() {
@@ -43,6 +49,7 @@ class Data {
     data['leadStatusId'] = this.leadStatusId;
     data['leadStatus'] = this.leadStatus;
     data['leadId'] = this.leadId;
+    data['credauLoanOfferPage'] = this.credauLoanOfferPage;
     return data;
   }
 }

@@ -22,7 +22,8 @@ import '../../../../Utils/validation.dart';
 import '../../../../Widget/app_bar.dart';
 
 class LoanOfferScreen extends StatefulWidget{
-  const LoanOfferScreen({super.key});
+  final int enhance;
+  const LoanOfferScreen({super.key,required this.enhance});
 
   @override
   State<StatefulWidget> createState() => _LoanOfferScreen();
@@ -443,18 +444,24 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
                                  color: ColorConstant.brownColor
                              ),
                            ),
-                           SizedBox(
-                             height: 16,
-                           ),
-                           Loan112Button(
-          text: "Request to Enhance Offer",
-          fontSize: FontConstants.f14,
-          fontWeight: FontConstants.w600,
-          fontFamily: FontConstants.fontFamily,
-          onPressed: (){
-          loanAcceptanceApiCall(context,3);
-          },
-          ),
+                           widget.enhance == 1?
+                           Column(
+                             children: [
+                               SizedBox(
+                                 height: 16,
+                               ),
+                               Loan112Button(
+                                 text: "Request to Enhance Offer",
+                                 fontSize: FontConstants.f14,
+                                 fontWeight: FontConstants.w600,
+                                 fontFamily: FontConstants.fontFamily,
+                                 onPressed: (){
+                                   loanAcceptanceApiCall(context,3);
+                                 },
+                               ),
+                             ],
+                           ):
+                           SizedBox.shrink(),
                            SizedBox(
                              height: 130.0,
                            )

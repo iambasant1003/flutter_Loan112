@@ -48,6 +48,7 @@ class AuthCubit extends Cubit<AuthState> {
     final geoLat = position.latitude.toString();
     final geoLong = position.longitude.toString();
     final deviceId = await getDeviceId();
+    final fcmToken = await MySharedPreferences.getNotificationData();
 
     DebugPrint.prt("Position $position,GeoLat $geoLat,GeoLang $geoLong,DeviceId $deviceId");
 
@@ -64,7 +65,7 @@ class AuthCubit extends Cubit<AuthState> {
     sendOtpParamPHPModel.utmSource = "";
     sendOtpParamPHPModel.utmMedium = "";
     sendOtpParamPHPModel.utmCampaign = "";
-    sendOtpParamPHPModel.fcmToken = "";
+    sendOtpParamPHPModel.fcmToken = fcmToken;
     sendOtpParamPHPModel.appfylerUid = "";
     sendOtpParamPHPModel.appfylerAdvertiserId = "";
     sendOtpParamPHPModel.deviceId = deviceId ?? "";

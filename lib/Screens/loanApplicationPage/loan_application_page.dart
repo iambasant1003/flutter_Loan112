@@ -77,6 +77,7 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
     });
   }
 
+  GetCustomerDetailsModel? getCustomerDetailsModel;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,6 +113,7 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
               context.read<JourneyCubit>().updateJourneyTabs(
                   state.getCustomerDetailsModel.data?.screenDetails!.toJson() as Map<String,dynamic>
               );
+              getCustomerDetailsModel = state.getCustomerDetailsModel;
             }else if(state is GetCustomerDetailsError){
               EasyLoading.dismiss();
               openSnackBar(context, state.getCustomerDetailsModel.message ?? "Unknown Error");
@@ -203,7 +205,9 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
                                           DebugPrint.prt("Current Status $status");
                                           if(status == null){
                                             if(stepKeys[index].toLowerCase().contains('eligibility')){
-                                              context.push(AppRouterName.checkEligibilityPage);
+                                              context.push(AppRouterName.checkEligibilityPage).then((val){
+                                                getCustomerDetailsApiCall();
+                                              });
                                             }
                                           }else{
                                             if(stepKeys[index].toLowerCase().contains('eligibility') && status !=1 && status != 0){
@@ -221,7 +225,7 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
                                             }else if(stepKeys[index].toLowerCase().contains('selfie')&& status!=1 && status != 0){
                                               context.push(AppRouterName.selfieScreenPath).then((val){});
                                             }else if(stepKeys[index].toLowerCase().contains("offer")&&status!=1 && status != 0){
-                                              context.push(AppRouterName.loanOfferPage).then((val){
+                                              context.push(AppRouterName.loanOfferPage,extra: getCustomerDetailsModel?.data?.screenDetails?.isEnhance).then((val){
                                                 getCustomerDetailsApiCall();
                                               });
                                             }else if(stepKeys[index].toLowerCase().contains('reference')&&status!=1 && status != 0){

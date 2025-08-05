@@ -91,13 +91,16 @@ class LoanApplicationRepository {
   }
 
 
-  Future<ApiResponse<GetPinCodeDetailsModel>> getPinCodeDetailsFunction(String pinCode) async{
+  Future<ApiResponse<GetPinCodeDetailsModel>> getPinCodeDetailsFunction(Map<String,dynamic> dataObj) async{
     try {
-      final response = await apiClass.get("$getPinCodeDetails?pincode=$pinCode", isHeader: true);
-      DebugPrint.prt("API Response AreaWise Data ${response.data}");
-      final ApiResponseStatus status = mapApiResponseStatus(response.data);
+      final response = await apiClassPhp.post(getPinCodeDetails,dataObj, isHeader: true);
+      DebugPrint.prt("API Response PinCode Data ${response.data}");
+      final ApiResponseStatus status = mapApiResponseStatusPhp(response.data);
+      DebugPrint.prt("ApI Response after statusCode $status");
       final Map<String, dynamic> responseData = response.data;
+      DebugPrint.prt("ApI Response after parsing $responseData");
       if (status == ApiResponseStatus.success) {
+        DebugPrint.prt("Data In Success PinCode $status");
         final data = GetPinCodeDetailsModel.fromJson(responseData);
         return ApiResponse.success(data);
       } else {

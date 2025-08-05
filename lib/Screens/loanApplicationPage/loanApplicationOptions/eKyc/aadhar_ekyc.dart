@@ -304,31 +304,36 @@ class _AadharKycScreen extends State<AadharKycScreen>{
                       height: 23.0,
                     ),
                     Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Need  Help..?",
-                            style: TextStyle(
-                                color: Color(0xff2B3C74),
-                                fontSize: FontConstants.f14,
-                                fontWeight: FontConstants.w600,
-                                fontFamily: FontConstants.fontFamily
+                      child: InkWell(
+                        onTap: (){
+                          context.push(AppRouterName.customerSupport);
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Need  Help..?",
+                              style: TextStyle(
+                                  color: Color(0xff2B3C74),
+                                  fontSize: FontConstants.f14,
+                                  fontWeight: FontConstants.w600,
+                                  fontFamily: FontConstants.fontFamily
+                              ),
                             ),
-                          ),
-                          SizedBox(
-                            width: 10.0,
-                          ),
-                          Text(
-                            "contact us",
-                            style: TextStyle(
-                                color: Color(0xff000000),
-                                fontSize: FontConstants.f14,
-                                fontWeight: FontConstants.w600,
-                                fontFamily: FontConstants.fontFamily
+                            SizedBox(
+                              width: 10.0,
                             ),
-                          ),
-                        ],
+                            Text(
+                              "contact us",
+                              style: TextStyle(
+                                  color: Color(0xff000000),
+                                  fontSize: FontConstants.f14,
+                                  fontWeight: FontConstants.w600,
+                                  fontFamily: FontConstants.fontFamily
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     )
                   ],
