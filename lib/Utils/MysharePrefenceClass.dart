@@ -1,4 +1,5 @@
 
+import 'package:loan112_app/Utils/Debugprint.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -10,6 +11,10 @@ class MySharedPreferences {
   static const savePhpOtpModel = 'savePhpOtpModel';
   static const saveLeadId = 'saveLeadId';
   static const saveCustomerDetails = "saveCustomerDetails";
+  static const setNotificationTokenData = "saveNotificationToken";
+  static const contactUsEmail = "contactUsEmail";
+  static const chatUsNumber = "chatUsNumber";
+  static const callUsNumber = "callUsNumber";
 
 
   static Future<SharedPreferences> _getPreferences() async {
@@ -53,6 +58,61 @@ class MySharedPreferences {
     }
   }
 
+  static Future<void> setContactUsEmail(String email) async {
+    String data = email;
+    final prefs = await _getPreferences();
+    await prefs.setString(contactUsEmail, data);
+  }
+
+  static Future<String> getContactUsEmail() async {
+    final prefs = await _getPreferences();
+    String? email = prefs.getString(contactUsEmail);
+
+    if (email != null) {
+      return email;
+    } else {
+      return "";
+    }
+  }
+
+  static Future<void> setChatUsNumber(String chatNumber) async {
+    String data = chatNumber;
+    final prefs = await _getPreferences();
+    await prefs.setString(chatUsNumber, data);
+  }
+
+  static Future<String> getChatUsNumber() async {
+    final prefs = await _getPreferences();
+    String? chatNumber = prefs.getString(chatUsNumber);
+
+    if (chatNumber != null) {
+      return chatNumber;
+    } else {
+      return "";
+    }
+  }
+
+  static Future<void> setCallUsNumber(String callNumber) async {
+    String data = callNumber;
+    final prefs = await _getPreferences();
+    await prefs.setString(callUsNumber, data);
+  }
+
+  static Future<String> getCallUsNumber() async {
+    final prefs = await _getPreferences();
+    String? callNumber = prefs.getString(callUsNumber);
+
+    if (callNumber != null) {
+      return callNumber;
+    } else {
+      return "";
+    }
+  }
+
+
+
+
+
 
 
   static Future<void> setLeadId(String leadId) async {
@@ -67,6 +127,24 @@ class MySharedPreferences {
 
     if (leadId != null) {
       return leadId;
+    } else {
+      return "";
+    }
+  }
+
+
+  static Future<void> setNotificationToken(String notificationToken) async {
+    String data = notificationToken;
+    final prefs = await _getPreferences();
+    await prefs.setString(setNotificationTokenData, data);
+  }
+
+  static Future<String> getNotificationData() async {
+    final prefs = await _getPreferences();
+    String? notificationToken = prefs.getString(setNotificationTokenData);
+
+    if (notificationToken != null) {
+      return notificationToken;
     } else {
       return "";
     }
@@ -129,13 +207,14 @@ class MySharedPreferences {
   static Future<void> setCustomerDetails(String customerData) async {
     String data = customerData;
     final prefs = await _getPreferences();
-    await prefs.setString(data, saveCustomerDetails);
+    await prefs.setString(saveCustomerDetails, data);
+    DebugPrint.prt("Data Saved Customer Profile");
   }
 
   static Future<dynamic> getCustomerDetails() async {
     final prefs = await _getPreferences();
     String? customerDetails = prefs.getString(saveCustomerDetails);
-
+     DebugPrint.prt("Get Customer Details $customerDetails");
     if (customerDetails != null) {
       return customerDetails;
     } else {
@@ -156,8 +235,12 @@ class MySharedPreferences {
     final removedPhp = await prefs.remove(userSessionDataPhp);
     final removedOtp = await prefs.remove(savePhpOtpModel);
     final removeCustomerDetails = await prefs.remove(saveCustomerDetails);
+    final removeCallUsNumber = await prefs.remove(callUsNumber);
+    final removeChatUsNumber = await prefs.remove(chatUsNumber);
+    final removeEmailUsNumber = await prefs.remove(contactUsEmail);
 
-    return removedLogin || removedNode || removedPhp || removedOtp || removeCustomerDetails;
+    return removedLogin || removedNode || removedPhp || removedOtp || removeCustomerDetails
+    || removeEmailUsNumber || removeChatUsNumber || removeCallUsNumber;
   }
 
 

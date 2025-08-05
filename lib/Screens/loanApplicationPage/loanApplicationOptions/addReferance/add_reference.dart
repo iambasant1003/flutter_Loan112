@@ -11,6 +11,7 @@ import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.da
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
 import 'package:loan112_app/Model/GetCustomerDetailsModel.dart';
 import 'package:loan112_app/ParamModel/AddReferenceParamModel.dart';
+import 'package:loan112_app/Utils/Debugprint.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:loan112_app/Widget/bottom_dashline.dart';
 import 'package:loan112_app/Widget/common_button.dart';
@@ -38,11 +39,6 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
   TextEditingController referAnceNameController = TextEditingController();
   TextEditingController referAnceNumberController = TextEditingController();
   TextEditingController referAnceNameControllerTwo = TextEditingController();
-  TextEditingController referAnceNumberControllerTwo = TextEditingController();
-  TextEditingController referAnceNameController2 = TextEditingController();
-  TextEditingController referAnceNumberController2 = TextEditingController();
-  TextEditingController referAnceNameControllerTwo2 = TextEditingController();
-  TextEditingController referAnceNumberControllerTwo2 = TextEditingController();
 
   final List<String> relationsDataList = [
     "Parents",
@@ -68,9 +64,10 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
     String? data = await MySharedPreferences.getCustomerDetails();
     if(data != null){
       CustomerDetails customerDetails = CustomerDetails.fromJson(jsonDecode(data));
+      DebugPrint.prt("Reference Type Data ${customerDetails.refrenceType}");
       setState(() {
         referAnceNameController.text = customerDetails.refrenceName ?? "";
-        selectedValue = customerDetails.refrenceType ?? "";
+        //selectedValue = customerDetails.refrenceType ?? "";
         referAnceNumberController.text = customerDetails.refrenceMobile ?? "";
       });
     }
@@ -149,7 +146,7 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
                                 height: 16.0,
                               ),
                               Text(
-                                "Note*  Only Two reference allowed",
+                                "Note*  Only One reference allowed",
                                 style: TextStyle(
                                     fontSize: FontConstants.f14,
                                     fontWeight: FontConstants.w500,
@@ -161,23 +158,6 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
                                 height: 16.0,
                               ),
                               addReferenceFormData(context),
-                              BlocBuilder<AddMoreReferenceCubit,bool>(
-                                builder: (context, bool data){
-                                  return data?
-                                  addReferenceFormData2(context):
-                                  Center(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        SizedBox(
-                                          height: 22,
-                                        ),
-                                        addMoreReferenceUI(context)
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
                             ],
                           ),
                         ),
@@ -286,80 +266,7 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
     );
   }
 
-  Widget addReferenceFormData2(BuildContext context){
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          height: 12.0,
-        ),
-        Text(
-          "Reference Name-2",
-          style: TextStyle(
-              fontSize: FontConstants.f14,
-              fontWeight: FontConstants.w600,
-              fontFamily: FontConstants.fontFamily,
-              color: ColorConstant.dashboardTextColor
-          ),
-        ),
-        SizedBox(
-          height: 6.0,
-        ),
-        CommonTextField(
-            controller: referAnceNameController2,
-            hintText: "Enter your Reference Name",
-            validator: (value){
-              return validateName(value);
-            },
-        ),
-        SizedBox(
-          height: 12.0,
-        ),
-        Text(
-          "Relation-2",
-          style: TextStyle(
-              fontSize: FontConstants.f14,
-              fontWeight: FontConstants.w600,
-              fontFamily: FontConstants.fontFamily,
-              color: ColorConstant.dashboardTextColor
-          ),
-        ),
-        SizedBox(
-          height: 6.0,
-        ),
-        selectRelationType(context,2),
-        SizedBox(
-          height: 12.0,
-        ),
-        Text(
-          "Mobile No.-2",
-          style: TextStyle(
-              fontSize: FontConstants.f14,
-              fontWeight: FontConstants.w600,
-              fontFamily: FontConstants.fontFamily,
-              color: ColorConstant.dashboardTextColor
-          ),
-        ),
-        SizedBox(
-          height: 6.0,
-        ),
-        CommonTextField(
-            controller: referAnceNumberController2,
-            keyboardType: TextInputType.phone,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-            ],
-            validator: (value) {
-              if(referAnceNumberController.text.trim() == referAnceNameController2.text.trim()){
-                return "Please enter different reference";
-              }
-              return validateMobileNumber(value);
-            },
-            hintText: "Enter mobile number"
-        ),
-      ],
-    );
-  }
+
 
   Widget selectRelationType(BuildContext context, int type) {
     return FormField<String>(
@@ -399,17 +306,11 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
                   ),
                 ))
                     .toList(),
-                value: type == 1 ? selectedValue : selectedValue2,
+                value: selectedValue,
                 onChanged: (value) {
-                  if (type == 1) {
-                    setState(() {
-                      selectedValue = value;
-                    });
-                  } else {
-                    setState(() {
-                      selectedValue2 = value;
-                    });
-                  }
+                  setState(() {
+                    selectedValue = value;
+                  });
                   state.didChange(value);
                 },
                 buttonStyleData: ButtonStyleData(
@@ -488,13 +389,6 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
       reference.referenceName = referAnceNameController.text.trim();
       reference.referenceRelation = relationsDataList.indexOf(selectedValue?? "")+1;
       referenceData.add(reference);
-      if(referAnceNameController2.text.trim() != "" && referAnceNumberController2.text.trim() != "" && selectedValue2 != null){
-        Reference referenceSecond = Reference();
-        referenceSecond.referenceMobile = referAnceNumberController2.text.trim();
-        referenceSecond.referenceName = referAnceNameController2.text.trim();
-        referenceSecond.referenceRelation = relationsDataList.indexOf(selectedValue2?? "")+1;
-        referenceData.add(referenceSecond);
-      }
 
     var otpModel = await MySharedPreferences.getUserSessionDataNode();
     VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));

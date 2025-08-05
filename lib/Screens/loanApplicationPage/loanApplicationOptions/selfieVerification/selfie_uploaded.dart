@@ -87,10 +87,19 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage>{
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!context.mounted) return;
 
-              openSnackBar(
-                context,
-                state.uploadSelfieModel.message ?? "Unknown Error",
-              );
+              if (state.uploadSelfieModel.message == "You are not eligible" && state.uploadSelfieModel.statusCode == 402 && state.uploadSelfieModel.success == false) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (!context.mounted) return;
+    context.replace(AppRouterName.eligibilityStatus, extra: state.uploadSelfieModel);
+    });
+              }
+              else{
+                openSnackBar(
+                  context,
+                  state.uploadSelfieModel.message ?? "Unknown Error",
+                );
+              }
+
             });
           }
         },

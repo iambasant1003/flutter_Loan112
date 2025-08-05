@@ -509,7 +509,7 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
 
 
   uploadUtilityData(BuildContext context) async{
-    if(selectedDocument?.docType != null || selectedDocument?.docType != ""){
+    if((selectedDocument?.docType != null || selectedDocument?.docType != "") && selectedDocument != null){
       DebugPrint.prt("File name path $fileNamePath");
       var imagePathConverted = File(fileNamePath!);
       var otpModel = await MySharedPreferences.getUserSessionDataNode();

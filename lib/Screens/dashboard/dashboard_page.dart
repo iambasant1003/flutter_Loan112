@@ -79,7 +79,7 @@ class _DashBoardPage extends State<DashBoardPage>{
                       child: InkWell(
                         onTap: () {
                           DebugPrint.prt("Headphone is tapped");
-                          context.push(AppRouterName.customerSupport,extra: dashBoardModel);
+                          context.push(AppRouterName.customerSupport);
                         },
                         child: Image.asset(
                           ImageConstants.dashBoardHeadphone,

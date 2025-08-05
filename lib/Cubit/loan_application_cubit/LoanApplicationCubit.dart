@@ -6,9 +6,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
 import 'package:loan112_app/Model/GenerateLoanOfferModel.dart';
 import 'package:loan112_app/Model/GetPurposeOfLoanModel.dart';
+import 'package:loan112_app/ParamModel/GetCityAndStateRequest.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
+import '../../Model/VerifyOTPModel.dart';
 import '../../Repository/loan_application_Repository.dart';
 import '../../Services/ApiResponseStatus.dart';
+import '../../Utils/MysharePrefenceClass.dart';
 
 class LoanApplicationCubit extends Cubit<LoanApplicationState> {
   final LoanApplicationRepository loanApplicationRepository;
@@ -29,17 +32,19 @@ class LoanApplicationCubit extends Cubit<LoanApplicationState> {
     }
   }
 
-  Future<void> getPinCodeDetailsApiCall(String pinCodeData) async {
+  Future<void> getPinCodeDetailsApiCall(Map<String,dynamic> dataObj) async {
+
     emit(LoanApplicationLoading());
     try {
-      final response = await loanApplicationRepository.getPinCodeDetailsFunction(pinCodeData);
+      final response = await loanApplicationRepository.getPinCodeDetailsFunction(dataObj);
+      DebugPrint.prt("PinCode Status ${response.status}");
       if (response.status == ApiResponseStatus.success) {
         emit(GetPinCodeDetailsSuccess(response.data!));
       } else {
-        emit(LoanApplicationError(response.error?.message ?? "Unknown Error"));
+        emit(LoanApplicationError(response.error?.message ?? "Please Enter valid PinCode"));
       }
     } catch (e) {
-      emit(LoanApplicationError("Something went wrong"));
+      emit(LoanApplicationError("Please Enter valid PinCode"));
     }
   }
 

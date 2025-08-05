@@ -83,6 +83,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
   flutter_launcher_icons:
+  flutter_local_notifications:
 
 
 

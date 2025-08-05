@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
 import 'package:loan112_app/Constant/ImageConstant/ImageConstants.dart';
+import 'package:loan112_app/Model/UploadSelfieModel.dart';
 import 'package:loan112_app/Widget/app_bar.dart';
 import 'package:loan112_app/Widget/common_button.dart';
 import '../../../../Cubit/loan_application_cubit/LoanApplicationCubit.dart';
@@ -15,7 +16,7 @@ import '../../../../Utils/MysharePrefenceClass.dart';
 import '../../../../Widget/eligibility_status_background.dart';
 
 class EligibilityStatus extends StatefulWidget{
-  final CreateLeadModel createLeadModel;
+  final UploadSelfieModel createLeadModel;
   const EligibilityStatus({super.key,required this.createLeadModel});
 
   @override

@@ -23,6 +23,7 @@ import 'package:loan112_app/Widget/common_textField.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import '../../../../Constant/ColorConst/ColorConstant.dart';
 import '../../../../Constant/ImageConstant/ImageConstants.dart';
+import '../../../../ParamModel/GetCityAndStateRequest.dart';
 import '../../../../Utils/UpperCaseTextFormatter.dart';
 import '../../../../Utils/validation.dart';
 
@@ -35,14 +36,11 @@ class CheckEligibility extends StatefulWidget{
 
 class _CheckEligibility extends State<CheckEligibility>{
 
-
-
   int employmentType = 1;
   int gender = 1;
   bool submitted = false;
   String stateId = "";
   String cityId = "";
-
   TextEditingController netMonthlyIncome = TextEditingController();
   TextEditingController dateOfBirth = TextEditingController();
   TextEditingController pinCodeController = TextEditingController();
@@ -53,7 +51,6 @@ class _CheckEligibility extends State<CheckEligibility>{
   TextEditingController companyNameController = TextEditingController();
   String dateOfBirthPassed = "";
   final _formKey = GlobalKey<FormState>();
-
 
   @override
   void initState() {
@@ -74,19 +71,19 @@ class _CheckEligibility extends State<CheckEligibility>{
     super.dispose();
   }
 
-
   void getCustomerDetails() async{
     String? customerData = await MySharedPreferences.getCustomerDetails();
     DebugPrint.prt("Data on eligibility check $customerData");
     if(customerData != null){
       CustomerDetails customerDetails = CustomerDetails.fromJson(jsonDecode(customerData));
       setState(() {
+        gender = int.parse(customerDetails.gender ?? "1");
         employmentType = int.parse(customerDetails.incomeTypeId ?? "1");
         netMonthlyIncome.text = customerDetails.monthlyIncome ?? "";
         companyNameController.text = customerDetails.empCompanyName ?? "";
         gender = int.parse(customerDetails.gender ?? "1");
         dateOfBirth.text = customerDetails.dob ?? "";
-        pinCodeController.text = customerDetails.empPincode ?? "";
+        pinCodeController.text = customerDetails.residencePincode ?? "";
         stateController.text = customerDetails.residenceStateName ?? "";
         cityController.text = customerDetails.residenceCityName ?? "";
         stateId = customerDetails.residenceStateId ?? "";
@@ -97,7 +94,6 @@ class _CheckEligibility extends State<CheckEligibility>{
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,13 +103,18 @@ class _CheckEligibility extends State<CheckEligibility>{
             EasyLoading.show(status: "Please Wait...");
           } else if (state is CreateLeadSuccess) {
             EasyLoading.dismiss();
+            DebugPrint.prt("Create Lead Success");
             MySharedPreferences.setLeadId(state.createLeadModel.data?.leadId ?? "");
 
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!context.mounted) return;
-              context.replace(AppRouterName.eligibilityStatus, extra: state.createLeadModel);
+              if(state.createLeadModel.data!.credauLoanOfferPage!){
+                context.pop();
+                context.push(AppRouterName.loanOfferPage,extra: 1);
+              }else{
+                context.pop();
+              }
             });
-
           } else if (state is GetPinCodeDetailsSuccess) {
             EasyLoading.dismiss();
 
@@ -122,23 +123,11 @@ class _CheckEligibility extends State<CheckEligibility>{
               stateController.text = state.pinCodeDetailsModel.data?.stateName ?? "";
               cityController.text = state.pinCodeDetailsModel.data?.cityName ?? "";
               stateId = state.pinCodeDetailsModel.data?.stateId.toString() ?? "";
-              cityId = "110"; // You may want to avoid hardcoding this
+              cityId = state.pinCodeDetailsModel.data?.cityId.toString() ?? ""; // You may want to avoid hardcoding this
             });
-
           } else if (state is CreateLeadError) {
             EasyLoading.dismiss();
-
-            if (state.createLeadModel.message == "You are not eligible" &&
-                state.createLeadModel.statusCode == 402 &&
-                state.createLeadModel.success == false) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (!context.mounted) return;
-                context.replace(AppRouterName.eligibilityStatus, extra: state.createLeadModel);
-              });
-            }else{
               openSnackBar(context, state.createLeadModel.message ?? "UnExpected Error");
-            }
-
           } else if (state is LoanApplicationError) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!context.mounted) return;
@@ -232,6 +221,7 @@ class _CheckEligibility extends State<CheckEligibility>{
                                 controller: netMonthlyIncome,
                                 hintText: "Enter your net monthly income*",
                                 keyboardType: TextInputType.number,
+                                maxLength: 8,
                                 inputFormatters: [
                                   FilteringTextInputFormatter.digitsOnly,
                                 ],
@@ -240,14 +230,23 @@ class _CheckEligibility extends State<CheckEligibility>{
                                     return "Please enter your net monthly income";
                                   }
 
-                                  final income = int.tryParse(val.trim());
+                                  final trimmedVal = val.trim();
+                                  DebugPrint.prt("Value Data  $trimmedVal");
 
-                                  if (income! <= 0) {
+                                  final income = BigInt.tryParse(trimmedVal);
+                                  DebugPrint.prt("Income $income");
+
+                                  if (income == null) {
+                                    return "Please enter a valid number";
+                                  }
+
+                                  if (income <= BigInt.zero) {
                                     return "Income must be greater than zero";
                                   }
 
                                   return null;
                                 },
+
 
                               ),
                               SizedBox(height: 12.0),
@@ -262,7 +261,7 @@ class _CheckEligibility extends State<CheckEligibility>{
                                   if(val!.trim().isEmpty){
                                     return "Please enter your company name";
                                   }else if(val.trim().length <3){
-                                    return "Please enter valid company name";
+                                    return "Please enter minimum 3 letter";
                                   }
                                   return null;
                                 },
@@ -305,12 +304,22 @@ class _CheckEligibility extends State<CheckEligibility>{
                                   controller: pinCodeController,
                                   hintText: "Enter Pin code",
                                   keyboardType: TextInputType.number,
+                                  maxLength: 6,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.digitsOnly,
                                   ],
-                                  onChanged: (val){
+                                  onChanged: (val) async{
                                     if(val.trim().length == 6){
-                                      context.read<LoanApplicationCubit>().getPinCodeDetailsApiCall(val);
+                                      var otpModel = await MySharedPreferences.getUserSessionDataNode();
+                                      VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
+                                      GetCityAndStateRequest getCityAndStateRequest = GetCityAndStateRequest(
+                                          custProfileId: verifyOtpModel.data?.custId ?? "",
+                                          leadId: verifyOtpModel.data?.leadId ?? "",
+                                          pincode: val.trim()
+                                      );
+                                      DebugPrint.prt("Get PinCode Data ${getCityAndStateRequest.toJson()}");
+
+                                      context.read<LoanApplicationCubit>().getPinCodeDetailsApiCall(getCityAndStateRequest.toJson());
                                     }
                                   },
                                   validator: (val)=> validateIndianPinCode(val)
@@ -409,6 +418,9 @@ class _CheckEligibility extends State<CheckEligibility>{
                           if(_formKey.currentState!.validate()){
                             var otpModel = await MySharedPreferences.getUserSessionDataNode();
                             VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
+                            final info = NetworkInfo();
+                            final ip = await info.getWifiIP();
+
                             var dataObj = {
                               "custId": verifyOtpModel.data?.custId,
                               "employementType": employmentType,
@@ -424,7 +436,7 @@ class _CheckEligibility extends State<CheckEligibility>{
                               "salaryAmt": int.parse(netMonthlyIncome.text.trim()),
                               "dob": dateOfBirthPassed,
                               "gender":gender,
-                              "ip_web": "192.0.0.0",
+                              "ip_web": ip,
                               "empName": companyNameController.text.trim()
                             };
                             DebugPrint.prt("Data Obj To Api $dataObj");
@@ -437,31 +449,36 @@ class _CheckEligibility extends State<CheckEligibility>{
                     SizedBox(
                       height: 20,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Need  Help..?",
-                          style: TextStyle(
-                              fontFamily: FontConstants.fontFamily,
-                              fontSize: FontConstants.f14,
-                              fontWeight: FontConstants.w600,
-                              color: ColorConstant.blackTextColor
+                    InkWell(
+                      onTap: (){
+                        context.push(AppRouterName.customerSupport);
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Need  Help..?",
+                            style: TextStyle(
+                                fontFamily: FontConstants.fontFamily,
+                                fontSize: FontConstants.f14,
+                                fontWeight: FontConstants.w600,
+                                color: ColorConstant.blackTextColor
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          width: 13.0,
-                        ),
-                        Text(
-                          "contact us",
-                          style: TextStyle(
-                              fontFamily: FontConstants.fontFamily,
-                              fontSize: FontConstants.f14,
-                              fontWeight: FontConstants.w800,
-                              color: ColorConstant.blackTextColor
+                          SizedBox(
+                            width: 13.0,
                           ),
-                        ),
-                      ],
+                          Text(
+                            "contact us",
+                            style: TextStyle(
+                                fontFamily: FontConstants.fontFamily,
+                                fontSize: FontConstants.f14,
+                                fontWeight: FontConstants.w800,
+                                color: ColorConstant.blackTextColor
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -473,13 +490,12 @@ class _CheckEligibility extends State<CheckEligibility>{
     );
   }
 
-
   void _pickDateOfBirth(BuildContext context) async {
     final pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now().subtract(const Duration(days: 365 * 18)),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
+      initialDate: DateTime(DateTime.now().year-21,DateTime.now().month,DateTime.now().day),
+      firstDate: DateTime(DateTime.now().year-55,DateTime.now().month,DateTime.now().day),
+      lastDate: DateTime(DateTime.now().year-21,DateTime.now().month,DateTime.now().day),
     );
 
     if (pickedDate != null) {
@@ -488,7 +504,6 @@ class _CheckEligibility extends State<CheckEligibility>{
       dateOfBirth.text = formattedUi;
     }
   }
-
 
   Widget labelTypeWidget(String label){
     return Text(
@@ -502,7 +517,6 @@ class _CheckEligibility extends State<CheckEligibility>{
     );
   }
 
- 
   Widget employmentTypeSelector({
     required int selectedType,
     required Function(int) onChanged,
@@ -525,8 +539,6 @@ class _CheckEligibility extends State<CheckEligibility>{
     );
   }
 
-
-
   Widget modeOfIncomeTypeSelector({
     required int selectedType,
     required Function(int) onChanged,
@@ -548,9 +560,6 @@ class _CheckEligibility extends State<CheckEligibility>{
       ],
     );
   }
-
-
-
 
   Widget _buildOption({
     required String label,

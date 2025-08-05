@@ -10,6 +10,7 @@ import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../Constant/FontConstant/FontConstant.dart';
 import '../../Routes/app_router_name.dart';
+import '../../Utils/FirebaseNotificationService.dart';
 import '../../Widget/common_button.dart';
 
 
@@ -22,6 +23,18 @@ class PermissionPage extends StatefulWidget {
 
 class _PermissionPage extends State<PermissionPage> {
   bool allPermissionAccepted = false;
+
+
+  @override
+  void initState() {
+    super.initState();
+    allowNotification();
+  }
+
+
+  void allowNotification() async{
+    await FirebaseNotificationService().init(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +159,10 @@ class _PermissionPage extends State<PermissionPage> {
 
     if (cameraPermission.isGranted &&
         microPhonePermission.isGranted &&
-        locationPermission.isGranted) {
+        locationPermission.isGranted &&
+        !(await Permission.notification.isDenied ||
+            await Permission.notification.isPermanentlyDenied)
+    ) {
       MySharedPreferences.setPermissionStatus(true);
       context.push(AppRouterName.login);
     } else {

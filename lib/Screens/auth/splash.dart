@@ -9,6 +9,7 @@ import 'package:loan112_app/Model/VerifyOTPModel.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
 import 'package:loan112_app/Utils/MysharePrefenceClass.dart';
 import '../../Routes/app_router_name.dart';
+import '../../Utils/FirebaseNotificationService.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -33,26 +34,11 @@ class _SplashScreenState extends State<SplashScreen> {
     );
 
     Future.delayed(Duration.zero, () {
-     // requestNotificationPermissions();
       _initAsync(context);
     });
   }
 
-  void requestNotificationPermissions() async {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-    NotificationSettings settings = await messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-
-    DebugPrint.prt('User granted permission: ${settings.authorizationStatus}');
-    FirebaseMessaging.instance.getToken().then((token) {
-      DebugPrint.prt("✅ FCM Token: $token");
-    });
-
-  }
 
 
 
@@ -63,7 +49,7 @@ class _SplashScreenState extends State<SplashScreen> {
     var dashBoardDataPhp = await MySharedPreferences.getUserSessionDataPhp();
     DebugPrint.prt("Is permission Given $isPermissionGiven");
     DebugPrint.prt("Dashbaord Data $dashBoardData,$dashBoardDataPhp");
-    Future.delayed(const Duration(seconds: 3), ()  {
+    Future.delayed(const Duration(seconds: 3), ()  async{
       if(dashBoardData != "" && dashBoardData != null){
         VerifyOTPModel verifyOTPModel = VerifyOTPModel.fromJson(jsonDecode(dashBoardData));
         //VerifyOTPModel verifyOTPModelPhp = VerifyOTPModel.fromJson(jsonDecode(dashBoardDataPhp));
@@ -77,7 +63,8 @@ class _SplashScreenState extends State<SplashScreen> {
             GoRouter.of(context).go(AppRouterName.permissionPage);
           }
         }
-      } else{
+      }
+      else{
         if(isPermissionGiven){
           context.go(AppRouterName.login);
         }else{

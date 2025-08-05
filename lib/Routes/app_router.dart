@@ -3,6 +3,7 @@ import 'package:loan112_app/Model/CheckBankStatementStatusModel.dart';
 import 'package:loan112_app/Model/CreateLeadModel.dart';
 import 'package:loan112_app/Model/DashBoarddataModel.dart';
 import 'package:loan112_app/Model/UpdateBankAccountModel.dart';
+import 'package:loan112_app/Model/UploadSelfieModel.dart';
 import 'package:loan112_app/Screens/Repayment/payment_screen.dart';
 import 'package:loan112_app/Screens/TermsAndCondition/terms_and_condition.dart';
 import 'package:loan112_app/Screens/auth/login_page.dart';
@@ -50,7 +51,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(path: AppRouterName.loanApplicationPage,builder: (context,state)=> LoanApplicationPage()),
     GoRoute(path: AppRouterName.checkEligibilityPage,builder: (context,state)=> CheckEligibility()),
     GoRoute(path: AppRouterName.eligibilityStatus,builder: (context,state){
-      final model = state.extra as CreateLeadModel;
+      final model = state.extra as UploadSelfieModel;
       return EligibilityStatus(createLeadModel: model);
     }),
     GoRoute(path: AppRouterName.bankStatement,builder: (context,state)=> BankStatementScreen()),
@@ -68,7 +69,8 @@ final GoRouter appRouter = GoRouter(
       return SelfieUploadedPage(imagePath: pathOfImage);
     }),
     GoRoute(path: AppRouterName.loanOfferPage,builder: (context,state){
-      return LoanOfferScreen();
+      int isEnhance = state.extra as int;
+      return LoanOfferScreen(enhance: isEnhance);
     }),
     GoRoute(path: AppRouterName.addReference,builder: (context,state) => AddReferenceScreen()),
     GoRoute(path: AppRouterName.utilityBillScreen,builder: (context,state) => UtilityBillScreen()),
@@ -94,8 +96,7 @@ final GoRouter appRouter = GoRouter(
       );
     }),
     GoRoute(path: AppRouterName.customerSupport,builder: (context,state){
-      DashBoarddataModel dashBoardData = state.extra as DashBoarddataModel;
-      return CustomerSupportUiScreen(dashBoarddataModel: dashBoardData);
+      return CustomerSupportUiScreen();
     }),
     GoRoute(path: AppRouterName.paymentStatusPage,builder: (context,state) {
       return PaymentStatusPage();

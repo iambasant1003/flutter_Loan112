@@ -3,13 +3,13 @@ import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
 import 'package:loan112_app/Model/DashBoarddataModel.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
+import 'package:loan112_app/Utils/MysharePrefenceClass.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:loan112_app/Widget/app_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CustomerSupportUiScreen extends StatefulWidget {
-   final  DashBoarddataModel dashBoarddataModel;
-  const CustomerSupportUiScreen({super.key,required this.dashBoarddataModel});
+  const CustomerSupportUiScreen({super.key});
 
   @override
   State<StatefulWidget> createState() => _CustomerSupportUiScreen();
@@ -17,6 +17,10 @@ class CustomerSupportUiScreen extends StatefulWidget {
 
 class _CustomerSupportUiScreen extends State<CustomerSupportUiScreen> {
   int selectedIndex = 1;
+
+  String contactEmail ="";
+  String contactNumber = "";
+  String contactWhatsAppNumber = "";
 
   final List<Map<String, dynamic>> contactOptions = [
     {
@@ -33,6 +37,19 @@ class _CustomerSupportUiScreen extends State<CustomerSupportUiScreen> {
     },
   ];
 
+
+  @override
+  void initState() {
+    super.initState();
+    getAllData();
+  }
+
+
+  void getAllData() async{
+    contactEmail = await MySharedPreferences.getContactUsEmail();
+    contactNumber = await MySharedPreferences.getCallUsNumber();
+    contactWhatsAppNumber = await MySharedPreferences.getChatUsNumber();
+  }
 
 
   @override
@@ -99,11 +116,11 @@ class _CustomerSupportUiScreen extends State<CustomerSupportUiScreen> {
                       child: InkWell(
                         onTap: (){
                           if(index ==0){
-                            launchEmail(toEmail:widget.dashBoarddataModel.data?.contactUsEmail?? "");
+                            launchEmail(toEmail:contactEmail);
                           }else if(index == 1){
-                            dialPhoneNumber(widget.dashBoarddataModel.data?.contactUsNumber ?? "");
+                            dialPhoneNumber(contactNumber);
                           }else{
-                            openWhatsAppChat(widget.dashBoarddataModel.data?.contactUsWhatsappNumber ?? "");
+                            openWhatsAppChat(contactWhatsAppNumber);
                           }
                         },
                         child:Row(

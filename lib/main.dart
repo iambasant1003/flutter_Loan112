@@ -1,6 +1,6 @@
 
 
-import 'package:firebase_messaging/firebase_messaging.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,10 +12,6 @@ import 'Constant/ColorConst/ColorConstant.dart';
 import 'Constant/ConstText/ConstText.dart';
 import 'Routes/app_router.dart';
 import 'Utils/AppConfig.dart';
-
-
-
-
 
 
 class MyApp extends StatefulWidget {
@@ -38,16 +34,6 @@ class MyAppState extends State<MyApp> {
     // Initialize your config class
     AppConfig.init(widget.environment);
     configLoading();
-
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('📩 Foreground message received: ${message.notification?.title}');
-      // Show local notification if needed
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('🔁 Message opened the app: ${message.notification?.title}');
-      // Navigate user to specific screen
-    });
   }
 
 

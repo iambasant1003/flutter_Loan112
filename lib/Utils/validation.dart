@@ -18,8 +18,10 @@ String? validateDateOfBirth(String? value){
     final age = today.year - dob.year -
         ((today.month < dob.month || (today.month == dob.month && today.day < dob.day)) ? 1 : 0);
 
-    if (age < 18) {
-      return 'You must be at least 18 years old';
+    if (age < 21) {
+      return 'You must be at least 21 years old';
+    }else if(age > 55){
+      return 'You must be less then 55 years old';
     }
   } catch (e) {
     return 'Enter date in format dd/MM/yyyy';

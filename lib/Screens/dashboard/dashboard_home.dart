@@ -8,6 +8,7 @@ import 'package:loan112_app/Cubit/dashboard_cubit/DashboardState.dart';
 import 'package:loan112_app/Model/DashBoarddataModel.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
+import 'package:loan112_app/Utils/MysharePrefenceClass.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../Constant/ColorConst/ColorConstant.dart';
@@ -54,6 +55,9 @@ class _DashBoardHome extends State<DashBoardHome>{
         }else if(state is DashBoardSuccess){
           EasyLoading.dismiss();
           dashBoarddataModel = state.dashBoardModel;
+          MySharedPreferences.setCallUsNumber(dashBoarddataModel?.data?.contactUsNumber ?? "");
+          MySharedPreferences.setChatUsNumber(dashBoarddataModel?.data?.contactUsWhatsappNumber ?? "");
+          MySharedPreferences.setContactUsEmail(dashBoarddataModel?.data?.contactUsEmail ?? "");
         }else if(state is DashBoardError){
           DebugPrint.prt("DashBoard Is facing Error");
           EasyLoading.dismiss();
@@ -137,13 +141,16 @@ class _DashBoardHome extends State<DashBoardHome>{
                                             DebugPrint.prt("application Submitted ${dashBoarddataModel?.data?.applicationSubmitted}");
                                             DebugPrint.prt("application loan History ${dashBoarddataModel?.data?.showLoanHistoryBtnFlag}");
                                             if(dashBoarddataModel?.data?.applyLoanBanner?.appBannerBtnActiveFlag == 1
-                                                && dashBoarddataModel?.data?.applicationSubmitted != 1&& dashBoarddataModel?.data?.showLoanHistoryBtnFlag != 1){
+                                                && dashBoarddataModel?.data?.applicationSubmitted != 1){
                                               context.push(AppRouterName.loanApplicationPage);
                                             }
                                             if(dashBoarddataModel?.data?.applicationSubmitted == 1
                                                 && dashBoarddataModel?.data?.showLoanHistoryBtnFlag != 1){
                                               context.push(AppRouterName.dashBoardStatus);
-                                            } else if(dashBoarddataModel?.data?.showLoanHistoryBtnFlag == 1){
+                                            } else if(
+                                            dashBoarddataModel?.data?.showLoanHistoryBtnFlag == 1 &&
+                                             dashBoarddataModel?.data?.applicationSubmitted == 1
+                                            ){
                                               context.push(AppRouterName.repaymentPage);
                                             }
                                           },
@@ -157,7 +164,7 @@ class _DashBoardHome extends State<DashBoardHome>{
                                   ],
                                 ),
                                 SizedBox(
-                                  height: 40.0,
+                                  height: 20.0,
                                 ),
                                 (
                                     dashBoarddataModel?.data?.activeLoanDetails != null &&

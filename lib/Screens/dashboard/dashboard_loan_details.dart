@@ -219,8 +219,8 @@ class DashboardLoanDetails extends StatelessWidget {
               ),
               Positioned(
                 bottom: -20,
-                left: 10,
-                right: 10,
+                left: 50,
+                right: 50,
                 child: SizedBox(
                   width: 150,
                   child: Loan112Button(
