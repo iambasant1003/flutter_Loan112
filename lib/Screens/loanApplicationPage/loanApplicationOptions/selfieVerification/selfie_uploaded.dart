@@ -23,34 +23,33 @@ import '../../../../Widget/app_bar.dart';
 import 'package:image/image.dart' as img;
 import 'package:http_parser/http_parser.dart';
 
-
-class SelfieUploadedPage extends StatefulWidget{
+class SelfieUploadedPage extends StatefulWidget {
   final String imagePath;
-  const SelfieUploadedPage({super.key,required this.imagePath});
+
+  const SelfieUploadedPage({super.key, required this.imagePath});
 
   @override
   State<StatefulWidget> createState() => _SelfieUploadedPage();
 }
 
-class _SelfieUploadedPage extends State<SelfieUploadedPage>{
+class _SelfieUploadedPage extends State<SelfieUploadedPage> {
 
 
-
-  getCustomerDetailsApiCall() async{
+  getCustomerDetailsApiCall() async {
     var otpModel = await MySharedPreferences.getPhpOTPModel();
-    SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
+    SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(
+      jsonDecode(otpModel),
+    );
     context.read<LoanApplicationCubit>().getCustomerDetailsApiCall({
-      "cust_profile_id": sendPhpOTPModel.data?.custProfileId
+      "cust_profile_id": sendPhpOTPModel.data?.custProfileId,
     });
   }
-
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocListener<LoanApplicationCubit,LoanApplicationState>(
-        listenWhen: (prev,current){
+      body: BlocListener<LoanApplicationCubit, LoanApplicationState>(
+        listenWhen: (prev, current) {
           return prev != current;
         },
         listener: (context, state) {
@@ -58,48 +57,66 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage>{
 
           if (state is LoanApplicationLoading) {
             EasyLoading.show(status: "Please Wait...");
-          }
-
-          else if (state is UploadSelfieSuccess) {
+          } else if (state is UploadSelfieSuccess) {
             EasyLoading.dismiss();
 
-            WidgetsBinding.instance.addPostFrameCallback((_) {
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
               if (!context.mounted) return;
 
               openSnackBar(
                 context,
-                state.uploadSelfieModel.message ?? "Selfie uploaded successfully",
-                backGroundColor: ColorConstant.appThemeColor
+                state.uploadSelfieModel.message ??
+                    "Selfie uploaded successfully",
+                backGroundColor: ColorConstant.appThemeColor,
               );
-
-              Future.delayed(Duration(milliseconds: 500), () {
-                if (!context.mounted) return;
-                context.pop();
-              });
-
-              getCustomerDetailsApiCall();
+              if((state.uploadSelfieModel.data?.decision ?? "").toLowerCase() == "repeat" &&
+                  (state.uploadSelfieModel.data?.checkKycFlag ?? true) == false
+                ){
+                  await MySharedPreferences.setEnhanceKey("1");
+              }else{
+                await MySharedPreferences.setEnhanceKey("0");
+              }
+              if((state.uploadSelfieModel.data?.loanAmount ?? 0)>0
+                  && (state.uploadSelfieModel.data?.decision ?? "").toLowerCase() == "approve"){
+                 var enhanceKey = await MySharedPreferences.getEnhanceKey();
+                 context.pop();
+                 context.push(AppRouterName.loanOfferPage,extra: int.parse(enhanceKey));
+              }else{
+                context.replace(
+                  AppRouterName.eligibilityStatus,
+                  extra: state.uploadSelfieModel,
+                );
+              }
+              // Future.delayed(Duration(milliseconds: 500), () {
+              //   if (!context.mounted) return;
+              //   context.pop();
+              // });
+              //
+              // getCustomerDetailsApiCall();
             });
-          }
-
-          else if (state is UploadSelfieError) {
+          } else if (state is UploadSelfieError) {
             EasyLoading.dismiss();
 
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!context.mounted) return;
 
-              if (state.uploadSelfieModel.message == "You are not eligible" && state.uploadSelfieModel.statusCode == 402 && state.uploadSelfieModel.success == false) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-    if (!context.mounted) return;
-    context.replace(AppRouterName.eligibilityStatus, extra: state.uploadSelfieModel);
-    });
+              if (state.uploadSelfieModel.statusCode == 402) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (!context.mounted) return;
+                  context.replace(
+                    AppRouterName.eligibilityStatus,
+                    extra: state.uploadSelfieModel,
+                  );
+                });
               }
-              else{
+              else if (state.uploadSelfieModel.message?.toLowerCase() == "already done") {
+              }
+              else {
                 openSnackBar(
                   context,
                   state.uploadSelfieModel.message ?? "Unknown Error",
                 );
               }
-
             });
           }
         },
@@ -113,176 +130,198 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage>{
             ),
 
             SafeArea(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Loan112AppBar(
-                      customLeading: InkWell(
-                        child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
-                        onTap: (){
-                          context.pop();
-                          getCustomerDetailsApiCall();
-                        },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Loan112AppBar(
+                    customLeading: InkWell(
+                      child: Icon(
+                        Icons.arrow_back_ios,
+                        color: ColorConstant.blackTextColor,
                       ),
+                      onTap: () {
+                        context.pop();
+                        getCustomerDetailsApiCall();
+                      },
                     ),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                height: 24.0,
-                              ),
-                              Text(
-                                "Selfie Uploaded",
-                                style: TextStyle(
-                                    fontSize: FontConstants.f20,
-                                    fontWeight: FontConstants.w800,
-                                    fontFamily: FontConstants.fontFamily,
-                                    color: ColorConstant.blackTextColor
-                                ),
-                              ),
-                              SizedBox(
-                                height: 63,
-                              ),
-                              Center(
-                            child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12.0),
-                        child: Transform(
-                          alignment: Alignment.center,
-                          transform: Matrix4.rotationY(math.pi),
-                          child: SizedBox(
-                            height: 245,
-                            width: 245,
-                            child: Image.file(
-                              File(widget.imagePath),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: FontConstants.horizontalPadding,
                         ),
-                      ),
-                    ),
-                              SizedBox(
-                                height: 43,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 24.0),
+                            Text(
+                              "Selfie Uploaded",
+                              style: TextStyle(
+                                fontSize: FontConstants.f20,
+                                fontWeight: FontConstants.w800,
+                                fontFamily: FontConstants.fontFamily,
+                                color: ColorConstant.blackTextColor,
                               ),
-                              Center(
-                                child: InkWell(
-                                  onTap: (){
-                                    context.replace(AppRouterName.selfieScreenPath);
-                                  },
-                                  child: Text(
-                                    "RECAPTURE",
-                                    style: TextStyle(
-                                        fontSize: FontConstants.f18,
-                                        fontWeight: FontConstants.w700,
-                                        fontFamily: FontConstants.fontFamily,
-                                        color: ColorConstant.appThemeColor
+                            ),
+                            SizedBox(height: 63),
+                            Center(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12.0),
+                                child: Transform(
+                                  alignment: Alignment.center,
+                                  transform: Matrix4.rotationY(math.pi),
+                                  child: SizedBox(
+                                    height: 245,
+                                    width: 245,
+                                    child: Image.file(
+                                      File(widget.imagePath),
+                                      fit: BoxFit.fill,
                                     ),
                                   ),
                                 ),
                               ),
-                              SizedBox(
-                                height: 12,
+                            ),
+                            SizedBox(height: 43),
+                            Center(
+                              child: InkWell(
+                                onTap: () {
+                                  context.replace(
+                                    AppRouterName.selfieScreenPath,
+                                  );
+                                },
+                                child: Text(
+                                  "RECAPTURE",
+                                  style: TextStyle(
+                                    fontSize: FontConstants.f18,
+                                    fontWeight: FontConstants.w700,
+                                    fontFamily: FontConstants.fontFamily,
+                                    color: ColorConstant.appThemeColor,
+                                  ),
+                                ),
                               ),
-                              Row(
-                                children: [
-                                  Container(
-                                    height: 1,
-                                    width: MediaQuery.of(context).size.width * 0.4,
-                                    color: ColorConstant.dashboardTextColor,
+                            ),
+                            SizedBox(height: 12),
+                            Row(
+                              children: [
+                                Container(
+                                  height: 1,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.4,
+                                  color: ColorConstant.dashboardTextColor,
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  "OR",
+                                  style: TextStyle(
+                                    fontSize: FontConstants.f14,
+                                    fontWeight: FontConstants.w700,
+                                    fontFamily: FontConstants.fontFamily,
+                                    color: ColorConstant.blackTextColor,
                                   ),
-                                  SizedBox(
-                                    width: 8,
-                                  ),
-                                  Text(
-                                    "OR",
-                                    style: TextStyle(
-                                        fontSize: FontConstants.f14,
-                                        fontWeight: FontConstants.w700,
-                                        fontFamily: FontConstants.fontFamily,
-                                        color: ColorConstant.blackTextColor
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 8,
-                                  ),
-                                  Container(
-                                    height: 1,
-                                    width: MediaQuery.of(context).size.width * 0.4,
-                                    color: ColorConstant.dashboardTextColor,
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 12,
-                              ),
-                              Loan112Button(onPressed: () async{
-                                var imagePathConverted = await convertToJpeg(widget.imagePath);
-                                DebugPrint.prt("Image Path ${imagePathConverted.path}");
-                                var otpModel = await MySharedPreferences.getUserSessionDataNode();
-                                VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
+                                ),
+                                SizedBox(width: 8),
+                                Container(
+                                  height: 1,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.4,
+                                  color: ColorConstant.dashboardTextColor,
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 12),
+                            Loan112Button(
+                              onPressed: () async {
+                                var imagePathConverted = await convertToJpeg(
+                                  widget.imagePath,
+                                );
+                                DebugPrint.prt(
+                                  "Image Path ${imagePathConverted.path}",
+                                );
+                                var otpModel =
+                                    await MySharedPreferences.getUserSessionDataNode();
+                                VerifyOTPModel verifyOtpModel =
+                                    VerifyOTPModel.fromJson(
+                                      jsonDecode(otpModel),
+                                    );
 
                                 var customerId = verifyOtpModel.data?.custId;
                                 var leadId = verifyOtpModel.data?.leadId;
-                                if(leadId == "" || leadId == null){
-                                  leadId = await MySharedPreferences.getLeadId();
+                                if (leadId == "" || leadId == null) {
+                                  leadId =
+                                      await MySharedPreferences.getLeadId();
                                 }
 
                                 final formData = FormData();
 
                                 // Add text parts
                                 formData.fields
-                                  ..add(MapEntry('custId', customerId?? ""))
+                                  ..add(MapEntry('custId', customerId ?? ""))
                                   ..add(MapEntry('leadId', leadId))
-                                  ..add(MapEntry('requestSource', ConstText.requestSource));
+                                  ..add(
+                                    MapEntry(
+                                      'requestSource',
+                                      ConstText.requestSource,
+                                    ),
+                                  );
 
                                 // Prepare file part
                                 final file = File(imagePathConverted.path);
 
                                 if (!await file.exists()) {
-                                  throw Exception('File does not exist at ${file.path}');
+                                  throw Exception(
+                                    'File does not exist at ${file.path}',
+                                  );
                                 }
 
                                 final fileName = file.uri.pathSegments.last;
-                                final fileExtension = fileName.split('.').last.toLowerCase();
+                                final fileExtension = fileName
+                                    .split('.')
+                                    .last
+                                    .toLowerCase();
 
                                 String? mimeType;
-                                if (fileExtension == 'jpg' || fileExtension == 'jpeg') {
+                                if (fileExtension == 'jpg' ||
+                                    fileExtension == 'jpeg') {
                                   mimeType = 'image/jpeg';
                                 } else if (fileExtension == 'pdf') {
                                   mimeType = 'application/pdf';
                                 } else {
-                                  throw Exception('Unsupported file type: $fileExtension');
+                                  throw Exception(
+                                    'Unsupported file type: $fileExtension',
+                                  );
                                 }
 
-                                final multipartFile = await MultipartFile.fromFile(
-                                  file.path,
-                                  filename: fileName,
-                                  contentType: MediaType.parse(mimeType),
+                                final multipartFile =
+                                    await MultipartFile.fromFile(
+                                      file.path,
+                                      filename: fileName,
+                                      contentType: MediaType.parse(mimeType),
+                                    );
+
+                                formData.files.add(
+                                  MapEntry('selfie', multipartFile),
                                 );
 
-                                formData.files.add(MapEntry('selfie', multipartFile));
-
-
-                                context.read<LoanApplicationCubit>().uploadSelfieApiCall(formData);
-                              }, text: "CONTINUE")
-                            ],
-                          ),
+                                context
+                                    .read<LoanApplicationCubit>()
+                                    .uploadSelfieApiCall(formData);
+                              },
+                              text: "CONTINUE",
+                            ),
+                          ],
                         ),
                       ),
-                    )
-                  ],
-                )
-            )
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
     );
   }
-
-
 
   Future<File> convertToJpeg(String inputPath, {int quality = 90}) async {
     final file = File(inputPath);
@@ -305,7 +344,4 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage>{
 
     return outputFile;
   }
-
-
 }
-

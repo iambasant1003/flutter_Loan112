@@ -30,9 +30,9 @@ class _RepaymentPage extends State<RepaymentPage>{
   @override
   void initState() {
     super.initState();
+    getLoanHistoryModel = GetLoanHistoryModel();
     getLoanHistory();
   }
-
 
   getLoanHistory() async{
     var otpModel = await MySharedPreferences.getPhpOTPModel();
@@ -41,7 +41,6 @@ class _RepaymentPage extends State<RepaymentPage>{
       "cust_profile_id": sendPhpOTPModel.data?.custProfileId
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -109,8 +108,6 @@ class _RepaymentPage extends State<RepaymentPage>{
         )
     );
   }
-
-
 
   Widget loanHistoryContainerWidget(BuildContext context){
     return Container(

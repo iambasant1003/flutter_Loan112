@@ -113,6 +113,24 @@ class _VerifyOTP extends State<VerifyOTP>{
                    bottom: true,
                    child: Column(
                      children: [
+                       Padding(
+                         padding: EdgeInsets.only(bottom: 11.0),
+                         child: Loan112AppBar(
+                           customLeading: InkWell(
+                             child: Icon(Icons.arrow_back_ios,
+                                 color: ColorConstant.blackTextColor),
+                             onTap: () {
+                               GoRouter.of(context).pop();
+                             },
+                           ),
+                           leadingSpacing: 15,
+                           title: Image.asset(
+                             ImageConstants.loan112AppNameIcon,
+                             height: 76,
+                             width: 76,
+                           ),
+                         ),
+                       ),
                        /// Scrollable form content
                        Expanded(
                          child: SingleChildScrollView(
@@ -120,24 +138,6 @@ class _VerifyOTP extends State<VerifyOTP>{
                            child: Column(
                              mainAxisSize: MainAxisSize.min,
                              children: [
-                               Padding(
-                                 padding: EdgeInsets.only(bottom: 11.0),
-                                 child: Loan112AppBar(
-                                   customLeading: InkWell(
-                                     child: Icon(Icons.arrow_back_ios,
-                                         color: ColorConstant.blackTextColor),
-                                     onTap: () {
-                                       GoRouter.of(context).pop();
-                                     },
-                                   ),
-                                   leadingSpacing: 15,
-                                   title: Image.asset(
-                                     ImageConstants.loan112AppNameIcon,
-                                     height: 76,
-                                     width: 76,
-                                   ),
-                                 ),
-                               ),
                                SizedBox(height: 48.0),
                                Image.asset(
                                  ImageConstants.verifyOTP,

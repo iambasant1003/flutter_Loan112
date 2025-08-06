@@ -33,7 +33,11 @@ Future<void> mainCommon(String env) async{
   setupLocator();
 
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: ColorConstant.appThemeColor));
+  //SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: ColorConstant.appThemeColor));
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    systemNavigationBarColor: Colors.blue, // navigation bar color
+    statusBarColor: Colors.pink, // status bar color
+  ));
   runApp(MyApp(environment: env));
 }
 

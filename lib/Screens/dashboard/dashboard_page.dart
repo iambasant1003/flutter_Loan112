@@ -54,10 +54,17 @@ class _DashBoardPage extends State<DashBoardPage>{
                 ),
                 appBar: Loan112AppBar(
                   leadingSpacing: 25,
-                  title: Image.asset(
-                    ImageConstants.loan112AppNameIcon,
-                    height: 76,
-                    width: 76,
+                  title: Builder(
+                      builder: (context)=> InkWell(
+                        onTap: () {
+                          Scaffold.of(context).openDrawer();
+                        },
+                        child: Image.asset(
+                          ImageConstants.loan112AppNameIcon,
+                          height: 76,
+                          width: 76,
+                        ),
+                      )
                   ),
                   customLeading: Builder(
                     builder: (context) => Padding(

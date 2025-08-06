@@ -20,8 +20,8 @@ String? validateDateOfBirth(String? value){
 
     if (age < 21) {
       return 'You must be at least 21 years old';
-    }else if(age > 55){
-      return 'You must be less then 55 years old';
+    }else if(age > 56){
+      return 'You must be less then 56 years old';
     }
   } catch (e) {
     return 'Enter date in format dd/MM/yyyy';

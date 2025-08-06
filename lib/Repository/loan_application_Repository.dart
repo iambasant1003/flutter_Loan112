@@ -313,9 +313,9 @@ class LoanApplicationRepository {
     }
   }
 
-  Future<ApiResponse<GetUtilityDocTypeModel>> getUtilityTyeApiCallFunction() async{
+  Future<ApiResponse<GetUtilityDocTypeModel>> getUtilityTyeApiCallFunction(Map<String,dynamic> dataObj) async{
     try {
-      final response = await apiClass.get(getUtilityDoc,isHeader: true);
+      final response = await apiClass.post(getUtilityDoc,dataObj,isHeader: true);
       DebugPrint.prt("API Response Utility Type data ${response.data}");
 
       final Map<String, dynamic> responseData = response.data;

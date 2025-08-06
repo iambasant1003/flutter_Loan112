@@ -17,7 +17,7 @@ import '../../../../Constant/ConstText/ConstText.dart';
 import '../../../../Constant/FontConstant/FontConstant.dart';
 import '../../../../Constant/ImageConstant/ImageConstants.dart';
 import '../../../../Model/GetUtilityDocTypeModel.dart';
-import '../../../../Model/VerifyOTPModel.dart';
+import '../../../../Model/VerifyOTPModel.dart' hide Data;
 import '../../../../Utils/Debugprint.dart';
 import '../../../../Utils/MysharePrefenceClass.dart';
 import '../../../../Utils/snackbarMassage.dart';
@@ -49,6 +49,7 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
   String? fileNamePath;
   String? fileName;
   String? fileSize;
+  int count = 0;
 
   final TextEditingController _passwordController = TextEditingController();
 
@@ -120,9 +121,19 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
   @override
   void initState() {
     super.initState();
-    context.read<LoanApplicationCubit>().getUtilityTypeDocApiCall();
+    getUtilityBillDoc();
   }
 
+
+  void getUtilityBillDoc() async{
+    var otpModel = await MySharedPreferences.getUserSessionDataNode();
+    VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
+    var leadId = verifyOtpModel.data?.leadId;
+    if(leadId == "" || leadId == null){
+      leadId = await MySharedPreferences.getLeadId();
+    }
+    context.read<LoanApplicationCubit>().getUtilityTypeDocApiCall({"leadId":leadId});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,8 +147,37 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
           }
 
           else if (state is GetUtilityDocTypeLoaded) {
+            setState(() {
+              getUtilityDocTypeModel = state.getUtilityDocTypeModel;
+              if (selectedDocument != null && getUtilityDocTypeModel?.data != null) {
+                Data? match;
+                for (final d in getUtilityDocTypeModel!.data!) {
+                  if (d.docsId == selectedDocument!.docsId) { // replace d.id with your unique field
+                    match = d;
+                    break;
+                  }
+                }
+                selectedDocument = match; // becomes null if not found
+              }
+              else {
+                selectedDocument = null;
+              }
+            });
+            DebugPrint.prt("Data Doc Length ${getUtilityDocTypeModel?.data?.length}");
+            for(var i =0;i<state.getUtilityDocTypeModel.data!.length;i++){
+              if((state.getUtilityDocTypeModel.data![i].isUploaded ?? false)){
+                count = count+1;
+              }
+            }
+            DebugPrint.prt("Count In Success $count");
+            if(count >=2){
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (context.mounted) {
+                  context.pop();
+                }
+              });
+            }
             EasyLoading.dismiss();
-            DebugPrint.prt("List data length ${state.getUtilityDocTypeModel.data?.length}");
           }
 
           else if (state is LoanApplicationError) {
@@ -151,14 +191,22 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
 
           else if (state is UploadUtilityDocSuccess) {
             EasyLoading.dismiss();
+            DebugPrint.prt("Final Result On utility Success ${state.uploadUtilityDocTypeModel.data?.finalResult}");
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (context.mounted) {
+                setState(() {
+                  fileNamePath = "";
+                  fileName = "";
+                  fileSize = "";
+                  pdfBytes = null;
+                  selectedDocument = null;
+                });
                 openSnackBar(
                   context,
                   state.uploadUtilityDocTypeModel.message ?? "",
                   backGroundColor: ColorConstant.appThemeColor,
                 );
-                context.pop();
+                getUtilityBillDoc();
               }
             });
           }
@@ -243,79 +291,72 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
 
 
   GetUtilityDocTypeModel? getUtilityDocTypeModel;
-  DataUtilityModel? selectedDocument;
+  Data? selectedDocument;
 
   Widget chooseDocumentButton(BuildContext context) {
-    return BlocBuilder<LoanApplicationCubit, LoanApplicationState>(
-      builder: (context, state) {
-        if (state is GetUtilityDocTypeLoaded) {
-          getUtilityDocTypeModel = state.getUtilityDocTypeModel;
-        }
-
-        if (getUtilityDocTypeModel?.data != null) {
-          return DropdownButtonHideUnderline(
-            child: DropdownButton2<DataUtilityModel>(
-              isExpanded: true,
-              hint: Text(
-                'Choose Your Document',
-                style: TextStyle(
-                  fontSize: FontConstants.f14,
-                  color: ColorConstant.blackTextColor,
-                  fontWeight: FontConstants.w400,
-                  fontFamily: FontConstants.fontFamily,
-                ),
-              ),
-              items: getUtilityDocTypeModel!.data!
-                  .map((item) => DropdownMenuItem<DataUtilityModel>(
-                value: item,
-                child: Text(
-                  item.docType ?? '',
-                  style: TextStyle(
-                    fontSize: FontConstants.f14,
-                    color: ColorConstant.blackTextColor,
-                    fontWeight: FontConstants.w500,
-                    fontFamily: FontConstants.fontFamily,
-                  ),
-                ),
-              ))
-                  .toList(),
-              value: selectedDocument,
-              onChanged: (value) {
-                setState(() {
-                  selectedDocument = value;
-                });
-              },
-              buttonStyleData: ButtonStyleData(
-                height: 50,
-                padding: const EdgeInsets.only(right: 12),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: ColorConstant.textFieldBorderColor,
-                  ),
-                  color: ColorConstant.appScreenBackgroundColor,
-                ),
-                elevation: 0,
-              ),
-              iconStyleData: IconStyleData(
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                  size: 20,
-                  color: ColorConstant.greyTextColor,
-                ),
-              ),
-              dropdownStyleData: DropdownStyleData(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                ),
+    if (getUtilityDocTypeModel?.data != null) {
+      return DropdownButtonHideUnderline(
+        child: DropdownButton2<Data>(
+          isExpanded: true,
+          hint: Text(
+            'Choose Your Document',
+            style: TextStyle(
+              fontSize: FontConstants.f14,
+              color: ColorConstant.blackTextColor,
+              fontWeight: FontConstants.w400,
+              fontFamily: FontConstants.fontFamily,
+            ),
+          ),
+          items: getUtilityDocTypeModel!.data!
+              .map((item) => DropdownMenuItem<Data>(
+            value: item,
+            child: Text(
+              item.docType ?? '',
+              style: TextStyle(
+                fontSize: FontConstants.f14,
+                color: ColorConstant.blackTextColor,
+                fontWeight: FontConstants.w500,
+                fontFamily: FontConstants.fontFamily,
               ),
             ),
-          );
-        } else {
-          return SizedBox.shrink();
-        }
-      },
-    );
+          ))
+              .toList(),
+          value: selectedDocument,
+          onChanged: (value) {
+            setState(() {
+              selectedDocument = value;
+            });
+          },
+          buttonStyleData: ButtonStyleData(
+            height: 50,
+            padding: const EdgeInsets.only(right: 12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: ColorConstant.textFieldBorderColor,
+              ),
+              color: ColorConstant.appScreenBackgroundColor,
+            ),
+            elevation: 0,
+          ),
+          iconStyleData: IconStyleData(
+            icon: Icon(
+              Icons.keyboard_arrow_down,
+              size: 20,
+              color: ColorConstant.greyTextColor,
+            ),
+          ),
+          dropdownStyleData: DropdownStyleData(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+      );
+    }
+    else {
+      return SizedBox.shrink();
+    }
   }
 
   Widget filePickingUI(BuildContext context){
@@ -528,7 +569,8 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
         ..add(MapEntry('custId', customerId?? ""))
         ..add(MapEntry('leadId', leadId))
         ..add(MapEntry('requestSource', ConstText.requestSource))
-        ..add(MapEntry('docType', ConstText.utilityBillType));
+        ..add(MapEntry('docType', selectedDocument?.docType ?? ""
+        ));
 
       // Prepare file part
       final file = File(imagePathConverted.path);

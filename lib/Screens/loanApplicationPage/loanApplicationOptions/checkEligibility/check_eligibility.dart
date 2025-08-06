@@ -110,6 +110,7 @@ class _CheckEligibility extends State<CheckEligibility>{
               if (!context.mounted) return;
               if(state.createLeadModel.data!.credauLoanOfferPage!){
                 context.pop();
+                MySharedPreferences.setEnhanceKey("1");
                 context.push(AppRouterName.loanOfferPage,extra: 1);
               }else{
                 context.pop();
@@ -129,6 +130,7 @@ class _CheckEligibility extends State<CheckEligibility>{
             EasyLoading.dismiss();
               openSnackBar(context, state.createLeadModel.message ?? "UnExpected Error");
           } else if (state is LoanApplicationError) {
+            EasyLoading.dismiss();
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!context.mounted) return;
               openSnackBar(context, state.message);
@@ -493,9 +495,22 @@ class _CheckEligibility extends State<CheckEligibility>{
   void _pickDateOfBirth(BuildContext context) async {
     final pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime(DateTime.now().year-21,DateTime.now().month,DateTime.now().day),
-      firstDate: DateTime(DateTime.now().year-55,DateTime.now().month,DateTime.now().day),
-      lastDate: DateTime(DateTime.now().year-21,DateTime.now().month,DateTime.now().day),
+      initialDate: DateTime(
+        DateTime.now().year - 21,
+        DateTime.now().month,
+        DateTime.now().day,
+      ),
+      firstDate: DateTime(
+        DateTime.now().year - 56,
+        DateTime.now().month,
+        DateTime.now().day,
+      ),
+      lastDate: DateTime(
+        DateTime.now().year - 21,
+        DateTime.now().month,
+        DateTime.now().day,
+      ),
+      locale: const Locale('en', 'GB'),   // Forces DD/MM/YYYY entry
     );
 
     if (pickedDate != null) {
