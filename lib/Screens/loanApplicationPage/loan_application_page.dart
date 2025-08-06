@@ -114,6 +114,8 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
                   state.getCustomerDetailsModel.data?.screenDetails!.toJson() as Map<String,dynamic>
               );
               getCustomerDetailsModel = state.getCustomerDetailsModel;
+              MySharedPreferences.setEnhanceKey((state.getCustomerDetailsModel.data?.screenDetails?.isEnhance ?? "").toString());
+              setState(() {});
             }else if(state is GetCustomerDetailsError){
               EasyLoading.dismiss();
               openSnackBar(context, state.getCustomerDetailsModel.message ?? "Unknown Error");
@@ -186,93 +188,95 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
                         ),
                         const SizedBox(height: 16),
                         // 👇 Wrap with Expanded
-                        BlocBuilder<JourneyCubit,Map<String,dynamic>>(
-                          builder: (context,state){
-                            return Expanded(
-                              child: ListView.builder(
-                                itemCount: stepKeys.length,
-                                itemBuilder: (context, index) {
-                                  final stepKey = step[index];
-                                  final int? status = int.tryParse(state[stepKey].toString());
+                        if(getCustomerDetailsModel != null)...[
+                          BlocBuilder<JourneyCubit,Map<String,dynamic>>(
+                            builder: (context,state){
+                              return Expanded(
+                                child: ListView.builder(
+                                  itemCount: stepKeys.length,
+                                  itemBuilder: (context, index) {
+                                    final stepKey = step[index];
+                                    final int? status = int.tryParse(state[stepKey].toString());
 
-                                  DebugPrint.prt("Status and Key $status,$stepKey");
+                                    DebugPrint.prt("Status and Key $status,$stepKey");
 
-                                  return Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      InkWell(
-                                        onTap:(){
-                                          DebugPrint.prt("Current Status $status");
-                                          if(status == null){
-                                            if(stepKeys[index].toLowerCase().contains('eligibility')){
-                                              context.push(AppRouterName.checkEligibilityPage).then((val){
-                                                getCustomerDetailsApiCall();
-                                              });
+                                    return Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        InkWell(
+                                          onTap:(){
+                                            DebugPrint.prt("Current Status $status");
+                                            if(status == null){
+                                              if(stepKeys[index].toLowerCase().contains('eligibility')){
+                                                context.push(AppRouterName.checkEligibilityPage).then((val){
+                                                  getCustomerDetailsApiCall();
+                                                });
+                                              }
+                                            }else{
+                                              if(stepKeys[index].toLowerCase().contains('eligibility') && status !=1 && status != 0){
+                                                context.push(AppRouterName.checkEligibilityPage).then((val){
+                                                  getCustomerDetailsApiCall();
+                                                });
+                                              }else if(stepKeys[index].toLowerCase().contains('statement')&& status != 1 && status != 0){
+                                                context.push(AppRouterName.bankStatement).then((val){
+                                                  getCustomerDetailsApiCall();
+                                                });
+                                              }else if(stepKeys[index].toLowerCase().contains('ekyc')&& status !=1 && status != 0){
+                                                context.push(AppRouterName.aaDarKYCScreen).then((val){
+                                                  getCustomerDetailsApiCall();
+                                                });
+                                              }else if(stepKeys[index].toLowerCase().contains('selfie')&& status!=1 && status != 0){
+                                                context.push(AppRouterName.selfieScreenPath).then((val){});
+                                              }else if(stepKeys[index].toLowerCase().contains("offer") &&status!=1 && status != 0){
+                                                context.push(AppRouterName.loanOfferPage,extra: getCustomerDetailsModel?.data?.screenDetails?.isEnhance).then((val){
+                                                  //getCustomerDetailsApiCall();
+                                                });
+                                              }else if(stepKeys[index].toLowerCase().contains('reference')&&status!=1 && status != 0){
+                                                context.push(AppRouterName.addReference).then((val){
+                                                  getCustomerDetailsApiCall();
+                                                });
+                                              }else if(stepKeys[index].toLowerCase().contains('utility')&&status!=1 && status != 0){
+                                                context.push(AppRouterName.utilityBillScreen).then((val){
+                                                  getCustomerDetailsApiCall();
+                                                });
+                                              }else if(stepKeys[index].toLowerCase().contains('bank')&&status!=1 && status != 0){
+                                                context.push(AppRouterName.bankDetailsScreen).then((val){
+                                                  getCustomerDetailsApiCall();
+                                                });
+                                              }
                                             }
-                                          }else{
-                                            if(stepKeys[index].toLowerCase().contains('eligibility') && status !=1 && status != 0){
-                                              context.push(AppRouterName.checkEligibilityPage).then((val){
-                                                getCustomerDetailsApiCall();
-                                              });
-                                            }else if(stepKeys[index].toLowerCase().contains('statement')&& status != 1 && status != 0){
-                                              context.push(AppRouterName.bankStatement).then((val){
-                                                getCustomerDetailsApiCall();
-                                              });
-                                            }else if(stepKeys[index].toLowerCase().contains('ekyc')&& status !=1 && status != 0){
-                                              context.push(AppRouterName.aaDarKYCScreen).then((val){
-                                                getCustomerDetailsApiCall();
-                                              });
-                                            }else if(stepKeys[index].toLowerCase().contains('selfie')&& status!=1 && status != 0){
-                                              context.push(AppRouterName.selfieScreenPath).then((val){});
-                                            }else if(stepKeys[index].toLowerCase().contains("offer")&&status!=1 && status != 0){
-                                              context.push(AppRouterName.loanOfferPage,extra: getCustomerDetailsModel?.data?.screenDetails?.isEnhance).then((val){
-                                                getCustomerDetailsApiCall();
-                                              });
-                                            }else if(stepKeys[index].toLowerCase().contains('reference')&&status!=1 && status != 0){
-                                              context.push(AppRouterName.addReference).then((val){
-                                                getCustomerDetailsApiCall();
-                                              });
-                                            }else if(stepKeys[index].toLowerCase().contains('utility')&&status!=1 && status != 0){
-                                              context.push(AppRouterName.utilityBillScreen).then((val){
-                                                getCustomerDetailsApiCall();
-                                              });
-                                            }else if(stepKeys[index].toLowerCase().contains('bank')&&status!=1 && status != 0){
-                                              context.push(AppRouterName.bankDetailsScreen).then((val){
-                                                getCustomerDetailsApiCall();
-                                              });
-                                            }
-                                          }
-                                        },
-                                        child: StepItem(
-                                          title: stepKeys[index],
-                                          status: status ?? 0,
-                                        ),
-                                      ),
-                                      // add line below except for last item
-                                      if (index != stepKeys.length - 1)
-                                        const SizedBox(height: 4),
-                                      if (index != stepKeys.length - 1)
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 20.0),
-                                          child: Container(
-                                            height: 20,
-                                            width: 2,
-                                            color: index < currentStep - 1
-                                                ? Colors.blue // completed line color
-                                                : Colors.grey.shade300, // pending line color
+                                          },
+                                          child: StepItem(
+                                            title: stepKeys[index],
+                                            status: status ?? 0,
                                           ),
                                         ),
-                                      if(index == stepKeys.length-1)
-                                        SizedBox(
-                                          height: 20,
-                                        )
-                                    ],
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                        ),
+                                        // add line below except for last item
+                                        if (index != stepKeys.length - 1)
+                                          const SizedBox(height: 4),
+                                        if (index != stepKeys.length - 1)
+                                          Padding(
+                                            padding: const EdgeInsets.only(left: 20.0),
+                                            child: Container(
+                                              height: 20,
+                                              width: 2,
+                                              color: index < currentStep - 1
+                                                  ? Colors.blue // completed line color
+                                                  : Colors.grey.shade300, // pending line color
+                                            ),
+                                          ),
+                                        if(index == stepKeys.length-1)
+                                          SizedBox(
+                                            height: 20,
+                                          )
+                                      ],
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                         SizedBox(
                           height: 20.0,
                         )
@@ -286,9 +290,6 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
       )
     );
   }
-
-
-
 
 
 }

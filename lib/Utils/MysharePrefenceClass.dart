@@ -15,6 +15,7 @@ class MySharedPreferences {
   static const contactUsEmail = "contactUsEmail";
   static const chatUsNumber = "chatUsNumber";
   static const callUsNumber = "callUsNumber";
+  static const isEnhanceKey = "isEnhance";
 
 
   static Future<SharedPreferences> _getPreferences() async {
@@ -127,6 +128,24 @@ class MySharedPreferences {
 
     if (leadId != null) {
       return leadId;
+    } else {
+      return "";
+    }
+  }
+
+
+  static Future<void> setEnhanceKey(String enhanceKey) async {
+    String data = enhanceKey;
+    final prefs = await _getPreferences();
+    await prefs.setString(isEnhanceKey, data);
+  }
+
+  static Future<String> getEnhanceKey() async {
+    final prefs = await _getPreferences();
+    String? enhanceData = prefs.getString(isEnhanceKey);
+
+    if (enhanceData != null) {
+      return enhanceData;
     } else {
       return "";
     }

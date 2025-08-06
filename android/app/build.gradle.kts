@@ -48,11 +48,20 @@ android {
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("debug")
             // Uncomment if using Crashlytics:
             // isMinifyEnabled = false
             // isShrinkResources = false
             // proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("debug")
+
+            // ensure R8 sees your custom rules file
+            isMinifyEnabled = true            // R8 runs only when minify is enabled
+            isShrinkResources = true
+
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }
@@ -64,4 +73,5 @@ flutter {
 dependencies {
     // ✅ Add this line for desugaring support
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    implementation("com.guardsquare:proguard-annotations:7.2.2")
 }

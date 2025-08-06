@@ -254,6 +254,7 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
         CommonTextField(
             controller: referAnceNumberController,
             hintText: "Enter mobile number",
+          maxLength: 10,
           keyboardType: TextInputType.phone,
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,

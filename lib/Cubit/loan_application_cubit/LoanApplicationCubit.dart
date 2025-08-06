@@ -133,9 +133,9 @@ class LoanApplicationCubit extends Cubit<LoanApplicationState> {
     }
   }
 
-  Future<void> getUtilityTypeDocApiCall() async{
+  Future<void> getUtilityTypeDocApiCall(Map<String,dynamic> dataObj) async{
     emit(LoanApplicationLoading());
-    final response = await loanApplicationRepository.getUtilityTyeApiCallFunction();
+    final response = await loanApplicationRepository.getUtilityTyeApiCallFunction(dataObj);
     DebugPrint.prt("Get Utility Doc Type Response Status ${response.status}");
     if (response.status == ApiResponseStatus.success) {
       emit(GetUtilityDocTypeLoaded(response.data!));

@@ -7,8 +7,10 @@ import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
 import 'package:loan112_app/Constant/ImageConstant/ImageConstants.dart';
 import 'package:loan112_app/Model/UploadSelfieModel.dart';
+import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Widget/app_bar.dart';
 import 'package:loan112_app/Widget/common_button.dart';
+import '../../../../Cubit/dashboard_cubit/DashboardCubit.dart';
 import '../../../../Cubit/loan_application_cubit/LoanApplicationCubit.dart';
 import '../../../../Model/CreateLeadModel.dart';
 import '../../../../Model/SendPhpOTPModel.dart';
@@ -43,8 +45,12 @@ class _EligibilityStatus extends State<EligibilityStatus>{
       appBar: Loan112AppBar(
         customLeading: InkWell(
           onTap: (){
-            context.pop();
-            getCustomerDetailsApiCall();
+            if(widget.createLeadModel.statusCode == 402){
+              context.push(AppRouterName.dashboardPage);
+            }else{
+              context.pop();
+              getCustomerDetailsApiCall();
+            }
           },
           child: Icon(
             Icons.arrow_back_ios,
@@ -134,8 +140,12 @@ class _EligibilityStatus extends State<EligibilityStatus>{
                 children: [
                   Loan112Button(
                     onPressed: () {
-                      context.pop();
-                      getCustomerDetailsApiCall();
+                      if(widget.createLeadModel.statusCode == 402){
+                        context.push(AppRouterName.dashboardPage);
+                      }else{
+                        context.pop();
+                        getCustomerDetailsApiCall();
+                      }
                     },
                     text: "Ok",
                   ),

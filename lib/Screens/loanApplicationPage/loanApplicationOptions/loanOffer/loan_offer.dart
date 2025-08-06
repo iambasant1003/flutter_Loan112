@@ -15,6 +15,8 @@ import 'package:loan112_app/Widget/common_button.dart';
 import '../../../../Constant/ColorConst/ColorConstant.dart';
 import '../../../../Constant/FontConstant/FontConstant.dart';
 import '../../../../Constant/ImageConstant/ImageConstants.dart';
+import '../../../../Cubit/dashboard_cubit/DashboardCubit.dart';
+import '../../../../Model/SendPhpOTPModel.dart';
 import '../../../../Model/VerifyOTPModel.dart';
 import '../../../../ParamModel/LoanAcceptanceParamModel.dart';
 import '../../../../Utils/MysharePrefenceClass.dart';
@@ -33,9 +35,11 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
 
 
 
+  double minValue = 0;
   double currentValue = 0;
   double maxValue = 40000;
   double currentTenure = 0;
+  double minTenure = 0;
   double maxTenure = 40;
   bool initialized = false;
   String? purPoseOfLoan;
@@ -72,6 +76,16 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
     );
   }
 
+
+  getCustomerDetailsApiCall() async{
+    context.read<DashboardCubit>().callDashBoardApi();
+    var otpModel = await MySharedPreferences.getPhpOTPModel();
+    SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
+    context.read<LoanApplicationCubit>().getCustomerDetailsApiCall({
+      "cust_profile_id": sendPhpOTPModel.data?.custProfileId
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,6 +93,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
           customLeading: InkWell(
             onTap: (){
               context.pop();
+              getCustomerDetailsApiCall();
             },
             child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
           ),
@@ -99,8 +114,10 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
               getPurposeOfLoanModel = state.getPurposeOfLoanModel;
 
               currentTenure = double.parse((generateLoanOfferModel?.data?.minLoanTenure ?? 0).toString());
+              minTenure = double.parse((generateLoanOfferModel?.data?.minLoanTenure ?? 0).toString());
               maxTenure = double.parse((generateLoanOfferModel?.data?.maxLoanTenure ?? 0).toString());
               currentValue = double.parse((generateLoanOfferModel?.data?.minLoanAmount ?? 0).toString());
+              minValue = double.parse((generateLoanOfferModel?.data?.minLoanAmount ?? 0).toString());
               maxValue = double.parse((generateLoanOfferModel?.data?.maxLoanAmount ?? 0).toString());
               interestRate = generateLoanOfferModel?.data?.interestRate ?? 0;
 
@@ -143,6 +160,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
                 if (context.mounted) {
                   context.pop();
                   checkConditionCalculateDistanceApiCall();
+                  getCustomerDetailsApiCall();
                 }
               });
             }
@@ -322,7 +340,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
                      gradient: LinearGradient(
                        colors: [
                          ColorConstant.whiteColor,
-                         ColorConstant.appScreenBackgroundColor,
+                         ColorConstant.whiteColor,
                        ],
                        begin: Alignment.topLeft,
                        end: Alignment.bottomRight,
@@ -463,7 +481,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
                            ):
                            SizedBox.shrink(),
                            SizedBox(
-                             height: 130.0,
+                             height: 180.0,
                            )
                          ],
                        ),
@@ -566,7 +584,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
           ),
           child: Slider(
             value: currentValue,
-            min: 0,
+            min: minValue,
             max: maxValue,
             divisions: 8,
             onChanged: (value) {
@@ -625,7 +643,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
           ),
           child: Slider(
             value: currentTenure,
-            min: 0,
+            min: minTenure,
             max: maxTenure,
             divisions: 8,
             onChanged: (value) {
@@ -769,7 +787,6 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
   Widget totalAmountUI(BuildContext context,{amountType,amountValue}){
     return Container(
       width: MediaQuery.of(context).size.width * 0.25,
-      height: 100,
       decoration: BoxDecoration(
           color: ColorConstant.containerBackground,
           borderRadius: BorderRadius.all(Radius.circular(6.0))
@@ -777,7 +794,6 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
       child: Padding(
         padding: EdgeInsets.symmetric(
             horizontal: 0,
-            //FontConstants.horizontalPadding,
             vertical: FontConstants.horizontalPadding
         ),
         child: Column(

@@ -1,23 +1,22 @@
-
 class GetUtilityDocTypeModel {
   int? statusCode;
-  List<DataUtilityModel>? data;
-  String? message;
+  List<Data>? data;
   bool? success;
+  String? message;
 
   GetUtilityDocTypeModel(
-      {this.statusCode, this.data, this.message, this.success});
+      {this.statusCode, this.data, this.success, this.message});
 
   GetUtilityDocTypeModel.fromJson(Map<String, dynamic> json) {
     statusCode = json['statusCode'];
     if (json['data'] != null) {
-      data = <DataUtilityModel>[];
+      data = <Data>[];
       json['data'].forEach((v) {
-        data!.add(new DataUtilityModel.fromJson(v));
+        data!.add(new Data.fromJson(v));
       });
     }
-    message = json['message'];
     success = json['success'];
+    message = json['message'];
   }
 
   Map<String, dynamic> toJson() {
@@ -26,23 +25,25 @@ class GetUtilityDocTypeModel {
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
-    data['message'] = this.message;
     data['success'] = this.success;
+    data['message'] = this.message;
     return data;
   }
 }
 
-class DataUtilityModel {
+class Data {
   int? docsId;
   String? docType;
   int? isRequired;
+  bool? isUploaded;
 
-  DataUtilityModel({this.docsId, this.docType, this.isRequired});
+  Data({this.docsId, this.docType, this.isRequired, this.isUploaded});
 
-  DataUtilityModel.fromJson(Map<String, dynamic> json) {
+  Data.fromJson(Map<String, dynamic> json) {
     docsId = json['docsId'];
     docType = json['docType'];
     isRequired = json['isRequired'];
+    isUploaded = json['isUploaded'];
   }
 
   Map<String, dynamic> toJson() {
@@ -50,6 +51,7 @@ class DataUtilityModel {
     data['docsId'] = this.docsId;
     data['docType'] = this.docType;
     data['isRequired'] = this.isRequired;
+    data['isUploaded'] = this.isUploaded;
     return data;
   }
 }

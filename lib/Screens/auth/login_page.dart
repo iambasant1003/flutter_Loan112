@@ -81,6 +81,19 @@ class _LogInPageState extends State<LogInPage> {
                     key: _formKey,
                     child: Column(
                       children: [
+                        Padding(
+                          padding: EdgeInsets.only(left: 10.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Image.asset(
+                                ImageConstants.loan112AppNameIcon,
+                                height: 76,
+                                width: 76,
+                              ),
+                            ],
+                          ),
+                        ),
                         /// Scrollable form content
                         Expanded(
                           child: SingleChildScrollView(
@@ -88,19 +101,6 @@ class _LogInPageState extends State<LogInPage> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Padding(
-                                  padding: EdgeInsets.only(left: 10.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Image.asset(
-                                        ImageConstants.loan112AppNameIcon,
-                                        height: 76,
-                                        width: 76,
-                                      ),
-                                    ],
-                                  ),
-                                ),
                                 SizedBox(height: 48.0),
                                 Image.asset(
                                   ImageConstants.logInPageIcon,

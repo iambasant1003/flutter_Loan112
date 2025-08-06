@@ -91,6 +91,8 @@ class _DashBoardHome extends State<DashBoardHome>{
                         ),
                         SafeArea(
                           child: SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            primary: true,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -138,26 +140,19 @@ class _DashBoardHome extends State<DashBoardHome>{
                                         right: 80,
                                         child: GestureDetector(
                                           onTap: (){
-                                            DebugPrint.prt("application Submitted ${dashBoarddataModel?.data?.applicationSubmitted}");
-                                            DebugPrint.prt("application loan History ${dashBoarddataModel?.data?.showLoanHistoryBtnFlag}");
-                                            if(dashBoarddataModel?.data?.applyLoanBanner?.appBannerBtnActiveFlag == 1
-                                                && dashBoarddataModel?.data?.applicationSubmitted != 1){
+                                            var navigationData = dashBoarddataModel?.data?.applyLoanBanner?.appBannerBtnGotoFlag;
+                                            if(navigationData == 0 || navigationData == 1 || navigationData == 2 ){
                                               context.push(AppRouterName.loanApplicationPage);
                                             }
-                                            if(dashBoarddataModel?.data?.applicationSubmitted == 1
-                                                && dashBoarddataModel?.data?.showLoanHistoryBtnFlag != 1){
+                                            if(navigationData == 3){
                                               context.push(AppRouterName.dashBoardStatus);
-                                            } else if(
-                                            dashBoarddataModel?.data?.showLoanHistoryBtnFlag == 1 &&
-                                             dashBoarddataModel?.data?.applicationSubmitted == 1
-                                            ){
+                                            } else if(navigationData == 4){
                                               context.push(AppRouterName.repaymentPage);
                                             }
                                           },
                                           child: Loan112Button(
                                               onPressed: null,
                                               text: dashBoarddataModel?.data?.applyLoanBanner?.appBannerBtnText ?? ""
-                                            //"Let's Start"
                                           ),
                                         )
                                     )
@@ -266,8 +261,8 @@ class _DashBoardHome extends State<DashBoardHome>{
   }
 
   Widget commonScaffold(BuildContext context,{required Widget bodyPart,dashBoardModel}){
-    return Scaffold(
-      body: bodyPart,
+    return SafeArea(
+      child: bodyPart,
     );
   }
 

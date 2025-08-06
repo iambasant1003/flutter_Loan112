@@ -211,7 +211,7 @@ class _Loan112Drawer extends State<Loan112Drawer> {
                               height: 10.0,
                             ),
                             Padding(
-                              padding: EdgeInsets.only(left: 30.0,top: 10.0),
+                              padding: EdgeInsets.only(left: 25.0),
                               child: Text(
                                 "${widget.dashBoarddataModel?.data?.applyLoanBanner!.appBannerProgressPercent?? 0.toString()}%",
                                 //"${(0.5 * 100).toInt()}%",
