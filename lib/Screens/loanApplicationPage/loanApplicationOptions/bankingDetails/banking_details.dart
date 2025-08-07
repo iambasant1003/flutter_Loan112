@@ -10,6 +10,7 @@ import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.da
 import 'package:loan112_app/Model/GetCustomerDetailsModel.dart';
 import 'package:loan112_app/ParamModel/UpdateBankDetailsParamModel.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
+import 'package:loan112_app/Utils/Debugprint.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:loan112_app/Widget/bottom_dashline.dart';
 import 'package:loan112_app/Widget/common_button.dart';
@@ -55,12 +56,14 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
     getBankDetails();
   }
 
+  String bankAccountYpeId = "";
   void getBankDetails() async{
     var data = await MySharedPreferences.getCustomerDetails();
     if(data != null){
       CustomerDetails customerDetails = CustomerDetails.fromJson(jsonDecode(data));
+      DebugPrint.prt("Customer Data ${customerDetails.bankAccountTypeId}");
        setState(() {
-         selectedBankType?.bankTypeId = customerDetails.bankAccountTypeId ?? "";
+         bankAccountYpeId = customerDetails.bankAccountTypeId ?? "";
          selectedBankType?.bankTypeName = customerDetails.bankAccountTypeName ?? "";
          bankName.text = customerDetails.bankAccountName ?? "";
          confirmBankAccount.text = customerDetails.cnfBankAccountNumber ?? "";
@@ -127,6 +130,9 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
              if (context.mounted) {
                setState(() {
                  bankAccountTypeModel = state.bankAccountTypeModel;
+                 if(bankAccountYpeId != ""){
+                   selectedBankType = bankAccountTypeModel?.data![int.parse(bankAccountYpeId)-1];
+                 }
                });
              }
            });

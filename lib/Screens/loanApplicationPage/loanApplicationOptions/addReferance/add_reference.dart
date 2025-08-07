@@ -67,7 +67,13 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
       DebugPrint.prt("Reference Type Data ${customerDetails.refrenceType}");
       setState(() {
         referAnceNameController.text = customerDetails.refrenceName ?? "";
-        //selectedValue = customerDetails.refrenceType ?? "";
+        int index = int.tryParse(customerDetails.refrenceType ?? "0") ?? 0;
+
+        if (index > 0 && index <= relationsDataList.length) {
+          selectedValue = relationsDataList[index - 1];
+        } else {
+          selectedValue = null;
+        }
         referAnceNumberController.text = customerDetails.refrenceMobile ?? "";
       });
     }
@@ -272,7 +278,7 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
   Widget selectRelationType(BuildContext context, int type) {
     return FormField<String>(
       validator: (value) {
-        if ((type == 1 && selectedValue == null) || (type == 2 && selectedValue2 == null)) {
+        if (type == 1 && selectedValue == null) {
           return 'Please select a relation';
         }
         return null;
@@ -307,7 +313,7 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
                   ),
                 ))
                     .toList(),
-                value: selectedValue,
+                value: relationsDataList.contains(selectedValue) ? selectedValue : null,
                 onChanged: (value) {
                   setState(() {
                     selectedValue = value;

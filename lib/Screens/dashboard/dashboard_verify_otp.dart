@@ -58,7 +58,7 @@ class _DashboardVerifyOTP extends State<DashboardVerifyOTP>{
 
 
   void _resendOtp() {
-    //context.read<AuthCubit>().sendBothOtp(widget.mobileNumber);
+    context.read<DashboardCubit>().callDeleteCustomerProfileApi();
   }
 
   @override
@@ -91,6 +91,14 @@ class _DashboardVerifyOTP extends State<DashboardVerifyOTP>{
                   }else if(state is DeleteOTPFailed){
                     EasyLoading.dismiss();
                     openSnackBar(context, state.deleteProfileOTPVerifyModel.message ?? "Unexpected Error");
+                  }
+                  else if(state is DeleteCustomerSuccess){
+                    EasyLoading.dismiss();
+                    startTimer();
+                  }
+                  else if(state is DeleteCustomerFailed){
+                    EasyLoading.dismiss();
+                    openSnackBar(context, state.deleteCustomerModel.message ?? "Unexpected Error");
                   }
                 },
                 child: SafeArea(

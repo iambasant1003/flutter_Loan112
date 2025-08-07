@@ -264,6 +264,8 @@ class _CheckEligibility extends State<CheckEligibility>{
                                     return "Please enter your company name";
                                   }else if(val.trim().length <3){
                                     return "Please enter minimum 3 letter";
+                                  }else if(!RegExp(r"^[a-zA-Z0-9][a-zA-Z0-9 .,&'\-]*[a-zA-Z0-9.]$").hasMatch(val)){
+                                    return "Please enter valid company name";
                                   }
                                   return null;
                                 },

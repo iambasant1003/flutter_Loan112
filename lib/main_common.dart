@@ -5,7 +5,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
-import 'Constant/ColorConst/ColorConstant.dart';
 import 'di/di_locator.dart';
 import 'main.dart';
 

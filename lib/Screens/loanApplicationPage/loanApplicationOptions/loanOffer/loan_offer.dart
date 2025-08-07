@@ -54,6 +54,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
 
   @override
   void initState() {
+    DebugPrint.prt("Is Enhance Button ${widget.enhance}");
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       generateLoanOfferApiCall();
@@ -160,7 +161,6 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
                 if (context.mounted) {
                   context.pop();
                   checkConditionCalculateDistanceApiCall();
-                  getCustomerDetailsApiCall();
                 }
               });
             }
@@ -462,7 +462,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
                                  color: ColorConstant.brownColor
                              ),
                            ),
-                           widget.enhance == 1?
+                           widget.enhance == 0?
                            Column(
                              children: [
                                SizedBox(
