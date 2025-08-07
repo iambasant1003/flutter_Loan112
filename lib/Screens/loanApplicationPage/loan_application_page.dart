@@ -121,171 +121,176 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
               openSnackBar(context, state.getCustomerDetailsModel.message ?? "Unknown Error");
             }else if(state is CalculateDistanceSuccess){
               EasyLoading.dismiss();
+              openSnackBar(context, "Distance Mapped",backGroundColor: ColorConstant.appThemeColor);
+              getCustomerDetailsApiCall();
             }else if(state is CalculateDistanceFailed){
               EasyLoading.dismiss();
             }
           },
-          child: SizedBox.expand(
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: Image.asset(
-                    ImageConstants.permissionScreenBackground,
-                    fit: BoxFit.cover, // Optional: to scale and crop nicely
-                  ),
-                ),
-                Positioned(
-                  left: 15,
-                  right: 15,
-                  top: 20,
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.7,
-                    height: MediaQuery.of(context).size.height * 0.9,
-                    decoration: BoxDecoration(
-                      color: ColorConstant.whiteColor,
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(10.0),
+          child: RefreshIndicator(
+              onRefresh: () async{
+                getCustomerDetailsApiCall();
+              },
+              child: SizedBox.expand(
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Image.asset(
+                        ImageConstants.permissionScreenBackground,
+                        fit: BoxFit.cover, // Optional: to scale and crop nicely
                       ),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        BlocBuilder<DashboardCubit,DashboardState>(
-                          builder: (context,state){
-                            if(state is DashBoardSuccess){
-                              return Row(
-                                children: [
-                                  SizedBox(
-                                    height: 90,
-                                    width: 90,
-                                    child: CircularProgressWithText(
-                                      progress: (state.dashBoardModel.data?.applyLoanBanner?.appBannerProgressPercent ?? 0) / 100,
-                                      isDrawer: false,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 10.0,
-                                  ),
-                                  Expanded(
-                                    child: Text(
-                                      state.dashBoardModel.data?.applyLoanBanner?.appBannerText?? "",
-                                      //"Begin your journey to financial empowerment-provide the necessary details to initiate your loan application.",
-                                      style: TextStyle(
-                                          fontFamily: FontConstants.fontFamily,
-                                          fontWeight: FontConstants.w500,
-                                          fontSize: FontConstants.f14,
-                                          color: ColorConstant.dashboardTextColor
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              );
-                            }else{
-                              return SizedBox();
-                            }
-                          },
+                    Positioned(
+                      left: 15,
+                      right: 15,
+                      top: 20,
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.7,
+                        height: MediaQuery.of(context).size.height * 0.9,
+                        decoration: BoxDecoration(
+                          color: ColorConstant.whiteColor,
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(10.0),
+                          ),
                         ),
-                        const SizedBox(height: 16),
-                        // 👇 Wrap with Expanded
-                        if(getCustomerDetailsModel != null)...[
-                          BlocBuilder<JourneyCubit,Map<String,dynamic>>(
-                            builder: (context,state){
-                              return Expanded(
-                                child: ListView.builder(
-                                  itemCount: stepKeys.length,
-                                  itemBuilder: (context, index) {
-                                    final stepKey = step[index];
-                                    final int? status = int.tryParse(state[stepKey].toString());
-
-                                    DebugPrint.prt("Status and Key $status,$stepKey");
-
-                                    return Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        InkWell(
-                                          onTap:(){
-                                            DebugPrint.prt("Current Status $status");
-                                            if(status == null){
-                                              if(stepKeys[index].toLowerCase().contains('eligibility')){
-                                                context.push(AppRouterName.checkEligibilityPage).then((val){
-                                                  getCustomerDetailsApiCall();
-                                                });
-                                              }
-                                            }else{
-                                              if(stepKeys[index].toLowerCase().contains('eligibility') && status !=1 && status != 0){
-                                                context.push(AppRouterName.checkEligibilityPage).then((val){
-                                                  getCustomerDetailsApiCall();
-                                                });
-                                              }else if(stepKeys[index].toLowerCase().contains('statement')&& status != 1 && status != 0){
-                                                context.push(AppRouterName.bankStatement).then((val){
-                                                  getCustomerDetailsApiCall();
-                                                });
-                                              }else if(stepKeys[index].toLowerCase().contains('ekyc')&& status !=1 && status != 0){
-                                                context.push(AppRouterName.aaDarKYCScreen).then((val){
-                                                  getCustomerDetailsApiCall();
-                                                });
-                                              }else if(stepKeys[index].toLowerCase().contains('selfie')&& status!=1 && status != 0){
-                                                context.push(AppRouterName.selfieScreenPath).then((val){});
-                                              }else if(stepKeys[index].toLowerCase().contains("offer") &&status!=1 && status != 0){
-                                                context.push(AppRouterName.loanOfferPage,extra: getCustomerDetailsModel?.data?.screenDetails?.isEnhance).then((val){
-                                                  //getCustomerDetailsApiCall();
-                                                });
-                                              }else if(stepKeys[index].toLowerCase().contains('reference')&&status!=1 && status != 0){
-                                                context.push(AppRouterName.addReference).then((val){
-                                                  getCustomerDetailsApiCall();
-                                                });
-                                              }else if(stepKeys[index].toLowerCase().contains('utility')&&status!=1 && status != 0){
-                                                context.push(AppRouterName.utilityBillScreen).then((val){
-                                                  getCustomerDetailsApiCall();
-                                                });
-                                              }else if(stepKeys[index].toLowerCase().contains('bank')&&status!=1 && status != 0){
-                                                context.push(AppRouterName.bankDetailsScreen).then((val){
-                                                  getCustomerDetailsApiCall();
-                                                });
-                                              }
-                                            }
-                                          },
-                                          child: StepItem(
-                                            title: stepKeys[index],
-                                            status: status ?? 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            BlocBuilder<DashboardCubit,DashboardState>(
+                              builder: (context,state){
+                                if(state is DashBoardSuccess){
+                                  return Row(
+                                    children: [
+                                      SizedBox(
+                                        height: 90,
+                                        width: 90,
+                                        child: CircularProgressWithText(
+                                          progress: (state.dashBoardModel.data?.applyLoanBanner?.appBannerProgressPercent ?? 0) / 100,
+                                          isDrawer: false,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 10.0,
+                                      ),
+                                      Expanded(
+                                        child: Text(
+                                          state.dashBoardModel.data?.applyLoanBanner?.appBannerText?? "",
+                                          //"Begin your journey to financial empowerment-provide the necessary details to initiate your loan application.",
+                                          style: TextStyle(
+                                              fontFamily: FontConstants.fontFamily,
+                                              fontWeight: FontConstants.w500,
+                                              fontSize: FontConstants.f14,
+                                              color: ColorConstant.dashboardTextColor
                                           ),
                                         ),
-                                        // add line below except for last item
-                                        if (index != stepKeys.length - 1)
-                                          const SizedBox(height: 4),
-                                        if (index != stepKeys.length - 1)
-                                          Padding(
-                                            padding: const EdgeInsets.only(left: 20.0),
-                                            child: Container(
-                                              height: 20,
-                                              width: 2,
-                                              color: index < currentStep - 1
-                                                  ? Colors.blue // completed line color
-                                                  : Colors.grey.shade300, // pending line color
+                                      )
+                                    ],
+                                  );
+                                }else{
+                                  return SizedBox();
+                                }
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            // 👇 Wrap with Expanded
+                            if(getCustomerDetailsModel != null)...[
+                              BlocBuilder<JourneyCubit,Map<String,dynamic>>(
+                                builder: (context,state){
+                                  DebugPrint.prt("All Step with key $state");
+                                  return Expanded(
+                                    child: ListView.builder(
+                                      itemCount: stepKeys.length,
+                                      itemBuilder: (context, index) {
+                                        final stepKey = step[index];
+                                        final int? status = int.tryParse(state[stepKey].toString());
+                                        DebugPrint.prt("Status and Key $status,$stepKey");
+
+                                        return Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            InkWell(
+                                              onTap:(){
+                                                DebugPrint.prt("Current Status $status");
+                                                if(status == null){
+                                                  if(stepKeys[index].toLowerCase().contains('eligibility')){
+                                                    context.push(AppRouterName.checkEligibilityPage).then((val){
+                                                      getCustomerDetailsApiCall();
+                                                    });
+                                                  }
+                                                }else{
+                                                  if(stepKeys[index].toLowerCase().contains('eligibility') && status !=1 && status != 0){
+                                                    context.push(AppRouterName.checkEligibilityPage).then((val){
+                                                      getCustomerDetailsApiCall();
+                                                    });
+                                                  }else if(stepKeys[index].toLowerCase().contains('statement')&& status != 1 && status != 0){
+                                                    context.push(AppRouterName.bankStatement).then((val){
+                                                      getCustomerDetailsApiCall();
+                                                    });
+                                                  }else if(stepKeys[index].toLowerCase().contains('ekyc')&& status !=1 && status != 0){
+                                                    context.push(AppRouterName.aaDarKYCScreen).then((val){
+                                                      getCustomerDetailsApiCall();
+                                                    });
+                                                  }else if(stepKeys[index].toLowerCase().contains('selfie')&& status!=1 && status != 0){
+                                                    context.push(AppRouterName.selfieScreenPath).then((val){});
+                                                  }else if(stepKeys[index].toLowerCase().contains("offer") &&status!=1 && status != 0){
+                                                    context.push(AppRouterName.loanOfferPage,extra: getCustomerDetailsModel?.data?.screenDetails?.isEnhance).then((val){});
+                                                  }else if(stepKeys[index].toLowerCase().contains('reference')&&status!=1 && status != 0){
+                                                    context.push(AppRouterName.addReference).then((val){
+                                                      getCustomerDetailsApiCall();
+                                                    });
+                                                  }else if(stepKeys[index].toLowerCase().contains('utility')&&status!=1 && status != 0){
+                                                    context.push(AppRouterName.utilityBillScreen).then((val){
+                                                      getCustomerDetailsApiCall();
+                                                    });
+                                                  }else if(stepKeys[index].toLowerCase().contains('bank')&&status!=1 && status != 0){
+                                                    context.push(AppRouterName.bankDetailsScreen).then((val){
+                                                      getCustomerDetailsApiCall();
+                                                    });
+                                                  }
+                                                }
+                                              },
+                                              child: StepItem(
+                                                title: stepKeys[index],
+                                                status: status ?? 0,
+                                              ),
                                             ),
-                                          ),
-                                        if(index == stepKeys.length-1)
-                                          SizedBox(
-                                            height: 20,
-                                          )
-                                      ],
-                                    );
-                                  },
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                        SizedBox(
-                          height: 20.0,
-                        )
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            ),
+                                            // add line below except for last item
+                                            if (index != stepKeys.length - 1)
+                                              const SizedBox(height: 4),
+                                            if (index != stepKeys.length - 1)
+                                              Padding(
+                                                padding: const EdgeInsets.only(left: 20.0),
+                                                child: Container(
+                                                  height: 20,
+                                                  width: 2,
+                                                  color: index < currentStep - 1
+                                                      ? Colors.blue // completed line color
+                                                      : Colors.grey.shade300, // pending line color
+                                                ),
+                                              ),
+                                            if(index == stepKeys.length-1)
+                                              SizedBox(
+                                                height: 20,
+                                              )
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                            SizedBox(
+                              height: 20.0,
+                            )
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
           ),
       )
     );

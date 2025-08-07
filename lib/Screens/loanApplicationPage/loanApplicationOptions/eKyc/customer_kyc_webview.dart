@@ -55,7 +55,10 @@ class _CustomerKycWebview extends State<CustomerKycWebview> {
           ),
         ),
       ),
-      body: WebViewWidget(controller: _controller),
+      body: SafeArea(
+        bottom: true,
+        child: WebViewWidget(controller: _controller),
+      )
     );
   }
 }

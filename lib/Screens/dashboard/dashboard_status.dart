@@ -119,7 +119,13 @@ class _DashboardStatusScreen extends State<DashboardStatusScreen> {
                 padding: EdgeInsets.symmetric(
                   horizontal: FontConstants.horizontalPadding,
                 ),
-                child: Loan112Button(text: "Refresh", onPressed: () {getCustomerDetailsApiCall();}),
+                child: Loan112Button(
+                    text: "Refresh",
+                    icon: Image.asset(ImageConstants.dashBoardRefresh),
+                    onPressed: () {
+                      getCustomerDetailsApiCall();
+                    }
+                ),
               ),
             ),
           ),

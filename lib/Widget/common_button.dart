@@ -14,6 +14,9 @@ class Loan112Button extends StatelessWidget {
   final double letterSpacing;
   final Color textColor;
 
+  // ✅ Optional icon (displayed after the text)
+  final Widget? icon;
+
   const Loan112Button({
     Key? key,
     this.onPressed,
@@ -25,6 +28,7 @@ class Loan112Button extends StatelessWidget {
     this.height = 1.0,
     this.letterSpacing = 0.0,
     this.textColor = Colors.white,
+    this.icon,
   }) : super(key: key);
 
   @override
@@ -54,21 +58,31 @@ class Loan112Button extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(borderRadius),
             ),
-            backgroundColor: Colors.transparent, // 👈 make transparent
-            shadowColor: Colors.transparent,     // optional: no shadow
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
             elevation: 0,
           ),
-          child: Text(
-            text,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: fontFamily,
-              fontWeight: fontWeight,
-              fontSize: fontSize,
-              height: height,
-              letterSpacing: letterSpacing,
-              color: textColor, // 👈 you can set to white for better contrast
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                text,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: fontFamily,
+                  fontWeight: fontWeight,
+                  fontSize: fontSize,
+                  height: height,
+                  letterSpacing: letterSpacing,
+                  color: textColor,
+                ),
+              ),
+              if (icon != null) ...[
+                const SizedBox(width: 8),
+                icon!,
+              ],
+            ],
           ),
         ),
       ),

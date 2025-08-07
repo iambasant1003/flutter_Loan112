@@ -29,7 +29,6 @@ class MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     // Initialize your config class
     AppConfig.init(widget.environment);
