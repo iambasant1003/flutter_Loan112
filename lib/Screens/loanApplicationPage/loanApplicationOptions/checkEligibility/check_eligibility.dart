@@ -83,6 +83,10 @@ class _CheckEligibility extends State<CheckEligibility>{
         companyNameController.text = customerDetails.empCompanyName ?? "";
         gender = int.parse(customerDetails.gender ?? "1");
         dateOfBirth.text = customerDetails.dob ?? "";
+        if (customerDetails.dob != null && customerDetails.dob!.isNotEmpty) {
+          DateTime parsedDob = DateFormat('dd-MM-yyyy').parse(customerDetails.dob!);
+          dateOfBirthPassed = DateFormat('yyyy-MM-dd').format(parsedDob);
+        }
         pinCodeController.text = customerDetails.residencePincode ?? "";
         stateController.text = customerDetails.residenceStateName ?? "";
         cityController.text = customerDetails.residenceCityName ?? "";

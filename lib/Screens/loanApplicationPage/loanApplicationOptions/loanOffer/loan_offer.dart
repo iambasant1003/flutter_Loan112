@@ -569,38 +569,46 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
   }
 
 
+  double step = 500;
   Widget principalSliderAndValue(BuildContext context){
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SliderTheme(
-          data: SliderTheme.of(context).copyWith(
-            activeTrackColor: Colors.blue,
-            inactiveTrackColor: Colors.blue.shade100,
-            thumbColor: ColorConstant.blackTextColor,
-            overlayColor: Colors.blue.withOpacity(0.2),
-            thumbShape: CustomThumbShape(),
-            trackHeight: 4,
-          ),
-          child: Slider(
-            value: currentValue,
-            min: minValue,
-            max: maxValue,
-            divisions: 8,
-            onChanged: (value) {
-              DebugPrint.prt("Current Principal Amount $value");
-              setState(() {
-                currentValue = value;
-              });
-              Future.delayed(const Duration(milliseconds: 500), () {
-                calculateLoan(principal: currentValue, tenure: currentTenure,
-                    interestRate: double.parse((interestRate).toString())
-                );
-              });
-            },
-          ),
-        ),
-        const SizedBox(height: 6),
+       SliderTheme(
+    data: SliderTheme.of(context).copyWith(
+      activeTrackColor: Colors.blue,
+      inactiveTrackColor: Colors.blue.shade100,
+      thumbColor: ColorConstant.blackTextColor,
+      overlayColor: Colors.blue.withOpacity(0.2),
+      thumbShape: CustomThumbShape(),
+      trackHeight: 4,
+    ),
+    child: Slider(
+    value: currentValue,
+    min: minValue,
+    max: maxValue,
+    divisions: ((maxValue - minValue) / step).round(),
+    label: currentValue.toStringAsFixed(0),
+    onChanged: (value) {
+    // Snap to nearest 500
+    double roundedValue = (value / step).round() * step;
+    setState(() {
+    currentValue = roundedValue;
+    });
+
+    DebugPrint.prt("Current Principal Amount $currentValue");
+
+    Future.delayed(const Duration(milliseconds: 500), () {
+    calculateLoan(
+    principal: currentValue,
+    tenure: currentTenure,
+    interestRate: double.parse((interestRate).toString()),
+    );
+    });
+    },
+    ),
+    ),
+    const SizedBox(height: 6),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -633,31 +641,34 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SliderTheme(
-          data: SliderTheme.of(context).copyWith(
-            activeTrackColor: Colors.blue,
-            inactiveTrackColor: Colors.blue.shade100,
-            thumbColor: ColorConstant.blackTextColor,
-            overlayColor: Colors.blue.withOpacity(0.2),
-            thumbShape: CustomThumbShape(),
-            trackHeight: 4,
-          ),
-          child: Slider(
-            value: currentTenure,
-            min: minTenure,
-            max: maxTenure,
-            divisions: 8,
-            onChanged: (value) {
-              setState(() {
-                currentTenure = value;
-              });
-              Future.delayed(const Duration(milliseconds: 500), () {
-                calculateLoan(principal: currentValue, tenure: currentTenure,
-                    interestRate: double.parse((interestRate).toString())
-                );
-              });
-            },
-          ),
-        ),
+    data: SliderTheme.of(context).copyWith(
+      activeTrackColor: Colors.blue,
+      inactiveTrackColor: Colors.blue.shade100,
+      thumbColor: ColorConstant.blackTextColor,
+      overlayColor: Colors.blue.withOpacity(0.2),
+      thumbShape: CustomThumbShape(),
+      trackHeight: 4,
+    ),
+    child: Slider(
+    value: currentTenure,
+    min: minTenure,
+    max: maxTenure,
+    divisions: (maxTenure - minTenure).round(), // Steps of 1
+    label: currentTenure.round().toString(),
+    onChanged: (value) {
+    setState(() {
+    currentTenure = value.roundToDouble(); // Ensure whole number
+    });
+    Future.delayed(const Duration(milliseconds: 500), () {
+    calculateLoan(
+    principal: currentValue,
+    tenure: currentTenure,
+    interestRate: double.parse((interestRate).toString()),
+    );
+    });
+    },
+    ),
+    ),
         const SizedBox(height: 6),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

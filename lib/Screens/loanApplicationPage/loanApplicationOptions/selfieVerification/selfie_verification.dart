@@ -5,8 +5,10 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
 import 'package:path/path.dart' as path;
@@ -19,6 +21,9 @@ import '../../../../Cubit/loan_application_cubit/LoanApplicationCubit.dart';
 import '../../../../Model/SendPhpOTPModel.dart';
 import '../../../../Utils/MysharePrefenceClass.dart';
 import '../../../../Widget/app_bar.dart';
+import 'package:image/image.dart' as img;
+
+import 'fullscreen_camera.dart';
 
 
 class SelfieCameraPage extends StatefulWidget {
@@ -29,129 +34,8 @@ class SelfieCameraPage extends StatefulWidget {
 }
 
 class _SelfieCameraPageState extends State<SelfieCameraPage> with WidgetsBindingObserver{
-  CameraController? _controller;
-  List<CameraDescription>? cameras;
-  bool isCameraReady = false;
-  XFile? imageFile;
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    _checkAndInitializeCamera();
-  }
-
-
-  Future<void> _checkAndInitializeCamera() async {
-    final cameraPermission = await Permission.camera.status;
-
-    if (cameraPermission.isGranted) {
-      // ✅ already granted
-      await _initializeCamera();
-    } else if (cameraPermission.isDenied) {
-      // 👈 ask for permission
-      final result = await Permission.camera.request();
-      if (result.isGranted) {
-        await _initializeCamera();
-      } else {
-        openAppSettings();
-      }
-    } else if (cameraPermission.isPermanentlyDenied) {
-      // 🚨 user previously denied permanently
-      openAppSettings();
-    }
-  }
-
-  Future<void> _initializeCamera() async {
-    cameras = await availableCameras();
-    final frontCamera = cameras!.firstWhere(
-          (camera) => camera.lensDirection == CameraLensDirection.front,
-    );
-    _controller = CameraController(
-      frontCamera,
-      ResolutionPreset.high,
-      enableAudio: false,
-    );
-    await _controller!.initialize();
-    if (!mounted) return;
-    setState(() {
-      isCameraReady = true;
-    });
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    _controller?.dispose();
-    super.dispose();
-  }
-
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      // app came back from settings, check permissions
-      _initializeCamera();
-    }
-  }
-
-
-
-  Future<void> _takeSelfie(BuildContext context) async {
-    if (!_controller!.value.isInitialized) return;
-
-    final directory = await getTemporaryDirectory();
-
-    // 📷 Take picture
-    final file = await _controller!.takePicture();
-    final filePath = path.join(
-      directory.path,
-      '${DateTime.now().millisecondsSinceEpoch}.jpg',
-    );
-
-    await file.saveTo(filePath);
-
-    final originalFile = File(filePath);
-    final originalSize = await originalFile.length();
-    DebugPrint.prt("Original file size: ${originalSize / (1024 * 1024)} MB");
-
-    File finalFile = originalFile;
-
-    // 📏 Check if > 5 MB (5 * 1024 * 1024 bytes)
-    if (originalSize > 5 * 1024 * 1024) {
-      DebugPrint.prt("File > 5MB, compressing...");
-
-      final compressedPath = path.join(
-        directory.path,
-        '${DateTime.now().millisecondsSinceEpoch}_compressed.jpg',
-      );
-
-      final compressed = await FlutterImageCompress.compressAndGetFile(
-        originalFile.path,
-        compressedPath,
-        quality: 80,                 // good balance quality
-        autoCorrectionAngle: true,  // fix orientation
-      );
-
-      if (compressed != null) {
-        finalFile = File(compressed.path);
-        final compressedSize = await finalFile.length();
-        DebugPrint.prt("Compressed file size: ${compressedSize / (1024 * 1024)} MB");
-      } else {
-        DebugPrint.prt("Compression failed, using original.");
-      }
-    } else {
-      DebugPrint.prt("File <= 5MB, using original.");
-    }
-
-    setState(() {
-      imageFile = XFile(finalFile.path);
-    });
-
-    context.replace(AppRouterName.selfieUploadedPage, extra: imageFile!.path);
-  }
-
-
+  File? imagePath;
   getCustomerDetailsApiCall() async{
     var otpModel = await MySharedPreferences.getPhpOTPModel();
     SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
@@ -219,31 +103,25 @@ class _SelfieCameraPageState extends State<SelfieCameraPage> with WidgetsBinding
                             SizedBox(
                               height: 56,
                             ),
-                            isCameraReady?
-                            Center(
-                              child: Container(
-                                width: 300,
-                                height: 300,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                                  border: Border.all(color: Colors.grey.shade300, width: 2), // optional border
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  child: CameraPreview(_controller!),
-                                ),
-                              ),
-                            ):
-                            GestureDetector(
-                              onTap: (){
-                                openAppSettings();
-                              },
-                              child: Container(
-                                height: 300,
-                                decoration: BoxDecoration(
+                            SizedBox(
+                              height: 300,
+                              child: GestureDetector(
+                                onTap: () async{
+                                  final imagePath = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (_) => const FullScreenCameraPage()),
+                                  );
+
+                                  if (imagePath != null) {
+                                    context.replace(AppRouterName.selfieUploadedPage, extra: imagePath);
+                                  }
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
                                     image: DecorationImage(
-                                        image: AssetImage(ImageConstants.selfieImageIcon)
-                                    )
+                                      image: AssetImage(ImageConstants.selfieImageIcon),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -302,8 +180,15 @@ class _SelfieCameraPageState extends State<SelfieCameraPage> with WidgetsBinding
                             ),
                             Center(
                               child: InkWell(
-                                onTap: (){
-                                  _takeSelfie(context);
+                                onTap: () async {
+                                  final imagePath = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (_) => const FullScreenCameraPage()),
+                                  );
+
+                                  if (imagePath != null) {
+                                    context.replace(AppRouterName.selfieUploadedPage, extra: imagePath);
+                                  }
                                 },
                                 child: Container(
                                   width: 80,  // adjust size as needed

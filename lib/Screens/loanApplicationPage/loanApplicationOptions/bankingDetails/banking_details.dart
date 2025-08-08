@@ -41,14 +41,10 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
   TextEditingController confirmBankAccount = TextEditingController();
   TextEditingController bankName = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
-
   //String? selectedValue;
   BankAccountTypeModel? bankAccountTypeModel;
   BankAccountTypeParamModel? selectedBankType;
 
-
-  
   @override
   void initState() {
     super.initState();
@@ -473,8 +469,6 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
   }
 
 
-
-
   Future<dynamic> showBankVerificationBottomSheet(BuildContext context,{required Future<void> Function() onYesTap,required Future<void> Function() onNoTap}) {
    return showModalBottomSheet(
       context: context,
@@ -512,7 +506,7 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
                     ],
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
 
                 Container(
                   height: 1,
@@ -528,7 +522,7 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
                     ],
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
 
                 // Action Buttons
                 Padding(

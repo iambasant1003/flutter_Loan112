@@ -116,6 +116,9 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
                   context,
                   state.uploadSelfieModel.message ?? "Unknown Error",
                 );
+                context.replace(
+                  AppRouterName.selfieScreenPath,
+                );
               }
             });
           }
@@ -165,6 +168,7 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
                               ),
                             ),
                             SizedBox(height: 63),
+                            /*
                             Center(
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(12.0),
@@ -180,6 +184,18 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
                                     ),
                                   ),
                                 ),
+                              ),
+                            ),
+                           */
+                            Center(
+                              child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20.0), // Optional rounded edges
+                                  child: Image.file(
+                                    File(widget.imagePath),
+                                    fit: BoxFit.cover, // ✅ SHOW FULL IMAGE
+                                    width: 245,
+                                    height: 245,
+                                  )
                               ),
                             ),
                             SizedBox(height: 43),
@@ -344,4 +360,6 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
 
     return outputFile;
   }
+
+
 }
