@@ -49,5 +49,6 @@ class ImageConstants {
   static const String deleteProfileInstruction = "assets/icons/drawer/delete_profile_instruction.png";
   static const String removeFile = "assets/icons/remove_icon.png";
   static const String dashBoardRefresh = "assets/images/dashboard_status_refresh.png";
+  static const String crossIcon = "assets/icons/cross_icon.jpg";
 
 }
