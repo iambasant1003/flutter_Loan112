@@ -73,11 +73,13 @@ class _AadharKycScreen extends State<AadharKycScreen>{
           }
 
           else if (state is CustomerKYCVerificationSuccess) {
-            EasyLoading.dismiss();
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!context.mounted) return;
               //context.pop();
-              context.replace(AppRouterName.eKycMessageScreen);
+              if(state.ekycVerificationModel.data?.ekycVerifiedFlag == 1){
+                EasyLoading.dismiss();
+                context.replace(AppRouterName.eKycMessageScreen);
+              }
             });
           }
 
