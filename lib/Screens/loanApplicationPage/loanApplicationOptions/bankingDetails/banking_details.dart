@@ -238,13 +238,17 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
                                height: 6.0,
                              ),
                              CommonTextField(
-                                 controller: bankAccount,
-                                 hintText: "Enter your Bank A/C No*",
-                                 keyboardType: TextInputType.number,
-                                 obscureText: true,
-                                 validator: (value){
-                                   return validateBankAccount(value);
-                                 },
+                               controller: bankAccount,
+                               hintText: "Enter your Bank A/C No*",
+                               keyboardType: TextInputType.number,
+                               obscureText: true,
+                               maxLength: 18,
+                               inputFormatters: [
+                                 FilteringTextInputFormatter.digitsOnly, // only allows 0-9
+                               ],
+                               validator: (value) {
+                                 return validateBankAccount(value);
+                               },
                              ),
                              SizedBox(
                                height: 12,
@@ -265,6 +269,10 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
                                  controller: confirmBankAccount,
                                  hintText: "Re-enter your Bank A/C No.",
                                  keyboardType: TextInputType.number,
+                                 maxLength: 18,
+                               inputFormatters: [
+                                 FilteringTextInputFormatter.digitsOnly, // only allows 0-9
+                               ],
                                  validator: (value){
                                    if(value?.trim() != bankAccount.text.trim()){
                                      return "Account numbers do not match";
@@ -309,7 +317,10 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
                              SizedBox(
                                height: 6.0,
                              ),
-                             bankAccountType(context)
+                             bankAccountType(context),
+                             SizedBox(
+                               height: 10.0,
+                             )
                            ],
                          ),
                        ),
@@ -335,8 +346,7 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
                 child: Loan112Button(
                     text: "Submit",
                     onPressed: () async{
-                      //context.push(AppRouterName.loanApplicationSubmit);
-                      //if(formKey.currentState!.validate()){
+                      if(formKey.currentState!.validate()){
 
                       showBankVerificationBottomSheet(
                         context,
@@ -365,7 +375,7 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
                           Navigator.pop(context);
                         },
                       );
-                      //}
+                      }
                     }
                 ),
               ),

@@ -149,28 +149,33 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
           else if (state is GetUtilityDocTypeLoaded) {
             setState(() {
               getUtilityDocTypeModel = state.getUtilityDocTypeModel;
-              if (selectedDocument != null && getUtilityDocTypeModel?.data != null) {
+              // Filter out any data where isUploaded is false
+              if (state.getUtilityDocTypeModel.data != null) {
+                 filteredUtilityBillData = GetUtilityDocTypeModel(
+                  data: state.getUtilityDocTypeModel.data!
+                      .where((d) => d.isUploaded == false)
+                      .toList(),
+                );
+              }
+
+
+              if (selectedDocument != null && filteredUtilityBillData?.data != null) {
                 Data? match;
-                for (final d in getUtilityDocTypeModel!.data!) {
-                  if (d.docsId == selectedDocument!.docsId) { // replace d.id with your unique field
+                for (final d in filteredUtilityBillData!.data!) {
+                  if (d.docsId == selectedDocument!.docsId) {
                     match = d;
                     break;
                   }
                 }
-                selectedDocument = match; // becomes null if not found
-              }
-              else {
+                selectedDocument = match; // null if not found
+              } else {
                 selectedDocument = null;
               }
             });
+            DebugPrint.prt("Filtered Bill ${filteredUtilityBillData?.data?.length}");
             DebugPrint.prt("Data Doc Length ${getUtilityDocTypeModel?.data?.length}");
-            for(var i =0;i<state.getUtilityDocTypeModel.data!.length;i++){
-              if((state.getUtilityDocTypeModel.data![i].isUploaded ?? false)){
-                count = count+1;
-              }
-            }
-            DebugPrint.prt("Count In Success $count");
-            if(count >=2){
+            if((int.parse((getUtilityDocTypeModel?.data!.length ?? 0).toString())
+                -int.parse((filteredUtilityBillData?.data!.length ?? 0).toString())) >=2){
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (context.mounted) {
                   context.pop();
@@ -291,10 +296,11 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
 
 
   GetUtilityDocTypeModel? getUtilityDocTypeModel;
+  GetUtilityDocTypeModel? filteredUtilityBillData;
   Data? selectedDocument;
 
   Widget chooseDocumentButton(BuildContext context) {
-    if (getUtilityDocTypeModel?.data != null) {
+    if (filteredUtilityBillData?.data != null) {
       return DropdownButtonHideUnderline(
         child: DropdownButton2<Data>(
           isExpanded: true,
@@ -307,7 +313,7 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
               fontFamily: FontConstants.fontFamily,
             ),
           ),
-          items: getUtilityDocTypeModel!.data!
+          items: filteredUtilityBillData!.data!
               .map((item) => DropdownMenuItem<Data>(
             value: item,
             child: Text(

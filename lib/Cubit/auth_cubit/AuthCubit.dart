@@ -42,66 +42,79 @@ class AuthCubit extends Cubit<AuthState> {
 
 
   Future<void> sendBothOtp(String phoneNumber) async {
-    DebugPrint.prt("Indide Method");
+    DebugPrint.prt("Inside Method");
     emit(AuthLoading());
-    final position = await getCurrentPosition();
-    final geoLat = position.latitude.toString();
-    final geoLong = position.longitude.toString();
-    final deviceId = await getDeviceId();
-    final fcmToken = await MySharedPreferences.getNotificationData();
-
-    DebugPrint.prt("Position $position,GeoLat $geoLat,GeoLang $geoLong,DeviceId $deviceId");
-
-    SendOTPPramPHPModel sendOtpParamPHPModel = SendOTPPramPHPModel();
-    sendOtpParamPHPModel.currentPage = pageLogin.toString();
-    sendOtpParamPHPModel.mobile = phoneNumber.trim().toString();
-    sendOtpParamPHPModel.isExistingCustomer = 0;
-    sendOtpParamPHPModel.adjustAdid = 1;
-    sendOtpParamPHPModel.adjustGpsId = 1;
-    sendOtpParamPHPModel.adjustIdfa = 1;
-    sendOtpParamPHPModel.pancard = "";
-    sendOtpParamPHPModel.geoLat = geoLat;
-    sendOtpParamPHPModel.geoLong = geoLong;
-    sendOtpParamPHPModel.utmSource = "";
-    sendOtpParamPHPModel.utmMedium = "";
-    sendOtpParamPHPModel.utmCampaign = "";
-    sendOtpParamPHPModel.fcmToken = fcmToken;
-    sendOtpParamPHPModel.appfylerUid = "";
-    sendOtpParamPHPModel.appfylerAdvertiserId = "";
-    sendOtpParamPHPModel.deviceId = deviceId ?? "";
-
-    SendOTPPramNodeModel sendOTPPramNodeModel = SendOTPPramNodeModel();
-    sendOTPPramNodeModel.mobile = phoneNumber.trim().toString();
-
-
-
 
     try {
-     var responseList = await Future.wait([
-      authRepository.sendOTPNodeApiCallFunction(sendOTPPramNodeModel.toJson()),
-       authRepository.sendOTPhpApiCallFunction(sendOtpParamPHPModel.toJson())
+      // Get location with timeout
+      final position = await getCurrentPosition().timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          throw Exception("Location fetch timed out");
+        },
+      );
+
+      final geoLat = position.latitude.toString();
+      final geoLong = position.longitude.toString();
+      final deviceId = await getDeviceId();
+      final fcmToken = await MySharedPreferences.getNotificationData();
+
+      DebugPrint.prt("Position $position, GeoLat $geoLat, GeoLong $geoLong, DeviceId $deviceId");
+
+      SendOTPPramPHPModel sendOtpParamPHPModel = SendOTPPramPHPModel()
+        ..currentPage = pageLogin.toString()
+        ..mobile = phoneNumber.trim()
+        ..isExistingCustomer = 0
+        ..adjustAdid = 1
+        ..adjustGpsId = 1
+        ..adjustIdfa = 1
+        ..pancard = ""
+        ..geoLat = geoLat
+        ..geoLong = geoLong
+        ..utmSource = ""
+        ..utmMedium = ""
+        ..utmCampaign = ""
+        ..fcmToken = fcmToken
+        ..appfylerUid = ""
+        ..appfylerAdvertiserId = ""
+        ..deviceId = deviceId ?? "";
+
+      SendOTPPramNodeModel sendOTPPramNodeModel = SendOTPPramNodeModel()
+        ..mobile = phoneNumber.trim();
+
+      // API calls with timeout
+      var responseList = await Future.wait([
+        authRepository
+            .sendOTPNodeApiCallFunction(sendOTPPramNodeModel.toJson())
+            .timeout(const Duration(seconds: 15)),
+        authRepository
+            .sendOTPhpApiCallFunction(sendOtpParamPHPModel.toJson())
+            .timeout(const Duration(seconds: 15)),
       ]);
-      if(responseList[0].status == ApiResponseStatus.success &&
-          responseList[1].status == ApiResponseStatus.success){
-        SendOTPModel sendOTPModel = SendOTPModel.fromJson(jsonDecode(jsonEncode(responseList[0].data)));
-        emit(AuthNodeSuccess(sendOTPModel));
-        SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(jsonEncode(responseList[1].data)));
-        emit(AuthPhpSuccess(sendPhpOTPModel));
-      }
-      else{
-        if(responseList[0].status != ApiResponseStatus.success){
-          SendOTPModel sendOTPModel = SendOTPModel.fromJson(jsonDecode(jsonEncode(responseList[0].error)));
-          emit(AuthError(sendOTPModel.message ?? "Unknown Error"));
-        }else if(responseList[1].status != ApiResponseStatus.success){
-          SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(jsonEncode(responseList[1].error)));
-          emit(AuthError(sendPhpOTPModel.message ?? "Unknown Error"));
+
+      if (responseList[0].status == ApiResponseStatus.success &&
+          responseList[1].status == ApiResponseStatus.success) {
+        emit(AuthNodeSuccess(
+          SendOTPModel.fromJson(jsonDecode(jsonEncode(responseList[0].data))),
+        ));
+        emit(AuthPhpSuccess(
+          SendPhpOTPModel.fromJson(jsonDecode(jsonEncode(responseList[1].data))),
+        ));
+      } else {
+        if (responseList[0].status != ApiResponseStatus.success) {
+          final err = SendOTPModel.fromJson(jsonDecode(jsonEncode(responseList[0].error)));
+          emit(AuthError(err.message ?? "Unknown Error"));
+        } else if (responseList[1].status != ApiResponseStatus.success) {
+          final err = SendPhpOTPModel.fromJson(jsonDecode(jsonEncode(responseList[1].error)));
+          emit(AuthError(err.message ?? "Unknown Error"));
         }
       }
     } catch (e) {
-      DebugPrint.prt("Error in one of the OTP APIs: $e");
-      emit(AuthError("something went wrong"));
+      DebugPrint.prt("Error in sendBothOtp: $e");
+      emit(AuthError(e.toString()));
     }
   }
+
 
 
 
