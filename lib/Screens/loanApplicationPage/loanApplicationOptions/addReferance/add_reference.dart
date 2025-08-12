@@ -133,6 +133,7 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
                         padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
                         child: Form(
                           key: formKey,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [

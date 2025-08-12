@@ -157,11 +157,13 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
 
             else if (state is LoanAcceptanceSuccess) {
               EasyLoading.dismiss();
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (context.mounted) {
-                  context.pop();
-                  checkConditionCalculateDistanceApiCall();
-                }
+
+              WidgetsBinding.instance.addPostFrameCallback((_) async {
+                if (!mounted) return; // double-check before starting
+                 context.pop();
+
+                if (!mounted) return; // check again after async call
+                await checkConditionCalculateDistanceApiCall();
               });
             }
 
@@ -861,7 +863,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
   }
 
 
-  void checkConditionCalculateDistanceApiCall() async{
+  Future<void> checkConditionCalculateDistanceApiCall() async{
       final position = await getCurrentPosition();
       final geoLat = position.latitude.toString();
       final geoLong = position.longitude.toString();
