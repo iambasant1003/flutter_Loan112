@@ -170,6 +170,10 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (context.mounted) {
                   openSnackBar(context, state.loanAcceptanceModel.message ?? "Unknown Error");
+                  if(state.loanAcceptanceModel.statusCode == 403){
+                    context.pop();
+                    getCustomerDetailsApiCall();
+                  }
                 }
               });
             }
