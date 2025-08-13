@@ -546,13 +546,12 @@ class LoanApplicationRepository {
     }
   }
 
-  Future<ApiResponse<CheckBankStatementStatusModel>> checkBankStatementStatusApiCallFunction({required String leadId,required String customerId}) async{
+  Future<ApiResponse<CheckBankStatementStatusModel>> checkBankStatementStatusApiCallFunction(Map<String,dynamic> dataObj) async{
     try {
-      final response = await apiClass.get("$checkBankStatementStatus?custId=$customerId&leadId=$leadId",isHeader: true);
+      final response = await apiClass.put(checkBankStatementStatus,dataObj,isHeader: true);
       DebugPrint.prt("API Response Check BankStatement Status ${response.data}");
 
       final Map<String, dynamic> responseData = response.data;
-
 
       final ApiResponseStatus status = mapApiResponseStatus(responseData);
 

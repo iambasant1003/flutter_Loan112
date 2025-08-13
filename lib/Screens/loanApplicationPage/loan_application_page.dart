@@ -223,7 +223,7 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
                                                     context.push(AppRouterName.checkEligibilityPage).then((val){
                                                       getCustomerDetailsApiCall();
                                                     });
-                                                  }else if(stepKeys[index].toLowerCase().contains('statement')&& status != 1 && status != 0){
+                                                  }else if(stepKeys[index].toLowerCase().contains('statement') && status != 1 && status != 0){
                                                     context.push(AppRouterName.bankStatement).then((val){
                                                       getCustomerDetailsApiCall();
                                                     });

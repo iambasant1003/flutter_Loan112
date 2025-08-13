@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loan112_app/Cubit/dashboard_cubit/DashboardState.dart';
+import 'package:loan112_app/Cubit/same_emit.dart';
 import 'package:loan112_app/Model/DashBoarddataModel.dart';
 import 'package:loan112_app/Model/DeleteCustomerModel.dart';
 import 'package:loan112_app/Model/SendPhpOTPModel.dart';
@@ -26,26 +27,35 @@ class DashboardCubit extends Cubit<DashboardState> {
       final SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(dashBoardData));
       final profileId = sendPhpOTPModel.data?.custProfileId?.trim();
 
-      emit(DashBoardLoading());
+      safeEmit(()=>
+          emit(DashBoardLoading())
+      );
 
       final response = await dashBoardRepository.dashBoardApiCallFunction(
           { "cust_profile_id": "$profileId" }
       );
       if (response.status == ApiResponseStatus.success) {
         DebugPrint.prt("DashBoard data Success");
-        emit(DashBoardSuccess(response.data!));
+        safeEmit(()=>
+            emit(DashBoardSuccess(response.data!))
+        );
       } else {
-        emit(DashBoardError(response.error!));
+        safeEmit(()=>
+            emit(DashBoardError(response.error!))
+        );
       }
     } catch (e, stacktrace) {
       DebugPrint.prt('Dashboard API Exception: $e\n$stacktrace');
-      emit(DashBoardError(
-          DashBoarddataModel.fromJson({
-            "status": "Unknown",
-            "message": "Unknown Error: $e",
-            "data": null
-          })
-      ));
+
+      safeEmit(()=>
+          emit(DashBoardError(
+              DashBoarddataModel.fromJson({
+                "status": "Unknown",
+                "message": "Unknown Error: $e",
+                "data": null
+              })
+          ))
+      );
     }
   }
 
@@ -60,26 +70,33 @@ class DashboardCubit extends Cubit<DashboardState> {
       deleteCustomerProfileModel.currentPage = "delete_profile_send_otp";
       deleteCustomerProfileModel.custProfileId = profileId;
 
-
-      emit(DashBoardLoading());
+      safeEmit(()=>
+          emit(DashBoardLoading())
+      );
 
       final response = await dashBoardRepository.deleteCustomerApiCallFunction(deleteCustomerProfileModel.toJson());
       if (response.status == ApiResponseStatus.success) {
         DebugPrint.prt("Customer Profile Delete Success");
-        emit(DeleteCustomerSuccess(response.data!));
+        safeEmit(()=>
+            emit(DeleteCustomerSuccess(response.data!))
+        );
       } else {
-        emit(DeleteCustomerFailed(response.error!));
+        safeEmit((){
+          emit(DeleteCustomerFailed(response.error!));
+        });
       }
 
     } catch (e, stacktrace) {
       DebugPrint.prt('Dashboard API Exception: $e\n$stacktrace');
-      emit(DeleteCustomerFailed(
-          DeleteCustomerModel.fromJson({
-            "status": "Unknown",
-            "message": "Unknown Error: $e",
-            "data": null
-          })
-      ));
+      safeEmit(()=>
+          emit(DeleteCustomerFailed(
+              DeleteCustomerModel.fromJson({
+                "status": "Unknown",
+                "message": "Unknown Error: $e",
+                "data": null
+              })
+          ))
+      );
     }
   }
 
@@ -95,23 +112,31 @@ class DashboardCubit extends Cubit<DashboardState> {
       deleteVerifyOTPParamModel.deleteProfileConsent = 1;
       deleteVerifyOTPParamModel.deleteProfileOtp = int.parse(otpValue);
 
-      emit(DashBoardLoading());
+      safeEmit(()=>
+          emit(DashBoardLoading())
+      );
       final response = await dashBoardRepository.verifyDeleteOTPApiCallFunction(deleteVerifyOTPParamModel.toJson());
       if (response.status == ApiResponseStatus.success) {
         DebugPrint.prt("Customer Profile OTP Delete Success");
-        emit(DeleteOTPVerified(response.data!));
+        safeEmit(()=>
+            emit(DeleteOTPVerified(response.data!))
+        );
       } else {
-        emit(DeleteOTPFailed(response.error!));
+        safeEmit(()=>
+            emit(DeleteOTPFailed(response.error!))
+        );
       }
     } catch (e, stacktrace) {
       DebugPrint.prt('Dashboard API Exception: $e\n$stacktrace');
-      emit(DeleteOTPFailed(
-          DeleteProfileOTPVerifyModel.fromJson({
-            "status": "Unknown",
-            "message": "Unknown Error",
-            "data": null
-          })
-      ));
+      safeEmit(()=>
+          emit(DeleteOTPFailed(
+              DeleteProfileOTPVerifyModel.fromJson({
+                "status": "Unknown",
+                "message": "Unknown Error",
+                "data": null
+              })
+          ))
+      );
     }
   }
 

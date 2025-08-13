@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loan112_app/Constant/PageKeyConstant/PageKeyConstant.dart';
+import 'package:loan112_app/Cubit/same_emit.dart';
 import 'package:loan112_app/Model/SendOTPModel.dart';
 import 'package:loan112_app/Model/SendPhpOTPModel.dart';
 import 'package:loan112_app/ParamModel/SendOTPPramNodeModel.dart';
@@ -30,12 +31,12 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       final response = await authRepository.sendOTPNodeApiCallFunction(sendOTPPramNodeModel.toJson());
       if (response.status == ApiResponseStatus.success) {
-        emit(AuthNodeSuccess(response.data!));
+        safeEmit(()=>emit(AuthNodeSuccess(response.data!)));
       } else {
-        emit(AuthError(response.error?.message ?? "Unknown error"));
+        safeEmit(()=>emit(AuthError(response.error?.message ?? "Unknown error")));
       }
     } catch (e) {
-      emit(AuthError("UnExpected Error"));
+      safeEmit(()=>emit(AuthError("UnExpected Error")));
     }
   }
 
@@ -43,16 +44,11 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> sendBothOtp(String phoneNumber) async {
     DebugPrint.prt("Inside Method");
-    emit(AuthLoading());
+    safeEmit(()=>emit(AuthLoading()));
 
     try {
       // Get location with timeout
-      final position = await getCurrentPosition().timeout(
-        const Duration(seconds: 10),
-        onTimeout: () {
-          throw Exception("Location fetch timed out");
-        },
-      );
+      final position = await getCurrentPositionFast();
 
       final geoLat = position.latitude.toString();
       final geoLong = position.longitude.toString();
@@ -94,24 +90,32 @@ class AuthCubit extends Cubit<AuthState> {
 
       if (responseList[0].status == ApiResponseStatus.success &&
           responseList[1].status == ApiResponseStatus.success) {
-        emit(AuthNodeSuccess(
+        safeEmit(()=>emit(AuthNodeSuccess(
           SendOTPModel.fromJson(jsonDecode(jsonEncode(responseList[0].data))),
-        ));
-        emit(AuthPhpSuccess(
-          SendPhpOTPModel.fromJson(jsonDecode(jsonEncode(responseList[1].data))),
-        ));
+        )));
+        safeEmit(()=>
+            emit(AuthPhpSuccess(
+              SendPhpOTPModel.fromJson(jsonDecode(jsonEncode(responseList[1].data))),
+            ))
+        );
       } else {
         if (responseList[0].status != ApiResponseStatus.success) {
           final err = SendOTPModel.fromJson(jsonDecode(jsonEncode(responseList[0].error)));
-          emit(AuthError(err.message ?? "Unknown Error"));
+          safeEmit(()=>
+              emit(AuthError(err.message ?? "Unknown Error"))
+          );
         } else if (responseList[1].status != ApiResponseStatus.success) {
           final err = SendPhpOTPModel.fromJson(jsonDecode(jsonEncode(responseList[1].error)));
-          emit(AuthError(err.message ?? "Unknown Error"));
+          safeEmit(()=>
+              emit(AuthError(err.message ?? "Unknown Error"))
+          );
         }
       }
     } catch (e) {
       DebugPrint.prt("Error in sendBothOtp: $e");
-      emit(AuthError(e.toString()));
+      safeEmit(()=>
+          emit(AuthError(e.toString()))
+      );
     }
   }
 
@@ -185,7 +189,9 @@ class AuthCubit extends Cubit<AuthState> {
 
 
   Future<void> verifyOtpNode(String phoneNumber,String otp) async {
-    emit(VerifyOtpLoading());
+    safeEmit(()=>
+        emit(VerifyOtpLoading())
+    );
     try {
       final response = await authRepository.verifyOTPNodeApiCallFunction({
         "mobile":phoneNumber,
@@ -193,12 +199,18 @@ class AuthCubit extends Cubit<AuthState> {
       });
       DebugPrint.prt("Verify OTP Success $response");
       if (response.status == ApiResponseStatus.success) {
-        emit(VerifyOTPSuccess(response.data!));
+        safeEmit(()=>
+            emit(VerifyOTPSuccess(response.data!))
+        );
       } else {
-        emit(AuthError(response.error?.message ?? "Unknown error"));
+        safeEmit(()=>
+            emit(AuthError(response.error?.message ?? "Unknown error"))
+        );
       }
     } catch (e) {
-      emit(AuthError(e.toString()));
+      safeEmit(()=>
+          emit(AuthError(e.toString()))
+      );
     }
   }
 
@@ -212,17 +224,25 @@ class AuthCubit extends Cubit<AuthState> {
       "otp": int.parse(otp)
     };
 
-    emit(VerifyOtpLoading());
+    safeEmit(()=>
+        emit(VerifyOtpLoading())
+    );
     try {
       final response = await authRepository.verifyOTPpHpApiCallFunction(otpVerifyRequest);
       DebugPrint.prt("Verify OTP Success $response");
       if (response.status == ApiResponseStatus.success) {
-        emit(VerifyPhpOTPSuccess(response.data!));
+        safeEmit(()=>
+            emit(VerifyPhpOTPSuccess(response.data!))
+        );
       } else {
-        emit(AuthError(response.error?.message ?? "Unknown error"));
+        safeEmit(()=>
+            emit(AuthError(response.error?.message ?? "Unknown error"))
+        );
       }
     } catch (e) {
-      emit(AuthError(e.toString()));
+      safeEmit(()=>
+          emit(AuthError(e.toString()))
+      );
     }
   }
 

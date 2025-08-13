@@ -209,35 +209,38 @@ class _OnlineBankingOption extends State<OnlineBankingOption>{
             ),
           ),
         ),
-        bottomNavigationBar: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const BottomDashLine(), // Make sure BottomDashLine uses double.infinity width
-            const SizedBox(height: 24),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
-              child: Loan112Button(
-                onPressed: () async {
-                  var otpModel = await MySharedPreferences.getUserSessionDataNode();
-                  VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
-                  var leadId = verifyOtpModel.data?.leadId ?? "";
-                  if (leadId.isEmpty) {
-                    leadId = await MySharedPreferences.getLeadId();
-                  }
+        bottomNavigationBar: SafeArea(
+          bottom: true,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const BottomDashLine(), // Make sure BottomDashLine uses double.infinity width
+              const SizedBox(height: 24),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
+                child: Loan112Button(
+                  onPressed: () async {
+                    var otpModel = await MySharedPreferences.getUserSessionDataNode();
+                    VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
+                    var leadId = verifyOtpModel.data?.leadId ?? "";
+                    if (leadId.isEmpty) {
+                      leadId = await MySharedPreferences.getLeadId();
+                    }
 
-                  context.read<LoanApplicationCubit>().fetchOnlineAccountAggregatorApiCall({
-                    "custId": verifyOtpModel.data?.custId,
-                    "leadId": leadId,
-                    "docType": "bank",
-                    "bankVerifyType" :  "1",
-                    "requestSource" :  "WHATSAPP-JOURNEY"
-                  });
-                },
-                text: 'INITIATE',
+                    context.read<LoanApplicationCubit>().fetchOnlineAccountAggregatorApiCall({
+                      "custId": verifyOtpModel.data?.custId,
+                      "leadId": leadId,
+                      "docType": "bank",
+                      "bankVerifyType" :  "1",
+                      "requestSource" :  "WHATSAPP-JOURNEY"
+                    });
+                  },
+                  text: 'INITIATE',
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-          ],
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );

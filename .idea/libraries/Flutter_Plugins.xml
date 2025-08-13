@@ -46,7 +46,6 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/image_picker_windows-0.2.1+1" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/shared_preferences_android-2.4.10" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/url_launcher_macos-3.2.2" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/connectivity_plus-6.1.4" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/share_plus-11.0.0" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/camera_android-0.10.10+3" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/camera_web-0.3.5" />
@@ -66,6 +65,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/url_launcher-6.3.2" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_messaging-15.2.10" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/package_info_plus-8.3.0" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/connectivity_plus-6.1.5" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

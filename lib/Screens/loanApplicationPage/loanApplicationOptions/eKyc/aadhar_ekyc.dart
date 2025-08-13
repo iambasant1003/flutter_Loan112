@@ -55,6 +55,7 @@ class _AadharKycScreen extends State<AadharKycScreen>{
                   leadId = await MySharedPreferences.getLeadId();
                 }
 
+                await Future.delayed(Duration(milliseconds: 300));
                 if (!context.mounted) return;
                 context.read<LoanApplicationCubit>().customerKycVerificationApiCall({
                   "custId": verifyOtpModel.data?.custId,

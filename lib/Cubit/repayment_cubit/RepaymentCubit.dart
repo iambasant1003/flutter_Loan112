@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loan112_app/Constant/ConstText/ConstText.dart';
 import 'package:loan112_app/Cubit/repayment_cubit/RepaymentState.dart';
+import 'package:loan112_app/Cubit/same_emit.dart';
 import 'package:loan112_app/Model/CashFreePaymentInitializationResponse.dart';
 import 'package:loan112_app/Model/RazorPayInitiatePaymentResponseModel.dart';
 import 'package:loan112_app/ParamModel/CashFreePaymentInitializationParamModel.dart';
@@ -26,7 +27,10 @@ class RePaymentCubit extends Cubit<RepaymentState> {
 
 
   Future<void> initiateRazorpayPayment(String amount,String leadId) async {
-    emit(RepaymentLoading());
+
+    safeEmit(()=>
+        emit(RepaymentLoading())
+    );
 
     RazorPayPaymentInitialParamModel razorPayPaymentInitialParamModel = RazorPayPaymentInitialParamModel();
     razorPayPaymentInitialParamModel.amount = double.parse(amount);
@@ -37,17 +41,24 @@ class RePaymentCubit extends Cubit<RepaymentState> {
       final response = await repaymentRepository.initiateRazorpayApiCallFunction(razorPayPaymentInitialParamModel.toJson());
       DebugPrint.prt("RazorPay Initiate Payment ${response.data}");
       if (response.status == ApiResponseStatus.success) {
-        emit(RazorpayPaymentInitiateSuccess(response.data!));
+        safeEmit(()=>
+            emit(RazorpayPaymentInitiateSuccess(response.data!))
+        );
       } else {
-        emit(RazorpayPaymentInitiateFailed(response.error!));
+        safeEmit(()=>
+            emit(RazorpayPaymentInitiateFailed(response.error!))
+        );
       }
     } catch (e) {
-      emit(
-          RazorpayPaymentInitiateFailed(
-              RazorPayInitiatePaymentResponseSuccessModel(
-              status: 500,
-              message: ConstText.exceptionError
-            )
+
+      safeEmit(()=>
+          emit(
+              RazorpayPaymentInitiateFailed(
+                  RazorPayInitiatePaymentResponseSuccessModel(
+                      status: 500,
+                      message: ConstText.exceptionError
+                  )
+              )
           )
       );
     }
@@ -55,7 +66,10 @@ class RePaymentCubit extends Cubit<RepaymentState> {
 
 
   Future<void> checkRazorpayPaymentStatus(String razorPaymentId,String leadId) async {
-    emit(RepaymentLoading());
+
+    safeEmit(()=>
+        emit(RepaymentLoading())
+    );
 
     CheckRazorPayPaymentStatusParamModel checkRazorPayPaymentStatusParamModel = CheckRazorPayPaymentStatusParamModel();
     checkRazorPayPaymentStatusParamModel.leadId = leadId;
@@ -68,16 +82,23 @@ class RePaymentCubit extends Cubit<RepaymentState> {
       final response = await repaymentRepository.completeRazorpayApiCallFunction(checkRazorPayPaymentStatusParamModel.toJson());
       DebugPrint.prt("RazorPay Payment Status Check ${response.data}");
       if (response.status == ApiResponseStatus.success) {
-        emit(CheckRazorPayPaymentStatusSuccess(response.data!));
+        safeEmit(()=>
+            emit(CheckRazorPayPaymentStatusSuccess(response.data!))
+        );
       } else {
-        emit(CheckRazorPayPaymentStatusFailed(response.error!));
+        safeEmit(()=>
+            emit(CheckRazorPayPaymentStatusFailed(response.error!))
+        );
       }
     } catch (e) {
-      emit(
-          CheckRazorPayPaymentStatusFailed(
-          RazorPayCheckPaymentStatusModel(
-                  status: 500,
-                  message: ConstText.exceptionError
+
+      safeEmit(()=>
+          emit(
+              CheckRazorPayPaymentStatusFailed(
+                  RazorPayCheckPaymentStatusModel(
+                      status: 500,
+                      message: ConstText.exceptionError
+                  )
               )
           )
       );
@@ -86,7 +107,9 @@ class RePaymentCubit extends Cubit<RepaymentState> {
 
 
   Future<void> initiateCashFreePayment(String amount,String leadId) async {
-    emit(RepaymentLoading());
+    safeEmit(()=>
+        emit(RepaymentLoading())
+    );
 
     CashFreePaymentInitializationParamModel cashFreePaymentInitializationParamModel = CashFreePaymentInitializationParamModel();
     cashFreePaymentInitializationParamModel.amount = double.parse(amount);
@@ -96,16 +119,23 @@ class RePaymentCubit extends Cubit<RepaymentState> {
       final response = await repaymentRepository.initiateCashFreeApiCallFunction(cashFreePaymentInitializationParamModel.toJson());
       DebugPrint.prt("CashFree Initiate Payment ${response.data}");
       if (response.status == ApiResponseStatus.success) {
-        emit(CashFreeInitiateSuccess(response.data!));
+        safeEmit(()=>
+            emit(CashFreeInitiateSuccess(response.data!))
+        );
       } else {
-        emit(CashFreeInitiateSuccess(response.error!));
+        safeEmit(()=>
+            emit(CashFreeInitiateSuccess(response.error!))
+        );
       }
     } catch (e) {
-      emit(
-          CashFreeInitiateFailed(
-              CashFreePaymentInitializationResponse(
-                  status: 500,
-                  message: ConstText.exceptionError
+
+      safeEmit(()=>
+          emit(
+              CashFreeInitiateFailed(
+                  CashFreePaymentInitializationResponse(
+                      status: 500,
+                      message: ConstText.exceptionError
+                  )
               )
           )
       );
@@ -113,8 +143,10 @@ class RePaymentCubit extends Cubit<RepaymentState> {
   }
 
   Future<void> checkCashFreePayment(String orderId) async {
-    emit(RepaymentLoading());
 
+    safeEmit(()=>
+        emit(RepaymentLoading())
+    );
     CashFreePaymentStatusParamModel cashFreePaymentStatusParamModel = CashFreePaymentStatusParamModel();
     cashFreePaymentStatusParamModel.leadId = "";
     cashFreePaymentStatusParamModel.orderId = "";
@@ -123,16 +155,22 @@ class RePaymentCubit extends Cubit<RepaymentState> {
       final response = await repaymentRepository.completeCashFreePayApiCallFunction(cashFreePaymentStatusParamModel.toJson());
       DebugPrint.prt("CashFree  Payment Status Check ${response.data}");
       if (response.status == ApiResponseStatus.success) {
-        emit(CashFreePaymentStatusSuccess(response.data!));
+        safeEmit(()=>
+            emit(CashFreePaymentStatusSuccess(response.data!))
+        );
       } else {
-        emit(CashFreePaymentStatusFailed(response.error!));
+        safeEmit(()=>
+            emit(CashFreePaymentStatusFailed(response.error!))
+        );
       }
     } catch (e) {
-      emit(
-          CashFreePaymentStatusFailed(
-              CashFreePaymentResponseModel(
-                  status: 500,
-                  message: ConstText.exceptionError
+      safeEmit(()=>
+          emit(
+              CashFreePaymentStatusFailed(
+                  CashFreePaymentResponseModel(
+                      status: 500,
+                      message: ConstText.exceptionError
+                  )
               )
           )
       );

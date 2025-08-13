@@ -8,7 +8,6 @@
       "version": "1.0.0+1",
       "dependencies": [
         "camera",
-        "connectivity_plus",
         "cupertino_icons",
         "device_info_plus",
         "dio",
@@ -30,6 +29,7 @@
         "go_router",
         "image",
         "image_picker",
+        "internet_connection_checker_plus",
         "intl",
         "network_info_plus",
         "package_info_plus",
@@ -111,6 +111,15 @@
         "test_api",
         "vector_math",
         "vm_service"
+      ]
+    },
+    {
+      "name": "internet_connection_checker_plus",
+      "version": "2.7.2",
+      "dependencies": [
+        "connectivity_plus",
+        "flutter",
+        "http"
       ]
     },
     {
@@ -297,19 +306,6 @@
         "geolocator_platform_interface",
         "geolocator_web",
         "geolocator_windows"
-      ]
-    },
-    {
-      "name": "connectivity_plus",
-      "version": "6.1.4",
-      "dependencies": [
-        "collection",
-        "connectivity_plus_platform_interface",
-        "flutter",
-        "flutter_web_plugins",
-        "meta",
-        "nm",
-        "web"
       ]
     },
     {
@@ -767,6 +763,29 @@
       ]
     },
     {
+      "name": "http",
+      "version": "1.4.0",
+      "dependencies": [
+        "async",
+        "http_parser",
+        "meta",
+        "web"
+      ]
+    },
+    {
+      "name": "connectivity_plus",
+      "version": "6.1.5",
+      "dependencies": [
+        "collection",
+        "connectivity_plus_platform_interface",
+        "flutter",
+        "flutter_web_plugins",
+        "meta",
+        "nm",
+        "web"
+      ]
+    },
+    {
       "name": "firebase_messaging_web",
       "version": "3.10.10",
       "dependencies": [
@@ -863,16 +882,6 @@
       "version": "0.5.0",
       "dependencies": [
         "dbus"
-      ]
-    },
-    {
-      "name": "http",
-      "version": "1.4.0",
-      "dependencies": [
-        "async",
-        "http_parser",
-        "meta",
-        "web"
       ]
     },
     {
@@ -1197,15 +1206,6 @@
         "meta",
         "plugin_platform_interface",
         "vector_math"
-      ]
-    },
-    {
-      "name": "connectivity_plus_platform_interface",
-      "version": "2.0.1",
-      "dependencies": [
-        "flutter",
-        "meta",
-        "plugin_platform_interface"
       ]
     },
     {
@@ -1576,6 +1576,15 @@
         "ffi",
         "meta",
         "xml"
+      ]
+    },
+    {
+      "name": "connectivity_plus_platform_interface",
+      "version": "2.0.1",
+      "dependencies": [
+        "flutter",
+        "meta",
+        "plugin_platform_interface"
       ]
     },
     {
