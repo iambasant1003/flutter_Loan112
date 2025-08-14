@@ -57,7 +57,7 @@ class _LoanListPageState extends State<LoanListPage> {
               child: Container(
                 margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  gradient: index == 0
+                  gradient: loanData?.loanActiveStatus == 1
                       ? LinearGradient(
                     colors: [
                       Color(0xFF2B3C74), // dark blue
@@ -67,7 +67,7 @@ class _LoanListPageState extends State<LoanListPage> {
                     end: Alignment.centerRight,
                   )
                       : null,
-                  color: index == 0 ? null : (isExpanded ? Colors.blue[50] : Colors.white),
+                  color: loanData?.loanActiveStatus == 1 ? null : (isExpanded ? Colors.blue[50] : Colors.white),
                   border: Border.all(
                     color: isExpanded ? Colors.blue : Colors.grey.shade300,
                     width: 1.5,
@@ -84,7 +84,7 @@ class _LoanListPageState extends State<LoanListPage> {
                 child: Column(
                   children: [
                     ListTile(
-                      leading: index == 0
+                      leading: loanData?.loanActiveStatus == 1
                           ? Container(
                         height: 24,
                         width: 24,
@@ -105,9 +105,9 @@ class _LoanListPageState extends State<LoanListPage> {
                       )
                           : null,
                       title: Text(
-                        index == 0 ? 'Active Loan' : "Loan $index",
+                        loanData?.loanActiveStatus == 1 ? 'Active Loan' : "Loan $index",
                         style: TextStyle(
-                          color: index == 0
+                          color: loanData?.loanActiveStatus == 1
                               ? Colors.white
                               : (isExpanded ? Colors.blue : Colors.black),
                           fontWeight: FontWeight.bold,
@@ -115,7 +115,7 @@ class _LoanListPageState extends State<LoanListPage> {
                       ),
                       trailing: Icon(
                         isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                        color: index == 0
+                        color: loanData?.loanActiveStatus == 1
                             ? Colors.white
                             : (isExpanded ? Colors.blue : Colors.black),
                       ),
@@ -133,7 +133,7 @@ class _LoanListPageState extends State<LoanListPage> {
   }
 
   Widget _buildDetailsSection(var loanData,int index) {
-    if(index == 0){
+    if(loanData.loanActiveStatus == 1){
       amountController.text = (loanData.repaymentAmount ?? 0).toString();
     }
     return Padding(
@@ -165,10 +165,10 @@ class _LoanListPageState extends State<LoanListPage> {
               _buildRow("Tenure in Days", "${loanData?.tenure ?? ""}"),
               _buildRow("Repayment Date", loanData?.repaymentDate ?? ""),
               _buildRow("Panel Interest (%) Per day", "${loanData?.penalRoi ?? ""}"),
-              index ==0?
+              loanData.loanActiveStatus ==1?
               SizedBox(height: 12):
               SizedBox.shrink(),
-              index ==0?
+              loanData.loanActiveStatus ==1?
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(

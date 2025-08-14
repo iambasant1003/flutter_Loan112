@@ -163,7 +163,7 @@ class _CheckEligibility extends State<CheckEligibility>{
                         child: Icon(Icons.arrow_back_ios, color: ColorConstant.blackTextColor),
                       ),
                     ),
-                    SizedBox(height: 8.0),
+                     SizedBox(height: 8.0),
 
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
@@ -205,10 +205,10 @@ class _CheckEligibility extends State<CheckEligibility>{
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(height: 24.0),
+                              SizedBox(height: 18.0),
 
                               labelTypeWidget("Select Employment Type"),
-                              SizedBox(height: 6.0),
+                              SizedBox(height: 12.0),
 
                               employmentTypeSelector(
                                 selectedType: employmentType,
@@ -218,7 +218,7 @@ class _CheckEligibility extends State<CheckEligibility>{
                                   });
                                 },
                               ),
-                              SizedBox(height: 24.0),
+                              SizedBox(height: 12.0),
 
                               labelTypeWidget("Net Monthly Income"),
                               SizedBox(height: 6.0),
@@ -405,7 +405,7 @@ class _CheckEligibility extends State<CheckEligibility>{
       bottomNavigationBar: SafeArea(
         bottom: true,
         child: Container(
-          height: 125,
+          height: 124,
           color: ColorConstant.whiteColor,
           child: Column(
             children: [
@@ -455,7 +455,7 @@ class _CheckEligibility extends State<CheckEligibility>{
                         text: "Check Eligibility"
                     ),
                     SizedBox(
-                      height: 20,
+                      height: 8,
                     ),
                     InkWell(
                       onTap: (){
@@ -488,6 +488,9 @@ class _CheckEligibility extends State<CheckEligibility>{
                         ],
                       ),
                     ),
+                    SizedBox(
+                      height: 20,
+                    )
                   ],
                 ),
               )
@@ -590,7 +593,7 @@ class _CheckEligibility extends State<CheckEligibility>{
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           border: Border.all(
             color: isSelected ? ColorConstant.appThemeColor : ColorConstant.greyTextColor,
@@ -602,8 +605,8 @@ class _CheckEligibility extends State<CheckEligibility>{
         child: Row(
           children: [
             Container(
-              width: 18,
-              height: 18,
+              width: 20,
+              height: 20,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
@@ -637,8 +640,6 @@ class _CheckEligibility extends State<CheckEligibility>{
       ),
     );
   }
-
-
 
 }
 
