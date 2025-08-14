@@ -45,6 +45,15 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
     });
   }
 
+
+  bool _isActive = true;
+
+  @override
+  void dispose() {
+    _isActive = false;
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,8 +69,8 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
           } else if (state is UploadSelfieSuccess) {
             EasyLoading.dismiss();
 
-            WidgetsBinding.instance.addPostFrameCallback((_) async {
-              if (!context.mounted) return;
+            Future(() async{
+              if (!_isActive) return;
 
               openSnackBar(
                 context,
@@ -71,38 +80,33 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
               );
               if((state.uploadSelfieModel.data?.decision ?? "").toLowerCase() == "repeat" &&
                   (state.uploadSelfieModel.data?.checkKycFlag ?? true) == false
-                ){
-                  await MySharedPreferences.setEnhanceKey("1");
+              ){
+                await MySharedPreferences.setEnhanceKey("1");
               }else{
                 await MySharedPreferences.setEnhanceKey("0");
               }
               if((state.uploadSelfieModel.data?.loanAmount ?? 0)>0
                   && (state.uploadSelfieModel.data?.decision ?? "").toLowerCase() == "approve"){
-                 var enhanceKey = await MySharedPreferences.getEnhanceKey();
-                 context.pop();
-                 context.push(AppRouterName.loanOfferPage,extra: int.parse(enhanceKey));
+                var enhanceKey = await MySharedPreferences.getEnhanceKey();
+                context.pop();
+                context.push(AppRouterName.loanOfferPage,extra: int.parse(enhanceKey));
               }else{
                 context.replace(
                   AppRouterName.eligibilityStatus,
                   extra: state.uploadSelfieModel,
                 );
               }
-              // Future.delayed(Duration(milliseconds: 500), () {
-              //   if (!context.mounted) return;
-              //   context.pop();
-              // });
-              //
-              // getCustomerDetailsApiCall();
             });
+
           } else if (state is UploadSelfieError) {
             EasyLoading.dismiss();
 
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (!context.mounted) return;
+              if (!_isActive) return;
 
               if (state.uploadSelfieModel.statusCode == 402) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (!context.mounted) return;
+                  if (!_isActive) return;
                   context.replace(
                     AppRouterName.eligibilityStatus,
                     extra: state.uploadSelfieModel,
@@ -110,6 +114,8 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
                 });
               }
               else if (state.uploadSelfieModel.message?.toLowerCase() == "already done") {
+                if(!_isActive) return;
+                openSnackBar(context, state.uploadSelfieModel.message ?? "Already done");
               }
               else {
                 openSnackBar(

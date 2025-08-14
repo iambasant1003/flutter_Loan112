@@ -29,6 +29,7 @@ class MyAppState extends State<MyApp> {
 
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
     // Initialize your config class
     AppConfig.init(widget.environment);
@@ -40,36 +41,36 @@ class MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-     return MultiRepositoryProvider(
-       providers: appRepositoryProviders,
-       child: MultiBlocProvider(
-         providers: appBlocProviders,
-         child: ScreenUtilInit(
-           designSize: const Size(414, 896),
-           minTextAdapt: true,
-           splitScreenMode: true,
-           builder: (context, child) {
-             return MaterialApp.router(
-               debugShowCheckedModeBanner: false,
-               title: ConstText.appName,
-               theme: ThemeData(
-                 useMaterial3: false,
-                 fontFamily: ConstText.fontType,
-                 primaryColor: ColorConstant.appThemeColor,
-                 scaffoldBackgroundColor: ColorConstant.whiteColor,
-                 appBarTheme: AppBarTheme(
-                   systemOverlayStyle: SystemUiOverlayStyle(
-                     statusBarColor: ColorConstant.appThemeColor,
-                   ),
-                 ),
-               ),
-               routerConfig: appRouter,
-               builder: EasyLoading.init(),
-             );
-           },
-         ),
-       ),
-     );
+    return MultiRepositoryProvider(
+      providers: appRepositoryProviders,
+      child: MultiBlocProvider(
+        providers: appBlocProviders,
+        child: ScreenUtilInit(
+          designSize: const Size(414, 896),
+          minTextAdapt: true,
+          splitScreenMode: true,
+          builder: (context, child) {
+            return MaterialApp.router(
+              debugShowCheckedModeBanner: false,
+              title: ConstText.appName,
+              theme: ThemeData(
+                useMaterial3: false,
+                fontFamily: ConstText.fontType,
+                primaryColor: ColorConstant.appThemeColor,
+                scaffoldBackgroundColor: ColorConstant.whiteColor,
+                appBarTheme: AppBarTheme(
+                  systemOverlayStyle: SystemUiOverlayStyle(
+                    statusBarColor: ColorConstant.appThemeColor,
+                  ),
+                ),
+              ),
+              routerConfig: appRouter,
+              builder: EasyLoading.init(),
+            );
+          },
+        ),
+      ),
+    );
   }
 
 
