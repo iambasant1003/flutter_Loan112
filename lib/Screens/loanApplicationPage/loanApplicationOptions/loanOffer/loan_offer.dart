@@ -35,6 +35,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
 
 
 
+
   double minValue = 0;
   double currentValue = 0;
   double maxValue = 40000;
@@ -51,6 +52,13 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
   DataModeL? selectedPurpose;
   GenerateLoanOfferModel? generateLoanOfferModel;
   GetPurposeOfLoanModel? getPurposeOfLoanModel;
+  bool _isActive = true;
+
+  @override
+  void dispose() {
+    _isActive = false;
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -102,7 +110,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
         ),
         body: BlocListener<LoanApplicationCubit,LoanApplicationState>(
           listener: (context, state) {
-            if (!mounted) return;
+            if (!_isActive) return;
 
             if (state is LoanApplicationLoading || state is LoanAcceptanceLoading) {
               EasyLoading.show(status: "Please wait...");
@@ -142,6 +150,10 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (context.mounted) {
                   openSnackBar(context, state.generateLoanOfferModel.message ?? "Unknown Error");
+                  if(state.generateLoanOfferModel.statusCode == 402){
+                    context.pop();
+                    getCustomerDetailsApiCall();
+                  }
                 }
               });
             }
@@ -157,12 +169,23 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
 
             else if (state is LoanAcceptanceSuccess) {
               EasyLoading.dismiss();
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (context.mounted) {
-                  context.pop();
-                  checkConditionCalculateDistanceApiCall();
-                }
+
+              // WidgetsBinding.instance.addPostFrameCallback((_) async {
+              //   await Future.delayed(Duration(milliseconds: 300));
+              //
+              //   if (!mounted) return; // check again after async call
+              //   await checkConditionCalculateDistanceApiCall();
+              //   if (!mounted) return; // double-check before starting
+              //    context.pop();
+              // });
+
+              Future(() async {
+                if (!_isActive) return;
+                await checkConditionCalculateDistanceApiCall();
+                if (!_isActive) return;
+                context.pop();
               });
+
             }
 
             else if (state is LoanAcceptanceError) {
@@ -170,6 +193,10 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (context.mounted) {
                   openSnackBar(context, state.loanAcceptanceModel.message ?? "Unknown Error");
+                  if(state.loanAcceptanceModel.statusCode == 403){
+                    context.pop();
+                    getCustomerDetailsApiCall();
+                  }
                 }
               });
             }
@@ -857,8 +884,8 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
   }
 
 
-  void checkConditionCalculateDistanceApiCall() async{
-      final position = await getCurrentPosition();
+  Future<void> checkConditionCalculateDistanceApiCall() async{
+      final position = await getCurrentPositionFast();
       final geoLat = position.latitude.toString();
       final geoLong = position.longitude.toString();
 

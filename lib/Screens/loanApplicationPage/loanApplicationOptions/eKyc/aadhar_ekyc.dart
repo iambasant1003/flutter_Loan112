@@ -55,6 +55,7 @@ class _AadharKycScreen extends State<AadharKycScreen>{
                   leadId = await MySharedPreferences.getLeadId();
                 }
 
+                await Future.delayed(Duration(milliseconds: 300));
                 if (!context.mounted) return;
                 context.read<LoanApplicationCubit>().customerKycVerificationApiCall({
                   "custId": verifyOtpModel.data?.custId,
@@ -73,11 +74,13 @@ class _AadharKycScreen extends State<AadharKycScreen>{
           }
 
           else if (state is CustomerKYCVerificationSuccess) {
-            EasyLoading.dismiss();
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!context.mounted) return;
               //context.pop();
-              context.replace(AppRouterName.eKycMessageScreen);
+              if(state.ekycVerificationModel.data?.ekycVerifiedFlag == 1){
+                EasyLoading.dismiss();
+                context.replace(AppRouterName.eKycMessageScreen);
+              }
             });
           }
 

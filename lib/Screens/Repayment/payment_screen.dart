@@ -194,7 +194,7 @@ class _PaymentOptionScreen extends State<PaymentOptionScreen> {
                 ),
                 SizedBox(height: 12.0),
                 Text(
-                  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since.",
+                  "We are processing your loan payment. Please review the details below and confirm to proceed. Your payment will be securely processed, and you will receive a confirmation once the transaction is complete.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontWeight: FontConstants.w600,

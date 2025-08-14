@@ -56,7 +56,9 @@ class _LogInPageState extends State<LogInPage> {
                 DebugPrint.prt("Navigation Logic Called To OTP");
                 EasyLoading.dismiss();
                 context.push(AppRouterName.verifyOtp,extra: mobileController.text.trim()).then((val){
-                  mobileController = TextEditingController();
+                  if (mounted) {
+                    mobileController.clear();
+                  }
                 });
               }else if(state is AuthError){
                 EasyLoading.dismiss();

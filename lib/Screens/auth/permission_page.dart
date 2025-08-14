@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -294,13 +295,15 @@ class _PermissionPage extends State<PermissionPage> {
                 imagePath: ImageConstants.permissionScreenDevice,
               ),
               SizedBox(height: 12),
-              permissionTypeWidget(
-                context,
-                title: 'SMS',
-                subtitle: 'The app periodically collects and transmits SMS data like sender names, SMS body and received time to our servers and third parties. This data is used to assess your income, spending patterns and your loan affordability. This helps us in quick credit assessment and help us in facilitating best offers to customers easily and at the same time prevent fraud.',
-                imagePath: ImageConstants.permissionScreenSMS,
-              ),
-              SizedBox(height: 12),
+              if(Platform.isAndroid)...[
+                permissionTypeWidget(
+                  context,
+                  title: 'SMS',
+                  subtitle: 'The app periodically collects and transmits SMS data like sender names, SMS body and received time to our servers and third parties. This data is used to assess your income, spending patterns and your loan affordability. This helps us in quick credit assessment and help us in facilitating best offers to customers easily and at the same time prevent fraud.',
+                  imagePath: ImageConstants.permissionScreenSMS,
+                ),
+                SizedBox(height: 12),
+              ],
               permissionTypeWidget(
                 context,
                 title: 'Camera',
