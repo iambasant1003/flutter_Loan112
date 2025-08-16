@@ -33,7 +33,7 @@ class LoanApplicationPage extends StatefulWidget{
 
 class _LoanApplicationPage extends State<LoanApplicationPage> {
 
-  final int currentStep = 1;
+
 
 
   final List<String> step = [
@@ -257,15 +257,13 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
                                             ),
                                             // add line below except for last item
                                             if (index != stepKeys.length - 1)
-                                              const SizedBox(height: 4),
-                                            if (index != stepKeys.length - 1)
                                               Padding(
                                                 padding: const EdgeInsets.only(left: 20.0),
                                                 child: Container(
-                                                  height: 20,
+                                                  height: 12,
                                                   width: 2,
-                                                  color: index < currentStep - 1
-                                                      ? Colors.blue // completed line color
+                                                  color: status ==1
+                                                      ? Color(0xFF5171DA) // completed line color
                                                       : Colors.grey.shade300, // pending line color
                                                 ),
                                               ),

@@ -51,17 +51,27 @@ class StepItem extends StatelessWidget {
     );
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 12.0),
       decoration: BoxDecoration(
         color: gradient == null ? bgColor : null,
         gradient: gradient,
         border: Border.all(color: borderColor),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: ListTile(
-        leading: leadingIcon,
-        title: Text(title, style: textStyle),
-      ),
+      child: Row(
+        children: [
+          leadingIcon,
+          SizedBox(
+            width: 12,
+          ),
+          Text(title, style: textStyle),
+        ],
+      )
+
+      // ListTile(
+      //   leading: leadingIcon,
+      //   title: Text(title, style: textStyle),
+      // ),
     );
   }
 }

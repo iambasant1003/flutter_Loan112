@@ -203,7 +203,62 @@ class _DashBoardHome extends State<DashBoardHome> {
                                         ?.data!
                                         .activeLoanDetails,
                                   )
-                                : SizedBox.shrink(),
+                                : (dashBoarddataModel?.data?.showLoanHistoryBtnFlag == 1)?
+                                 Padding(
+                                   padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
+                                   child: Column(
+                                     children: [
+                                       SizedBox(
+                                         height: 8.0,
+                                       ),
+                                       InkWell(
+                                         onTap: (){
+                                           context.push(AppRouterName.repaymentPage);
+                                         },
+                                         child: Container(
+                                           decoration: BoxDecoration(
+                                             color: Colors.white,
+                                             borderRadius: BorderRadius.circular(40),
+                                             border: Border.all(
+                                               color: Colors.blue.shade100,
+                                             ),
+                                             boxShadow: [
+                                               BoxShadow(
+                                                 color: Colors.blue.shade50,
+                                                 blurRadius: 8,
+                                                 offset: Offset(0, 2),
+                                               )
+                                             ],
+                                           ),
+                                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                                           child: Row(
+                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                             children: [
+                                               Text(
+                                                   'Check Your Loan History',
+                                                   style: TextStyle(
+                                                       fontSize: FontConstants.f14,
+                                                       fontFamily: FontConstants.fontFamily,
+                                                       fontWeight: FontConstants.w700,
+                                                       color: ColorConstant.blackTextColor
+                                                   )
+                                               ),
+                                               Icon(
+                                                 Icons.arrow_forward,
+                                                 color: ColorConstant.blueTextColor,
+                                                 size: 20,
+                                               ),
+                                             ],
+                                           ),
+                                         ),
+                                       ),
+                                       SizedBox(
+                                         height: 8,
+                                       )
+                                     ],
+                                   ),
+                                 ):
+                            SizedBox.shrink(),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

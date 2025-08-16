@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../Constant/ColorConst/ColorConstant.dart';
@@ -12,17 +13,9 @@ class CommonTextField extends StatelessWidget {
   final VoidCallback? onEditingComplete;
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
-
-  /// Fully customizable trailing widget
   final Widget? trailingWidget;
-
-  /// Optional click callback if you want the trailingWidget to be wrapped in a clickable
   final VoidCallback? trailingClick;
-
-  /// Optional readOnly flag for fields like DOB
   final bool readOnly;
-
-  /// Optional obscureText flag for password fields
   final bool obscureText;
 
   const CommonTextField({
@@ -39,7 +32,7 @@ class CommonTextField extends StatelessWidget {
     this.trailingWidget,
     this.trailingClick,
     this.readOnly = false,
-    this.obscureText = false, // 👈 added with default false
+    this.obscureText = false,
   }) : super(key: key);
 
   @override
@@ -64,31 +57,35 @@ class CommonTextField extends StatelessWidget {
       keyboardType: keyboardType,
       inputFormatters: inputFormatters,
       readOnly: readOnly,
-      obscureText: obscureText, // 👈 use the new property
+      obscureText: obscureText,
       style: const TextStyle(
         fontFamily: 'Manrope',
         fontWeight: FontWeight.w500,
         fontSize: 14,
-        height: 1.71,
+        height: 1.2, // Keeps text centered
         letterSpacing: 0,
       ),
       maxLength: maxLength,
       decoration: InputDecoration(
         counterText: '',
-        isDense: true,
+        isDense: true, // removes default vertical padding
         hintText: hintText,
         hintStyle: hintStyle ??
             const TextStyle(
               fontFamily: 'Manrope',
               fontWeight: FontWeight.w500,
               fontSize: 14,
-              height: 1.71,
+              height: 1.43,
               letterSpacing: 0,
               color: Color(0xFF98A2B3),
             ),
         contentPadding: const EdgeInsets.symmetric(
-          vertical: 12,
-          horizontal: 12,
+          horizontal: 14,
+          vertical: 14, // ⬅ remove vertical padding
+        ),
+        constraints: const BoxConstraints(
+          minHeight: 44,
+          maxHeight: 44, // ⬅ force fixed height
         ),
         enabledBorder: border(normalBorderColor),
         focusedBorder: border(normalBorderColor),
@@ -98,10 +95,7 @@ class CommonTextField extends StatelessWidget {
             ? GestureDetector(
           onTap: trailingClick ?? () {},
           behavior: HitTestBehavior.translucent,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: trailingWidget,
-          ),
+          child: trailingWidget,
         )
             : null,
       ),
