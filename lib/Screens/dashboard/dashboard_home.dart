@@ -146,7 +146,7 @@ class _DashBoardHome extends State<DashBoardHome> {
                                 ),
                                 //This 2nd Positioned Contains Button
                                 Positioned(
-                                  bottom: -15,
+                                  bottom: -20,
                                   left: 80,
                                   right: 80,
                                   child: GestureDetector(
@@ -185,7 +185,7 @@ class _DashBoardHome extends State<DashBoardHome> {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 20.0),
+                            SizedBox(height: 10.0),
                             (dashBoarddataModel?.data?.activeLoanDetails !=
                                         null &&
                                     (dashBoarddataModel
@@ -209,7 +209,7 @@ class _DashBoardHome extends State<DashBoardHome> {
                                    child: Column(
                                      children: [
                                        SizedBox(
-                                         height: 8.0,
+                                         height: 20.0,
                                        ),
                                        InkWell(
                                          onTap: (){
@@ -252,13 +252,11 @@ class _DashBoardHome extends State<DashBoardHome> {
                                            ),
                                          ),
                                        ),
-                                       SizedBox(
-                                         height: 8,
-                                       )
                                      ],
                                    ),
                                  ):
                             SizedBox.shrink(),
+                            SizedBox(height: 20.0),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

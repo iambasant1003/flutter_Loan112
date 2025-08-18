@@ -455,7 +455,7 @@ class _CheckEligibility extends State<CheckEligibility>{
                         text: "Check Eligibility"
                     ),
                     SizedBox(
-                      height: 8,
+                      height: 24.0,
                     ),
                     InkWell(
                       onTap: (){
@@ -489,7 +489,7 @@ class _CheckEligibility extends State<CheckEligibility>{
                       ),
                     ),
                     SizedBox(
-                      height: 20,
+                      height: 4.0,
                     )
                   ],
                 ),

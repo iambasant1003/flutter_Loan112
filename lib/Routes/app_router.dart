@@ -1,7 +1,5 @@
 import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Model/CheckBankStatementStatusModel.dart';
-import 'package:loan112_app/Model/CreateLeadModel.dart';
-import 'package:loan112_app/Model/DashBoarddataModel.dart';
 import 'package:loan112_app/Model/UpdateBankAccountModel.dart';
 import 'package:loan112_app/Model/UploadSelfieModel.dart';
 import 'package:loan112_app/Screens/Repayment/payment_screen.dart';
@@ -13,6 +11,7 @@ import 'package:loan112_app/Screens/dashboard/dashboard_status.dart';
 import 'package:loan112_app/Screens/dashboard/dashboard_verify_otp.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/addReferance/add_reference.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/bankStatement/bank_statement.dart';
+import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/bankStatement/newBREJourney/bank_statement_analyzer.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/bankStatement/onlinebankStatement/online_bank_statement.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/bankStatement/onlinebankStatement/online_banking_message.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/bankingDetails/banking_details.dart';
@@ -104,6 +103,9 @@ final GoRouter appRouter = GoRouter(
     GoRoute(path: AppRouterName.termsAndConditionWebview,builder: (context,state){
       String webUrl = state.extra as String;
       return TermsAndConditionScreen(webUrl: webUrl);
+    }),
+    GoRoute(path: AppRouterName.bankStatementAnalyzer,builder: (context,state) {
+      return BankStatementAnalyzer();
     }),
   ],
 );

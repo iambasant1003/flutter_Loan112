@@ -20,6 +20,7 @@ import '../../Model/GetLoanHistoryModel.dart';
 import '../../Model/UpdateBankAccountModel.dart';
 import '../../Model/UploadBankStatementModel.dart';
 import '../../Model/UploadOnlineBankStatementModel.dart';
+import '../../Model/VerifyBankStatementModel.dart';
 
 abstract class LoanApplicationState {}
 
@@ -230,6 +231,16 @@ class CalculateDistanceSuccess extends LoanApplicationState{
 class CalculateDistanceFailed extends LoanApplicationState{
   final CalculateDistanceResponseModel calculateDistanceResponseModel;
   CalculateDistanceFailed(this.calculateDistanceResponseModel);
+}
+
+class VerifyBankStatementSuccess extends LoanApplicationState{
+  final VerifyBankStatementModel verifyBankStatementModel;
+  VerifyBankStatementSuccess(this.verifyBankStatementModel);
+}
+
+class VerifyBankStatementFailed extends LoanApplicationState{
+  final VerifyBankStatementModel verifyBankStatementModel;
+  VerifyBankStatementFailed(this.verifyBankStatementModel);
 }
 
 

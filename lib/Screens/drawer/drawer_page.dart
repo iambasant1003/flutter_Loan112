@@ -230,9 +230,9 @@ class _Loan112Drawer extends State<Loan112Drawer> {
                   )
                 ],
               ),
-              SizedBox(
-                height: 10.0,
-              ),
+              // SizedBox(
+              //   height: 10.0,
+              // ),
               Divider(
                 height: 1.0,
                 color: ColorConstant.greyTextColor.withOpacity(0.5), // 50% opacity

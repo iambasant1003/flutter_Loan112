@@ -342,6 +342,24 @@ class LoanApplicationCubit extends Cubit<LoanApplicationState> {
     }
   }
 
+  Future<void> verifyBankStatementApiCall(Map<String,dynamic> dataObj) async{
+    safeEmit(()=>
+        emit(LoanApplicationLoading())
+    );
+    final response = await loanApplicationRepository.verifyBankStatementApiCallFunction(dataObj);
+    DebugPrint.prt("Verify Bank Statement Response Status ${response.status}");
+    if (response.status == ApiResponseStatus.success) {
+      safeEmit(()=>
+          emit(VerifyBankStatementSuccess(response.data!))
+      );
+    } else {
+      DebugPrint.prt("Inside Else Block of response");
+      safeEmit(()=>
+          emit(VerifyBankStatementFailed(response.error!))
+      );
+    }
+  }
+
 
 
 

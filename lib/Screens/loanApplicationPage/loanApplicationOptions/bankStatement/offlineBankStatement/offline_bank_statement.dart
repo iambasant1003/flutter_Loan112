@@ -21,6 +21,7 @@ import 'package:widgets_easier/widgets_easier.dart';
 import '../../../../../Constant/ColorConst/ColorConstant.dart';
 import '../../../../../Constant/ImageConstant/ImageConstants.dart';
 import '../../../../../Model/VerifyOTPModel.dart';
+import '../../../../../Routes/app_router_name.dart';
 import '../../../../../Utils/MysharePrefenceClass.dart';
 import '../../../../../Widget/app_bar.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
@@ -130,13 +131,14 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
             EasyLoading.show(status: "Please wait...");
           } else if (state is UploadBankStatementSuccess) {
             EasyLoading.dismiss();
-            openSnackBar(
-              context,
-              state.uploadBankStatementModel.message ?? "Success",
-              backGroundColor: ColorConstant.appThemeColor,
-            );
-            context.pop();
-            context.pop();
+            // openSnackBar(
+            //   context,
+            //   state.uploadBankStatementModel.message ?? "Success",
+            //   backGroundColor: ColorConstant.appThemeColor,
+            // );
+            // context.pop();
+            // context.pop();
+            context.replace(AppRouterName.bankStatementAnalyzer);
           } else if (state is UploadBankStatementFailed) {
             EasyLoading.dismiss();
             DebugPrint.prt("Upload Bank Statement Failed");
