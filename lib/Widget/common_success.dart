@@ -116,7 +116,10 @@ const Loan112VerifyStatusPage({
                     const SizedBox(height: 16.0),
                   ],
                 ),
-              )
+              ),
+              SizedBox(
+                height: 18.0,
+              ),
             ],
           ),
         ],
@@ -125,3 +128,4 @@ const Loan112VerifyStatusPage({
   }
 
 }
+

@@ -248,7 +248,4 @@ class _BankStatementScreen extends State<BankStatementScreen> {
     );
   }
 
-
-
-
 }

@@ -74,3 +74,4 @@ class _EkycMessageScreen extends State<EkycMessageScreen>{
   }
 
 }
+

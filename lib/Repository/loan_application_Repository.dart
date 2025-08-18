@@ -23,6 +23,7 @@ import '../Model/AddReferenceModel.dart';
 import '../Model/CheckBankStatementStatusModel.dart';
 import '../Model/UpdateBankAccountModel.dart';
 import '../Model/UploadOnlineBankStatementModel.dart';
+import '../Model/VerifyBankStatementModel.dart';
 import '../Services/ApiResponseStatus.dart';
 import '../Services/http_client.dart';
 import '../Utils/Debugprint.dart';
@@ -633,6 +634,34 @@ class LoanApplicationRepository {
     }
   }
 
+  Future<ApiResponse<VerifyBankStatementModel>> verifyBankStatementApiCallFunction(Map<String,dynamic> dataObj) async{
+    try {
+      final response = await apiClass.post(bankStatementVerification,dataObj,isHeader: true);
+      DebugPrint.prt("API Response verify Bank Statement ${response.data}");
+
+      final Map<String, dynamic> responseData = response.data;
+
+
+      final ApiResponseStatus status = mapApiResponseStatus(responseData);
+
+      if (status == ApiResponseStatus.success) {
+        DebugPrint.prt("verify Bank Statement Success Response Model $responseData}");
+        final data =VerifyBankStatementModel.fromJson(responseData);
+        return ApiResponse.success(data);
+      } else {
+        final error = VerifyBankStatementModel.fromJson(responseData);
+        DebugPrint.prt("verify Bank Statement Error Message ${error.message}, ${error.statusCode}");
+        return ApiResponse.error(status, error: error);
+      }
+    } catch (e) {
+      DebugPrint.prt("Exception in verify Bank Statement data : $e");
+      final error = VerifyBankStatementModel(
+        statusCode: 500,
+        message: ConstText.exceptionError,
+      );
+      return ApiResponse.error(ApiResponseStatus.serverError, error: error);
+    }
+  }
 
 }
 

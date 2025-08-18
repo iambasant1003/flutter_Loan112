@@ -1,9 +1,9 @@
-
 import 'package:flutter/material.dart';
 
-class Loan112ConcaveContainer extends StatelessWidget {
+class Loan112BREBackground extends StatelessWidget {
   final double height;
-  const Loan112ConcaveContainer({super.key,required this.height});
+  final Color  containerColor;
+  const Loan112BREBackground({super.key,required this.height,required this.containerColor});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +12,7 @@ class Loan112ConcaveContainer extends StatelessWidget {
       child: Container(
         height: height,
         decoration: BoxDecoration(
-            color: const Color(0xFFE3F4E1), // #E3F4E1
+            color: containerColor, // #E3F4E1
             borderRadius: BorderRadius.only(bottomLeft: Radius.circular(40),bottomRight: Radius.circular(40))
         ),
       ),

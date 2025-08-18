@@ -34,6 +34,7 @@ const String completeCashFreePayment = "completeCashfreePayment$andRD";
 const String initiateRazorpayPayment = "initiateRazorRequest$andRD";
 const String completeRazorpayPayment = "completeRazorRequest$andRD";
 const String calculateDistance = "calculate-distance";
+const String bankStatementVerification   = "bank-statement-verifification";
 
 
 

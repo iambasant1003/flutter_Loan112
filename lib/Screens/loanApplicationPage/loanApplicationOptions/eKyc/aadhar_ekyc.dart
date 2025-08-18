@@ -294,7 +294,7 @@ class _AadharKycScreen extends State<AadharKycScreen>{
                   ),
                    */
                                   SizedBox(
-                                    height: 8.0,
+                                    height: 24.0,
                                   ),
                                   Center(
                                     child: InkWell(
@@ -330,7 +330,7 @@ class _AadharKycScreen extends State<AadharKycScreen>{
                                     ),
                                   ),
                                   SizedBox(
-                                    height: 20.0,
+                                    height: 4.0,
                                   ),
                                 ],
                               ),

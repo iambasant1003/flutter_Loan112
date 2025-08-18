@@ -42,7 +42,7 @@ class _LoanListPageState extends State<LoanListPage> {
         bool isExpanded = _expandedIndex == index;
         var loanData = widget.loanHistoryModel.data?[index];
 
-        return Column(
+        return  Column(
           children: [
             GestureDetector(
               onTap: () {
@@ -105,7 +105,7 @@ class _LoanListPageState extends State<LoanListPage> {
                       )
                           : null,
                       title: Text(
-                        loanData?.loanActiveStatus == 1 ? 'Active Loan' : "Loan $index",
+                        _getLoanTitle(index, loanData?.loanActiveStatus ?? 0),
                         style: TextStyle(
                           color: loanData?.loanActiveStatus == 1
                               ? Colors.white
@@ -122,10 +122,10 @@ class _LoanListPageState extends State<LoanListPage> {
                     ),
                   ],
                 ),
-              )
+              ),
             ),
-            if(isExpanded) SizedBox(height: 12.0),
-            if (isExpanded) _buildDetailsSection(loanData,index),
+            if (isExpanded) SizedBox(height: 12.0),
+            if (isExpanded) _buildDetailsSection(loanData, index),
           ],
         );
       },
@@ -330,5 +330,28 @@ class _LoanListPageState extends State<LoanListPage> {
       return ''; // or handle error
     }
   }
-  
+
+  String _getLoanTitle(int index, int loanActiveStatus) {
+    // Find first active loan index
+    int firstActiveIndex = widget.loanHistoryModel.data
+        ?.indexWhere((e) => e.loanActiveStatus == 1) ??
+        -1;
+
+    if (loanActiveStatus == 1) {
+      return "Active Loan";
+    } else {
+      // If there is an active loan
+      if (firstActiveIndex != -1) {
+        // loans after active loan start numbering from Loan 1
+        int adjustedIndex = index - (firstActiveIndex + 1) + 1;
+        return "Loan $adjustedIndex";
+      } else {
+        // no active loan → start from Loan 1 from beginning
+        return "Loan ${index + 1}";
+      }
+    }
+  }
+
+
+
 }

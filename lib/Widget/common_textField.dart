@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../Constant/ColorConst/ColorConstant.dart';
@@ -62,13 +61,13 @@ class CommonTextField extends StatelessWidget {
         fontFamily: 'Manrope',
         fontWeight: FontWeight.w500,
         fontSize: 14,
-        height: 1.2, // Keeps text centered
+        height: 1.2,
         letterSpacing: 0,
       ),
       maxLength: maxLength,
       decoration: InputDecoration(
         counterText: '',
-        isDense: true, // removes default vertical padding
+        isDense: true,
         hintText: hintText,
         hintStyle: hintStyle ??
             const TextStyle(
@@ -81,16 +80,23 @@ class CommonTextField extends StatelessWidget {
             ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 14,
-          vertical: 14, // ⬅ remove vertical padding
+          vertical: 14,
         ),
-        constraints: const BoxConstraints(
-          minHeight: 44,
-          maxHeight: 44, // ⬅ force fixed height
-        ),
+        // ✅ only enforce minHeight, remove maxHeight
+        constraints: const BoxConstraints(minHeight: 44),
+
         enabledBorder: border(normalBorderColor),
         focusedBorder: border(normalBorderColor),
         errorBorder: border(errorBorderColor),
         focusedErrorBorder: border(errorBorderColor),
+
+        // ✅ Allow error message to show without affecting field size
+        errorStyle: const TextStyle(
+          fontSize: 12,
+          height: 1.2,
+          color: errorBorderColor,
+        ),
+
         suffixIcon: trailingWidget != null
             ? GestureDetector(
           onTap: trailingClick ?? () {},
