@@ -105,7 +105,8 @@ final GoRouter appRouter = GoRouter(
       return TermsAndConditionScreen(webUrl: webUrl);
     }),
     GoRoute(path: AppRouterName.bankStatementAnalyzer,builder: (context,state) {
-      return BankStatementAnalyzer();
+      int timerValue = state.extra as int;
+      return BankStatementAnalyzer(timerValue: timerValue);
     }),
   ],
 );

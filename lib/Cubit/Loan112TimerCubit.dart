@@ -2,13 +2,14 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Loan112TimerCubit extends Cubit<int> {
-  Loan112TimerCubit() : super(60); // initial value = 60 seconds
+  Loan112TimerCubit() : super(0); // default to 0
 
   Timer? _timer;
 
-  void startTimer() {
+  /// Start timer with a given duration from backend
+  void startTimer(int durationInSeconds) {
     _timer?.cancel(); // cancel if already running
-    emit(60); // reset to 60
+    emit(durationInSeconds); // set backend value
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (state > 0) {
@@ -19,11 +20,13 @@ class Loan112TimerCubit extends Cubit<int> {
     });
   }
 
-  void resetTimer() {
+  /// Reset timer back to a given duration
+  void resetTimer(int durationInSeconds) {
     _timer?.cancel();
-    emit(60);
+    emit(durationInSeconds);
   }
 
+  /// Stop timer completely
   void stopTimer() {
     _timer?.cancel();
   }

@@ -205,6 +205,7 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
                   fileSize = "";
                   pdfBytes = null;
                   selectedDocument = null;
+                  needsPassword = false;
                 });
                 openSnackBar(
                   context,
@@ -436,6 +437,7 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
                       fileName = "";
                       fileSize = "";
                       pdfBytes = null;
+                      needsPassword = false;
                     });
                   },
                   child: Image.asset(ImageConstants.crossActionIcon,height: 24,width: 24),

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
+import 'package:loan112_app/Utils/Debugprint.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:loan112_app/Widget/bottom_dashline.dart';
 import 'package:loan112_app/Widget/common_button.dart';
@@ -23,7 +24,8 @@ import '../../../../../Widget/app_bar.dart';
 import 'new_breBackground.dart';
 
 class BankStatementAnalyzer extends StatefulWidget{
-  const BankStatementAnalyzer({super.key});
+  final int timerValue;
+  const BankStatementAnalyzer({super.key,required this.timerValue});
 
   @override
   State<StatefulWidget> createState() => _BankStatementAnalyzer();
@@ -31,15 +33,13 @@ class BankStatementAnalyzer extends StatefulWidget{
 
 class _BankStatementAnalyzer extends State<BankStatementAnalyzer>{
 
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     context.read<ShowBankStatementAnalyzerStatusCubit>().hide();
-    context.read<Loan112TimerCubit>().startTimer();
+    context.read<Loan112TimerCubit>().startTimer(widget.timerValue * 60);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +71,12 @@ class _BankStatementAnalyzer extends State<BankStatementAnalyzer>{
               if(state is VerifyBankStatementSuccess){
                 EasyLoading.dismiss();
                 context.read<ShowBankStatementAnalyzerStatusCubit>().show();
+                if(state.verifyBankStatementModel.data?.bankStatementFetched == 1){
+                  DebugPrint.prt("Inside if status is one");
+                  context.pop();
+                  context.pop();
+                  getCustomerDetailsApiCall();
+                }
               }else if(state is VerifyBankStatementFailed){
                 EasyLoading.dismiss();
                 openSnackBar(context, state.verifyBankStatementModel.message ?? "Unexpected Error");
@@ -228,6 +234,12 @@ class _BankStatementAnalyzer extends State<BankStatementAnalyzer>{
           if(state is VerifyBankStatementSuccess){
             EasyLoading.dismiss();
             context.read<ShowBankStatementAnalyzerStatusCubit>().show();
+            if(state.verifyBankStatementModel.data?.bankStatementFetched == 1){
+              DebugPrint.prt("Inside if status is one");
+              context.pop();
+              context.pop();
+              getCustomerDetailsApiCall();
+            }
           }else if(state is VerifyBankStatementFailed){
             EasyLoading.dismiss();
             openSnackBar(context, state.verifyBankStatementModel.message ?? "Unexpected Error");
@@ -254,8 +266,9 @@ class _BankStatementAnalyzer extends State<BankStatementAnalyzer>{
                               bottom: -60,
                               child: Column(
                                 children: [
+                                  verifyBankStatementModel?.data?.bankStatementFetched != 1?
                                   Text(
-                                    "Oops! Couldn’t Process Your Loan.",
+                                    getStatementText(verifyBankStatementModel?.data?.bankStatementFetched ?? 0),
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         fontSize: FontConstants.f22,
@@ -263,7 +276,8 @@ class _BankStatementAnalyzer extends State<BankStatementAnalyzer>{
                                         fontFamily: FontConstants.fontFamily,
                                         color: ColorConstant.blackTextColor
                                     ),
-                                  ),
+                                  ):
+                                  SizedBox.shrink(),
                                   SizedBox(
                                     height: 21,
                                   ),
@@ -308,9 +322,19 @@ class _BankStatementAnalyzer extends State<BankStatementAnalyzer>{
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
                           child: Loan112Button(
-                            text: "CHECK ANALYZE STATUS",
+                            text: (
+                                verifyBankStatementModel?.data?.bankStatementFetched ==3 ||
+                                    verifyBankStatementModel?.data?.bankStatementFetched ==4
+                            )?
+                            "Upload Bank Statement":
+                            "CHECK ANALYZE STATUS",
                             onPressed: (){
-                              callVerifyBankStatementApiCall();
+                              if(verifyBankStatementModel?.data?.bankStatementFetched ==3 ||
+                                  verifyBankStatementModel?.data?.bankStatementFetched ==4){
+                                context.pop();
+                              }else{
+                                callVerifyBankStatementApiCall();
+                              }
                             },
                           ),
                         )
@@ -321,7 +345,8 @@ class _BankStatementAnalyzer extends State<BankStatementAnalyzer>{
                 SafeArea(
                   bottom: true,
                   child:  recommendedCard(
-                      title: "Want your loan instantly? Do Account Aggregator.",
+                      title: " If you still want the loan? Do Account Aggregator.",
+                      //getStatementText(verifyBankStatementModel?.data!.bankStatementFetched ?? 0),
                       buttonText: "Account Aggregator",
                       onPressed: (){
                         context.replace(AppRouterName.onlineBankStatement);
@@ -436,7 +461,6 @@ class _BankStatementAnalyzer extends State<BankStatementAnalyzer>{
     );
   }
 
-
   void callVerifyBankStatementApiCall() async{
     var otpModel = await MySharedPreferences.getUserSessionDataNode();
     VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
@@ -451,7 +475,6 @@ class _BankStatementAnalyzer extends State<BankStatementAnalyzer>{
     context.read<LoanApplicationCubit>().verifyBankStatementApiCall(dataObj);
   }
 
-
   void getCustomerDetailsApiCall() async{
     context.read<DashboardCubit>().callDashBoardApi();
     var otpModel = await MySharedPreferences.getPhpOTPModel();
@@ -460,6 +483,86 @@ class _BankStatementAnalyzer extends State<BankStatementAnalyzer>{
       "cust_profile_id": sendPhpOTPModel.data?.custProfileId
     });
   }
+
+  String getStatementText(int fetchBankStatementVal){
+    if(fetchBankStatementVal == 2){
+      return "If you still want the loan? Do Account Aggregator.";
+    }else if(fetchBankStatementVal == 3){
+       return "Oops! Couldn’t Process Your Loan.";
+    }else if(fetchBankStatementVal == 4){
+      return "If you still want the loan? Do Account Aggregator.";
+    }else{
+      return "";
+    }
+  }
+
+//   [12:01] Basant Jha
+//   is ApiState.Success -> {
+//   when(state.data.data.bank_statement_fetched){
+//   1->{
+//   finish()
+//   }
+//   2 ->{
+// //                            MaterialAlertDialogBuilder(this@BankStatementCheckActivity)
+// //                                .setTitle("Processing")
+// //                                .setMessage(state.data.data.message)
+// //                                .setPositiveButton("Ok") { dialogInterface, _ ->
+// //                                    // Handle OK click
+// //                                    dialogInterface.dismiss()
+// //                                }
+// //                                .setCancelable(false)
+// //                                .show()
+//   showError(state.data.data.message, binding.root)
+//   binding.tvAccount.setText("If you still want the loan? Do Account Aggregator.")
+//   }
+//   4->{
+//   setUiOops()
+//   binding.tvAccount.setText("If you still want the loan? Do Account Aggregator.")
+//
+//   isUploadoffLine = true
+//   binding.btnSkip.text = "Upload Bank Statement"
+// //                            MaterialAlertDialogBuilder(this@BankStatementCheckActivity)
+// //                                .setTitle("Oops! ")
+// //                                .setMessage(state.data.data.message)
+// //                                .setPositiveButton("Ok") { dialogInterface, _ ->
+// //                                    // Handle OK click
+// //                                    dialogInterface.dismiss()
+// ////                                    finish()
+// //                                }
+// //                                .setCancelable(false)
+// //                                .show()
+//   showError(state.data.data.message, binding.root)
+//
+//
+//   }
+//   else->{
+//   isUploadoffLine = true
+//   binding.tvAccount.setText("If you still want the loan? Do Account Aggregator.")
+//   binding.btnSkip.text = "Upload Bank Statement"
+//   setUiOops()
+// //                            MaterialAlertDialogBuilder(this@BankStatementCheckActivity)
+// //                                .setTitle("Oops! ")
+// //                                .setMessage(state.data.data.message)
+// //                                .setPositiveButton("Ok") { dialogInterface, _ ->
+// //                                    // Handle OK click
+// //                                    dialogInterface.dismiss()
+// ////                                    finish()
+// //                                }
+// //                                .setCancelable(false)
+// //                                .show()
+//   showError(state.data.data.message, binding.root)
+//   }
+//   }
+//
+//   hideLoading()
+//   android.util.Log.d("tag", "Successes")
+//
+//   }
+//
+//   [12:01] Basant Jha
+//   [19/08, 11:59] Zeeshan Loan 112: "We couldn’t move forward due to an issue with your bank statement. If you still want the loan, please complete the Account Aggregator process.
+//   [19/08, 11:59] Zeeshan Loan 112: Upload Bank Statement
+
 
 }
 

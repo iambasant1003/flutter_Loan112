@@ -115,10 +115,13 @@ class _Loan112AppBarState extends State<Loan112AppBar> {
             backgroundColor: widget.backgroundColor ?? Colors.transparent,
             elevation: 0,
           ),
+          /*
           AnimatedNetworkStatus(
             isNetworkAvailable: _hasInternet,
             //showRestored: _showRestoredMsg,
           ),
+
+           */
         ],
       ),
     );

@@ -233,7 +233,7 @@ class _AadharKycScreen extends State<AadharKycScreen>{
                     ),
                     SafeArea(
                       child:  SizedBox(
-                        height: 124,
+                        height: 134,
                         child: Column(
                           children: [
                             BottomDashLine(),
@@ -330,7 +330,7 @@ class _AadharKycScreen extends State<AadharKycScreen>{
                                     ),
                                   ),
                                   SizedBox(
-                                    height: 4.0,
+                                    height: 10.0,
                                   ),
                                 ],
                               ),

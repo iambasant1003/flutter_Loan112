@@ -33,9 +33,6 @@ class LoanOfferScreen extends StatefulWidget{
 
 class _LoanOfferScreen extends State<LoanOfferScreen>{
 
-
-
-
   double minValue = 0;
   double currentValue = 0;
   double maxValue = 40000;
@@ -258,11 +255,33 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
         bottomNavigationBar: SafeArea(
           bottom: true,
           child: SizedBox(
-            height: 80,
+            height: widget.enhance == 0?
+            150:82,
             width: MediaQuery.of(context).size.width,
             child: Column(
               children: [
                 BottomDashLine(),
+                widget.enhance == 0?
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 16,
+                      ),
+                      Loan112Button(
+                        text: "Request to Enhance Offer",
+                        fontSize: FontConstants.f14,
+                        fontWeight: FontConstants.w600,
+                        fontFamily: FontConstants.fontFamily,
+                        onPressed: (){
+                          loanAcceptanceApiCall(context,3);
+                        },
+                      ),
+                    ],
+                  ),
+                ):
+                SizedBox.shrink(),
                 SizedBox(
                   height: 12,
                 ),
@@ -277,19 +296,59 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
                         onTap: () {
                           loanAcceptanceApiCall(context,2);
                         },
-                        child: Text(
-                          "REJECT",
-                          style: TextStyle(
-                            fontSize: FontConstants.f14,
-                            fontFamily: FontConstants.fontFamily,
-                            fontWeight: FontConstants.w600,
-                            color: ColorConstant.brownColor,
+                        child: Container(
+                          width: 107,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: ColorConstant.errorRedColor,
+                            ),
+                            borderRadius: BorderRadius.all(Radius.circular(50.0))
+                          ),
+                          child: Center(
+                            child: Text(
+                              "REJECT",
+                              style: TextStyle(
+                                fontSize: FontConstants.f14,
+                                fontFamily: FontConstants.fontFamily,
+                                fontWeight: FontConstants.w600,
+                                color: ColorConstant.brownColor,
+                              ),
+                            ),
                           ),
                         ),
                       ),
                       SizedBox(width: 16), // optional spacing
+                      InkWell(
+                        onTap: (){
+                          loanAcceptanceApiCall(context, 1);
+                        },
+                        child: Container(
+                          width: 107,
+                          height: 40,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                color: ColorConstant.appThemeColor,
+                              ),
+                              borderRadius: BorderRadius.all(Radius.circular(50.0))
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Accept",
+                              style: TextStyle(
+                                fontSize: FontConstants.f14,
+                                fontFamily: FontConstants.fontFamily,
+                                fontWeight: FontConstants.w600,
+                                color: ColorConstant.appThemeColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                      /*
                       SizedBox(
-                        width: 150, // or any fixed width you want
+                        width: 107,
+                        height: 40,
                         child: Loan112Button(
                           text: "CONTINUE",
                           fontSize: FontConstants.f14,
@@ -300,11 +359,13 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
                           },
                         ),
                       ),
+
+                       */
                     ],
                   ),
                 ),
                 SizedBox(
-                  height: 12,
+                  height: 16,
                 ),
               ],
             ),
@@ -312,7 +373,6 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
         ),
     );
   }
-
 
   void loanAcceptanceApiCall(BuildContext context, int loanAcceptedId) async {
     if (purposeOfLoanId != "") {
@@ -340,9 +400,6 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
       openSnackBar(context, "Please select purpose of loan");
     }
   }
-
-
-
 
   Widget loanOfferContainer(BuildContext context){
     return BlocBuilder<LoanApplicationCubit,LoanApplicationState>(
@@ -489,26 +546,8 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
                                  color: ColorConstant.brownColor
                              ),
                            ),
-                           widget.enhance == 0?
-                           Column(
-                             children: [
-                               SizedBox(
-                                 height: 16,
-                               ),
-                               Loan112Button(
-                                 text: "Request to Enhance Offer",
-                                 fontSize: FontConstants.f14,
-                                 fontWeight: FontConstants.w600,
-                                 fontFamily: FontConstants.fontFamily,
-                                 onPressed: (){
-                                   loanAcceptanceApiCall(context,3);
-                                 },
-                               ),
-                             ],
-                           ):
-                           SizedBox.shrink(),
                            SizedBox(
-                             height: 180.0,
+                             height: 220.0,
                            )
                          ],
                        ),
@@ -527,9 +566,6 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
         }
     );
   }
-
-
-
 
   Widget purposeOfLoanButton(BuildContext context, GetPurposeOfLoanModel getPurposeOfLoanModel) {
     return DropdownButtonHideUnderline(
@@ -595,13 +631,12 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
     );
   }
 
-
   double step = 500;
   Widget principalSliderAndValue(BuildContext context){
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-       SliderTheme(
+        SliderTheme(
     data: SliderTheme.of(context).copyWith(
       activeTrackColor: Colors.blue,
       inactiveTrackColor: Colors.blue.shade100,
@@ -614,10 +649,10 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
     value: currentValue,
     min: minValue,
     max: maxValue,
-    divisions: ((maxValue - minValue) / step).round(),
+    // ❌ removed divisions → no dots on UI
     label: currentValue.toStringAsFixed(0),
     onChanged: (value) {
-    // Snap to nearest 500
+    // ✅ Snap to nearest 500
     double roundedValue = (value / step).round() * step;
     setState(() {
     currentValue = roundedValue;
@@ -629,13 +664,13 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
     calculateLoan(
     principal: currentValue,
     tenure: currentTenure,
-    interestRate: double.parse((interestRate).toString()),
+    interestRate: double.parse(interestRate.toString()),
     );
     });
     },
     ),
     ),
-    const SizedBox(height: 6),
+        const SizedBox(height: 6),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -677,25 +712,25 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
       trackHeight: 4,
     ),
     child: Slider(
-    value: currentTenure,
-    min: minTenure,
-    max: maxTenure,
-    divisions: (maxTenure - minTenure).round(), // Steps of 1
-    label: currentTenure.round().toString(),
-    onChanged: (value) {
-    setState(() {
-    currentTenure = value.roundToDouble(); // Ensure whole number
-    });
-    Future.delayed(const Duration(milliseconds: 500), () {
-    calculateLoan(
-    principal: currentValue,
-    tenure: currentTenure,
-    interestRate: double.parse((interestRate).toString()),
-    );
-    });
-    },
-    ),
-    ),
+      value: currentTenure,
+      min: minTenure,
+      max: maxTenure,
+      // ❌ removed divisions → smooth slider with no dots
+      label: currentTenure.round().toString(),
+      onChanged: (value) {
+        setState(() {
+          currentTenure = value.roundToDouble(); // round to whole internally
+        });
+        Future.delayed(const Duration(milliseconds: 500), () {
+          calculateLoan(
+            principal: currentValue,
+            tenure: currentTenure,
+            interestRate: double.parse(interestRate.toString()),
+          );
+        });
+      },
+    )
+        ),
         const SizedBox(height: 6),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -864,7 +899,6 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
     );
   }
 
-
   calculateLoan({
     required double principal,
     required double tenure,
@@ -882,7 +916,6 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
           : totalPayable.toStringAsFixed(2);
     });
   }
-
 
   Future<void> checkConditionCalculateDistanceApiCall() async{
       final position = await getCurrentPositionFast();
