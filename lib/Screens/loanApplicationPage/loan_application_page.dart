@@ -53,7 +53,7 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
     "Selfie Verification",
     "Fetch Bank Statement",
     "Get Loan Offer",
-    "Utility bills",
+    "Current Residence Proof",
     "Add References",
     "Banking Details"
   ];
@@ -239,7 +239,7 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
                                                     context.push(AppRouterName.addReference).then((val){
                                                       getCustomerDetailsApiCall();
                                                     });
-                                                  }else if(stepKeys[index].toLowerCase().contains('utility')&&status!=1 && status != 0){
+                                                  }else if(stepKeys[index].toLowerCase().contains('residence') &&status!=1 && status != 0){
                                                     context.push(AppRouterName.utilityBillScreen).then((val){
                                                       getCustomerDetailsApiCall();
                                                     });

@@ -37,7 +37,6 @@ class FetchOfflineBankStatement extends StatefulWidget{
 
 class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
 
-
   List<String> bankStatementInstruction = [
     "Maximum 2 MB file size allowed.",
     "Only pdf files allowed.",
@@ -119,7 +118,6 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return BlocListener<LoanApplicationCubit,LoanApplicationState>(
@@ -138,7 +136,7 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
             // );
             // context.pop();
             // context.pop();
-            context.replace(AppRouterName.bankStatementAnalyzer);
+            context.replace(AppRouterName.bankStatementAnalyzer,extra: state.uploadBankStatementModel.data?.timerVal);
           } else if (state is UploadBankStatementFailed) {
             EasyLoading.dismiss();
             DebugPrint.prt("Upload Bank Statement Failed");
@@ -160,14 +158,23 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Loan112AppBar(
-                  customLeading: InkWell(
-                    onTap: () {
-                      context.pop();
-                    },
-                    child: Icon(
-                      Icons.arrow_back_ios,
-                      color: ColorConstant.blackTextColor,
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
+                  child: Loan112AppBar(
+                    customLeading: InkWell(
+                      onTap: () {
+                        context.pop();
+                      },
+                      child: Icon(
+                        Icons.arrow_back_ios,
+                        color: ColorConstant.blackTextColor,
+                      ),
+                    ),
+                    leadingSpacing: 15,
+                    title: Image.asset(
+                      ImageConstants.loan112AppNameIcon,
+                      height: 76,
+                      width: 76,
                     ),
                   ),
                 ),
@@ -272,6 +279,7 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
                                                 fileName = "";
                                                 fileSize = "";
                                                 pdfBytes = null;
+                                                needsPassword = false;
                                               });
                                             },
                                             child: Image.asset(ImageConstants.crossActionIcon,height: 24,width: 24),
@@ -417,9 +425,6 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
     );
   }
 
-
-
-
   Future<void> uploadSalarySlipNJS({
     required String custId,
     required String leadId,
@@ -486,8 +491,5 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
     context.read<LoanApplicationCubit>().uploadBankStatementApiCall(formData);
 
   }
-
-
-
 }
 

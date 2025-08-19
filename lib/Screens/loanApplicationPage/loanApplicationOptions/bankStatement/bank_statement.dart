@@ -34,14 +34,23 @@ class _BankStatementScreen extends State<BankStatementScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Loan112AppBar(
-                customLeading: InkWell(
-                  onTap: () {
-                    context.pop();
-                  },
-                  child: Icon(
-                    Icons.arrow_back_ios,
-                    color: ColorConstant.blackTextColor,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
+                child: Loan112AppBar(
+                  customLeading: InkWell(
+                    onTap: () {
+                      context.pop();
+                    },
+                    child: Icon(
+                      Icons.arrow_back_ios,
+                      color: ColorConstant.blackTextColor,
+                    ),
+                  ),
+                  leadingSpacing: 15,
+                  title: Image.asset(
+                    ImageConstants.loan112AppNameIcon,
+                    height: 76,
+                    width: 76,
                   ),
                 ),
               ),

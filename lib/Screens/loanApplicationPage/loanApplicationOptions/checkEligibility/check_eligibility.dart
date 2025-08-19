@@ -297,6 +297,7 @@ class _CheckEligibility extends State<CheckEligibility>{
                                 controller: dateOfBirth,
                                 hintText: "Select your Date of Birth*",
                                 readOnly: true,  // make it readonly, we only pick from calendar
+                                onTap: ()=>_pickDateOfBirth(context),
                                 trailingWidget: GestureDetector(
                                   onTap: () => _pickDateOfBirth(context),
                                   child: Icon(Icons.calendar_month, color: ColorConstant.greyTextColor, size: 20),
@@ -405,7 +406,7 @@ class _CheckEligibility extends State<CheckEligibility>{
       bottomNavigationBar: SafeArea(
         bottom: true,
         child: Container(
-          height: 124,
+          height: 134,
           color: ColorConstant.whiteColor,
           child: Column(
             children: [
@@ -489,7 +490,7 @@ class _CheckEligibility extends State<CheckEligibility>{
                       ),
                     ),
                     SizedBox(
-                      height: 4.0,
+                      height: 14.0,
                     )
                   ],
                 ),

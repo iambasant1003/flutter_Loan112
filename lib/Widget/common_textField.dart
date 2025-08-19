@@ -16,6 +16,7 @@ class CommonTextField extends StatelessWidget {
   final VoidCallback? trailingClick;
   final bool readOnly;
   final bool obscureText;
+  final VoidCallback? onTap; // 👈 NEW
 
   const CommonTextField({
     Key? key,
@@ -32,6 +33,7 @@ class CommonTextField extends StatelessWidget {
     this.trailingClick,
     this.readOnly = false,
     this.obscureText = false,
+    this.onTap, // 👈 NEW
   }) : super(key: key);
 
   @override
@@ -57,6 +59,7 @@ class CommonTextField extends StatelessWidget {
       inputFormatters: inputFormatters,
       readOnly: readOnly,
       obscureText: obscureText,
+      onTap: onTap, // 👈 Pass onTap
       style: const TextStyle(
         fontFamily: 'Manrope',
         fontWeight: FontWeight.w500,
@@ -82,21 +85,16 @@ class CommonTextField extends StatelessWidget {
           horizontal: 14,
           vertical: 14,
         ),
-        // ✅ only enforce minHeight, remove maxHeight
         constraints: const BoxConstraints(minHeight: 44),
-
         enabledBorder: border(normalBorderColor),
         focusedBorder: border(normalBorderColor),
         errorBorder: border(errorBorderColor),
         focusedErrorBorder: border(errorBorderColor),
-
-        // ✅ Allow error message to show without affecting field size
         errorStyle: const TextStyle(
           fontSize: 12,
           height: 1.2,
           color: errorBorderColor,
         ),
-
         suffixIcon: trailingWidget != null
             ? GestureDetector(
           onTap: trailingClick ?? () {},

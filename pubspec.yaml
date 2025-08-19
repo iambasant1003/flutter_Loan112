@@ -71,6 +71,7 @@ dependencies:
   firebase_crashlytics: ^4.0.0
   firebase_messaging:
   internet_connection_checker_plus: ^2.7.2
+  #appsflyer_sdk: ^6.16.21
 
 
 dev_dependencies:
