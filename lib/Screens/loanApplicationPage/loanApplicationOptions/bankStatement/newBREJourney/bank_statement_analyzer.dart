@@ -208,8 +208,8 @@ class _BankStatementAnalyzer extends State<BankStatementAnalyzer>{
             ),
           ),
           SizedBox(
-            height: 10.0,
-          )
+            height: 15,
+          ),
         ],
       ),
     );
@@ -354,7 +354,7 @@ class _BankStatementAnalyzer extends State<BankStatementAnalyzer>{
                   ),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 15,
                 ),
               ],
             );

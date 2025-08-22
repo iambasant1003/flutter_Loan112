@@ -219,6 +219,7 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
                                                     });
                                                   }
                                                 }else{
+                                                  showMessageAboutStep(status);
                                                   if(stepKeys[index].toLowerCase().contains('eligibility') && status !=1 && status != 0){
                                                     context.push(AppRouterName.checkEligibilityPage).then((val){
                                                       getCustomerDetailsApiCall();
@@ -294,6 +295,22 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
     );
   }
 
+  showMessageAboutStep(int stepStatus){
+    DebugPrint.prt("Status On Tap $stepStatus");
+    if(stepStatus == 0){
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          openSnackBar(context, "Previous step is pending");
+        }
+      });
+    }else if(stepStatus == 1){
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if(mounted){
+          openSnackBar(context, "Already done");
+        }
+      });
+    }
+  }
 
 }
 

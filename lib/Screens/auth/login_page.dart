@@ -33,6 +33,7 @@ class _LogInPageState extends State<LogInPage> {
 
   TextEditingController mobileController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String mobileNumberToPass = "";
 
 
   @override
@@ -55,11 +56,8 @@ class _LogInPageState extends State<LogInPage> {
               } else if(state is AuthNodeSuccess){
                 DebugPrint.prt("Navigation Logic Called To OTP");
                 EasyLoading.dismiss();
-                context.push(AppRouterName.verifyOtp,extra: mobileController.text.trim()).then((val){
-                  if (mounted) {
-                    mobileController.clear();
-                  }
-                });
+                mobileController.clear();
+                context.push(AppRouterName.verifyOtp,extra: mobileNumberToPass);
               }else if(state is AuthError){
                 EasyLoading.dismiss();
                 openSnackBar(context, state.message);
@@ -147,6 +145,9 @@ class _LogInPageState extends State<LogInPage> {
                                             ],
                                             validator: (value) {
                                               return validateMobileNumber(value);
+                                            },
+                                            onEditingComplete: (){
+                                              mobileNumberToPass = mobileController.text.trim();
                                             },
                                             onChanged: (val) {
                                               print("Value is Changing");

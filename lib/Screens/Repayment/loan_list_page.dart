@@ -164,7 +164,7 @@ class _LoanListPageState extends State<LoanListPage> {
               _buildRow("Total Repayment Amount (Rs.)", "${loanData?.repaymentAmount ?? ""}/-"),
               _buildRow("Tenure in Days", "${loanData?.tenure ?? ""}"),
               _buildRow("Repayment Date", loanData?.repaymentDate ?? ""),
-              _buildRow("Panel Interest (%) Per day", "${loanData?.penalRoi ?? ""}"),
+              _buildRow("Panel Interest (%) Per day", "${loanData?.panelRoi ?? ""}"),
               loanData.loanActiveStatus ==1?
               SizedBox(height: 12):
               SizedBox.shrink(),

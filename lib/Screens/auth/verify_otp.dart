@@ -102,7 +102,11 @@ class _VerifyOTP extends State<VerifyOTP>{
                     } else if(state is VerifyOTPSuccess){
                       EasyLoading.dismiss();
                       MySharedPreferences.setUserSessionDataNode(jsonEncode(state.verifyOTPModel));
-                      context.push(AppRouterName.dashboardPage);
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted) {
+                          context.push(AppRouterName.dashboardPage);
+                        }
+                      });
                     }else if(state is AuthError){
                       EasyLoading.dismiss();
                       openSnackBar(context, state.message);

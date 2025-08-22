@@ -7,6 +7,7 @@ import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.da
 import 'package:loan112_app/Cubit/repayment_cubit/RepaymentCubit.dart';
 import '../Cubit/Loan112TimerCubit.dart';
 import '../Cubit/ShowBanStatementAnalyzerStatusCubit.dart';
+import '../Cubit/UploadStatusCubit.dart';
 import '../Cubit/auth_cubit/AuthCubit.dart';
 import '../di/di_locator.dart';
 
@@ -39,5 +40,8 @@ final List<BlocProvider> appBlocProviders = [
   ),
   BlocProvider<Loan112TimerCubit>(
     create: (_) => locator<Loan112TimerCubit>(),
+  ),
+  BlocProvider<UploadStatusCubit>(
+    create: (_) => locator<UploadStatusCubit>(),
   ),
 ];

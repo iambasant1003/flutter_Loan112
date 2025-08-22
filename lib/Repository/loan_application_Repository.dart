@@ -578,13 +578,13 @@ class LoanApplicationRepository {
 
   Future<ApiResponse<GetLoanHistoryModel>> getLoanHistoryApiCallFunction(Map<String,dynamic> dataObj) async{
     try {
-      final response = await apiClassPhp.post(getLoanHistory,dataObj,isHeader: true);
+      final response = await apiClass.post(getLoanHistory,dataObj,isHeader: true);
       DebugPrint.prt("API Response Get Loan History ${response.data}");
 
       final Map<String, dynamic> responseData = response.data;
 
 
-      final ApiResponseStatus status = mapApiResponseStatusPhp(responseData);
+      final ApiResponseStatus status = mapApiResponseStatus(responseData);
 
       if (status == ApiResponseStatus.success) {
         DebugPrint.prt("Get Loan History Success Response Model $responseData}");
@@ -592,13 +592,13 @@ class LoanApplicationRepository {
         return ApiResponse.success(data);
       } else {
         final error = GetLoanHistoryModel.fromJson(responseData);
-        DebugPrint.prt("Get Loan History Type Error Message ${error.message}, ${error.status}");
+        DebugPrint.prt("Get Loan History Type Error Message ${error.message}, ${error.statusCode}");
         return ApiResponse.error(status, error: error);
       }
     } catch (e) {
       DebugPrint.prt("Exception in Get Loan History data : $e");
       final error = GetLoanHistoryModel(
-        status: 500,
+        statusCode: 500,
         message: ConstText.exceptionError,
       );
       return ApiResponse.error(ApiResponseStatus.serverError, error: error);

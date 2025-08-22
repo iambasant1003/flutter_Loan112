@@ -269,14 +269,17 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
                       SizedBox(
                         height: 16,
                       ),
-                      Loan112Button(
-                        text: "Request to Enhance Offer",
-                        fontSize: FontConstants.f14,
-                        fontWeight: FontConstants.w600,
-                        fontFamily: FontConstants.fontFamily,
-                        onPressed: (){
-                          loanAcceptanceApiCall(context,3);
-                        },
+                      SizedBox(
+                        width: 250,
+                        child: Loan112Button(
+                          text: "Request to Enhance Offer",
+                          fontSize: FontConstants.f14,
+                          fontWeight: FontConstants.w600,
+                          fontFamily: FontConstants.fontFamily,
+                          onPressed: (){
+                            loanAcceptanceApiCall(context,3);
+                          },
+                        ),
                       ),
                     ],
                   ),
