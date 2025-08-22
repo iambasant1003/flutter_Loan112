@@ -20,6 +20,7 @@ import 'package:loan112_app/Widget/common_textField.dart';
 import 'package:widgets_easier/widgets_easier.dart';
 import '../../../../../Constant/ColorConst/ColorConstant.dart';
 import '../../../../../Constant/ImageConstant/ImageConstants.dart';
+import '../../../../../Cubit/UploadStatusCubit.dart';
 import '../../../../../Model/VerifyOTPModel.dart';
 import '../../../../../Routes/app_router_name.dart';
 import '../../../../../Utils/MysharePrefenceClass.dart';
@@ -53,6 +54,7 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
   String? fileName;
 
   final TextEditingController _passwordController = TextEditingController();
+
 
   Future<void> _pickPdf() async {
     setState(() {
@@ -118,6 +120,14 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
     }
   }
 
+
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<UploadStatusCubit>().hideSuccess();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<LoanApplicationCubit,LoanApplicationState>(
@@ -136,7 +146,13 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
             // );
             // context.pop();
             // context.pop();
-            context.replace(AppRouterName.bankStatementAnalyzer,extra: state.uploadBankStatementModel.data?.timerVal);
+            context.read<UploadStatusCubit>().showSuccess();
+            Future.delayed(const Duration(seconds: 1), () {
+              context.replace(
+                AppRouterName.bankStatementAnalyzer,
+                extra: state.uploadBankStatementModel.data?.timerVal,
+              );
+            });
           } else if (state is UploadBankStatementFailed) {
             EasyLoading.dismiss();
             DebugPrint.prt("Upload Bank Statement Failed");
@@ -409,6 +425,63 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
                                   ],
                                 ),
                                 SizedBox(height: 8.0),
+                              ],
+                            );
+                          },
+                        ),
+                        BlocBuilder<UploadStatusCubit, bool>(
+                          builder: (context, isUploaded) {
+                            if (!isUploaded) {
+                              return const SizedBox.shrink(); // return empty if false
+                            }
+
+                            return Column(
+                              children: [
+                                SizedBox(
+                                  height: 35.0,
+                                ),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: FontConstants.horizontalPadding,
+                                      vertical: FontConstants.horizontalPadding
+                                  ),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.all(Radius.circular(FontConstants.horizontalPadding)),
+                                      border: Border.all(
+                                          color: ColorConstant.textFieldBorderColor,
+                                          width: 1
+                                      )
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Image.asset(ImageConstants.bankStatementUploadSuccess,width: 86,height: 86),
+                                      Column(
+                                        children: [
+                                          Text(
+                                            "Congratulations!",
+                                            style: TextStyle(
+                                                fontSize: FontConstants.f18,
+                                                fontFamily: FontConstants.fontFamily,
+                                                fontWeight: FontConstants.w800,
+                                                color: ColorConstant.blackTextColor
+                                            ),
+                                          ),
+                                          Text(
+                                            "File uploaded successfully",
+                                            style: TextStyle(
+                                                fontWeight: FontConstants.w500,
+                                                fontFamily: FontConstants.fontFamily,
+                                                fontSize: FontConstants.f14,
+                                                color: ColorConstant.greyTextColor
+                                            ),
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
                               ],
                             );
                           },

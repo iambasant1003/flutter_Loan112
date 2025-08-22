@@ -81,11 +81,9 @@ class AuthCubit extends Cubit<AuthState> {
       // API calls with timeout
       var responseList = await Future.wait([
         authRepository
-            .sendOTPNodeApiCallFunction(sendOTPPramNodeModel.toJson())
-            .timeout(const Duration(seconds: 15)),
+            .sendOTPNodeApiCallFunction(sendOTPPramNodeModel.toJson()),
         authRepository
             .sendOTPhpApiCallFunction(sendOtpParamPHPModel.toJson())
-            .timeout(const Duration(seconds: 15)),
       ]);
 
       if (responseList[0].status == ApiResponseStatus.success &&

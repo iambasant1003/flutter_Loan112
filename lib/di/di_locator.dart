@@ -13,6 +13,7 @@ import 'package:loan112_app/Repository/loan_application_Repository.dart';
 import 'package:loan112_app/Repository/repayment_repository.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/bankStatement/newBREJourney/bank_statement_analyzer.dart';
 import 'package:loan112_app/Services/http_client_php.dart';
+import '../Cubit/UploadStatusCubit.dart';
 import '../Cubit/auth_cubit/AuthCubit.dart';
 import '../Services/http_client.dart';
 
@@ -36,5 +37,6 @@ void setupLocator() {
   locator.registerFactory(()=> RePaymentCubit(locator<RepaymentRepository>()));
   locator.registerFactory(()=> ShowBankStatementAnalyzerStatusCubit());
   locator.registerFactory(()=> Loan112TimerCubit());
+  locator.registerFactory(()=> UploadStatusCubit());
 
 }
