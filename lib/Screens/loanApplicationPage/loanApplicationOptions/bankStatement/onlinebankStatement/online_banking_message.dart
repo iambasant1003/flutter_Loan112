@@ -9,6 +9,7 @@ import '../../../../../Cubit/dashboard_cubit/DashboardCubit.dart';
 import '../../../../../Cubit/loan_application_cubit/LoanApplicationCubit.dart';
 import '../../../../../Model/CheckBankStatementStatusModel.dart';
 import '../../../../../Model/SendPhpOTPModel.dart';
+import '../../../../../Routes/app_router_name.dart';
 import '../../../../../Utils/MysharePrefenceClass.dart';
 import '../../../../../Widget/common_button.dart';
 import '../../../../../Widget/common_success.dart';
@@ -30,7 +31,7 @@ class _OnlineBankingMessageScreen extends State<OnlineBankingMessageScreen>{
         onBackPress: (){
           context.pop();
           context.pop();
-          getCustomerDetailsApiCall();
+          context.push(AppRouterName.loanOfferPage,extra: 1).then((val){});
         },
         isSuccess: widget.checkBankStatementStatusModel.success ?? false,
         statusType: (widget.checkBankStatementStatusModel.data?.aaConsentStatus == 1 && (widget.checkBankStatementStatusModel.success ?? false))?
@@ -42,7 +43,7 @@ class _OnlineBankingMessageScreen extends State<OnlineBankingMessageScreen>{
           onPressed: () {
             context.pop();
             context.pop();
-            getCustomerDetailsApiCall();
+            context.push(AppRouterName.loanOfferPage,extra: 1).then((val){});
           },
           text: "CONTINUE",
         )

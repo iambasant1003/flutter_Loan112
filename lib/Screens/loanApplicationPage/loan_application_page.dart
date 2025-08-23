@@ -116,6 +116,9 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
               getCustomerDetailsModel = state.getCustomerDetailsModel;
               MySharedPreferences.setEnhanceKey((state.getCustomerDetailsModel.data?.screenDetails?.isEnhance ?? "").toString());
               setState(() {});
+              // if(state.getCustomerDetailsModel.data?.screenDetails?.residenceProofUpload == 2){
+              //   context.push(AppRouterName.utilityBillScreen);
+              // }
             }else if(state is GetCustomerDetailsError){
               EasyLoading.dismiss();
               openSnackBar(context, state.getCustomerDetailsModel.message ?? "Unknown Error");
@@ -214,40 +217,28 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
                                                 DebugPrint.prt("Current Status $status");
                                                 if(status == null){
                                                   if(stepKeys[index].toLowerCase().contains('eligibility')){
-                                                    context.push(AppRouterName.checkEligibilityPage).then((val){
-                                                      getCustomerDetailsApiCall();
-                                                    });
+                                                    context.push(AppRouterName.checkEligibilityPage);
                                                   }
                                                 }else{
                                                   showMessageAboutStep(status);
                                                   if(stepKeys[index].toLowerCase().contains('eligibility') && status !=1 && status != 0){
-                                                    context.push(AppRouterName.checkEligibilityPage).then((val){
-                                                      getCustomerDetailsApiCall();
-                                                    });
+                                                    context.push(AppRouterName.checkEligibilityPage);
                                                   }else if(stepKeys[index].toLowerCase().contains('statement') && status != 1 && status != 0){
-                                                    context.push(AppRouterName.bankStatement).then((val){
-                                                      getCustomerDetailsApiCall();
-                                                    });
+                                                    context.push(AppRouterName.bankStatement);
                                                   }else if(stepKeys[index].toLowerCase().contains('ekyc')&& status !=1 && status != 0){
-                                                    context.push(AppRouterName.aaDarKYCScreen).then((val){
-                                                      getCustomerDetailsApiCall();
-                                                    });
+                                                    context.push(AppRouterName.aaDarKYCScreen);
                                                   }else if(stepKeys[index].toLowerCase().contains('selfie')&& status!=1 && status != 0){
                                                     context.push(AppRouterName.selfieScreenPath).then((val){});
                                                   }else if(stepKeys[index].toLowerCase().contains("offer") &&status!=1 && status != 0){
                                                     context.push(AppRouterName.loanOfferPage,extra: getCustomerDetailsModel?.data?.screenDetails?.isEnhance).then((val){});
                                                   }else if(stepKeys[index].toLowerCase().contains('reference')&&status!=1 && status != 0){
                                                     context.push(AppRouterName.addReference).then((val){
-                                                      getCustomerDetailsApiCall();
+                                                     // getCustomerDetailsApiCall();
                                                     });
                                                   }else if(stepKeys[index].toLowerCase().contains('residence') &&status!=1 && status != 0){
-                                                    context.push(AppRouterName.utilityBillScreen).then((val){
-                                                      getCustomerDetailsApiCall();
-                                                    });
+                                                    context.push(AppRouterName.utilityBillScreen);
                                                   }else if(stepKeys[index].toLowerCase().contains('bank')&&status!=1 && status != 0){
-                                                    context.push(AppRouterName.bankDetailsScreen).then((val){
-                                                      getCustomerDetailsApiCall();
-                                                    });
+                                                    context.push(AppRouterName.bankDetailsScreen);
                                                   }
                                                 }
                                               },

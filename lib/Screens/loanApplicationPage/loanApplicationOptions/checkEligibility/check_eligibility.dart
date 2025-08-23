@@ -23,6 +23,8 @@ import 'package:loan112_app/Widget/common_textField.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import '../../../../Constant/ColorConst/ColorConstant.dart';
 import '../../../../Constant/ImageConstant/ImageConstants.dart';
+import '../../../../Cubit/dashboard_cubit/DashboardCubit.dart';
+import '../../../../Model/SendPhpOTPModel.dart';
 import '../../../../ParamModel/GetCityAndStateRequest.dart';
 import '../../../../Utils/UpperCaseTextFormatter.dart';
 import '../../../../Utils/validation.dart';
@@ -71,6 +73,16 @@ class _CheckEligibility extends State<CheckEligibility>{
     super.dispose();
   }
 
+
+  getCustomerDetailsApiCall() async{
+    context.read<DashboardCubit>().callDashBoardApi();
+    var otpModel = await MySharedPreferences.getPhpOTPModel();
+    SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
+    context.read<LoanApplicationCubit>().getCustomerDetailsApiCall({
+      "cust_profile_id": sendPhpOTPModel.data?.custProfileId
+    });
+  }
+
   void getCustomerDetails() async{
     String? customerData = await MySharedPreferences.getCustomerDetails();
     DebugPrint.prt("Data on eligibility check $customerData");
@@ -116,8 +128,8 @@ class _CheckEligibility extends State<CheckEligibility>{
                 context.pop();
                 MySharedPreferences.setEnhanceKey("1");
                 context.push(AppRouterName.loanOfferPage,extra: 1);
-              }else{
-                context.pop();
+              } else{
+                context.replace(AppRouterName.aaDarKYCScreen);
               }
             });
           } else if (state is GetPinCodeDetailsSuccess) {
@@ -157,8 +169,9 @@ class _CheckEligibility extends State<CheckEligibility>{
                   children: [
                     Loan112AppBar(
                       customLeading: InkWell(
-                        onTap: (){
+                        onTap: () async{
                           context.pop();
+                          await getCustomerDetailsApiCall();
                         },
                         child: Icon(Icons.arrow_back_ios, color: ColorConstant.blackTextColor),
                       ),

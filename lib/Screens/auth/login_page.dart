@@ -170,6 +170,7 @@ class _LogInPageState extends State<LogInPage> {
                           child: Loan112Button(
                             onPressed: () {
                               if(_formKey.currentState!.validate()){
+                                mobileNumberToPass = mobileController.text.trim();
                                 final phone = mobileController.text.trim();
                                 if (phone.isNotEmpty) {
                                   DebugPrint.prt("LogIn Method Called $phone");

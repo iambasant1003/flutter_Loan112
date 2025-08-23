@@ -238,7 +238,7 @@ class _BankStatementAnalyzer extends State<BankStatementAnalyzer>{
               DebugPrint.prt("Inside if status is one");
               context.pop();
               context.pop();
-              getCustomerDetailsApiCall();
+              context.push(AppRouterName.loanOfferPage,extra: 1).then((val){});
             }
           }else if(state is VerifyBankStatementFailed){
             EasyLoading.dismiss();

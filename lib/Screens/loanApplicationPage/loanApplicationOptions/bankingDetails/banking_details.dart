@@ -17,7 +17,9 @@ import 'package:loan112_app/Widget/common_button.dart';
 import 'package:loan112_app/Widget/common_textField.dart';
 import '../../../../Constant/ColorConst/ColorConstant.dart';
 import '../../../../Constant/FontConstant/FontConstant.dart';
+import '../../../../Cubit/dashboard_cubit/DashboardCubit.dart';
 import '../../../../Model/BankAccountTypeModel.dart';
+import '../../../../Model/SendPhpOTPModel.dart';
 import '../../../../Model/VerifyOTPModel.dart';
 import '../../../../ParamModel/VerifyIfscParamModel.dart';
 import '../../../../Utils/MysharePrefenceClass.dart';
@@ -67,6 +69,16 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
          ifscCode.text = customerDetails.bankAccountIfsc ?? "";
        });
     }
+  }
+
+
+  getCustomerDetailsApiCall() async{
+    context.read<DashboardCubit>().callDashBoardApi();
+    var otpModel = await MySharedPreferences.getPhpOTPModel();
+    SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
+    context.read<LoanApplicationCubit>().getCustomerDetailsApiCall({
+      "cust_profile_id": sendPhpOTPModel.data?.custProfileId
+    });
   }
 
 
@@ -154,8 +166,9 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
                    Loan112AppBar(
                      customLeading: InkWell(
                        child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
-                       onTap: (){
+                       onTap: () async{
                          context.pop();
+                         await getCustomerDetailsApiCall();
                        },
                      ),
                    ),

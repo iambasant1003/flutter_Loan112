@@ -51,4 +51,5 @@ class AppRouterName{
   static var paymentStatusPage = "/paymentStatusPage";
   static var termsAndConditionWebview = "/termsAndConditionWebview";
   static var bankStatementAnalyzer = "/bankStatementAnalyzer";
+  static var sessionTimeOut = "/sessionTimeout";
 }

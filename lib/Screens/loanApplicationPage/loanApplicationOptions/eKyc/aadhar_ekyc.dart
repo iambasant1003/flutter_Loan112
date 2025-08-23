@@ -17,6 +17,8 @@ import 'package:loan112_app/Widget/common_button.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../../../Constant/ConstText/ConstText.dart';
 import '../../../../Constant/ImageConstant/ImageConstants.dart';
+import '../../../../Cubit/dashboard_cubit/DashboardCubit.dart';
+import '../../../../Model/SendPhpOTPModel.dart';
 import '../../../../Utils/MysharePrefenceClass.dart';
 
 class AadharKycScreen extends StatefulWidget{
@@ -31,6 +33,15 @@ class _AadharKycScreen extends State<AadharKycScreen>{
   TextEditingController adarOTPController = TextEditingController();
   bool reInitiate = false;
 
+
+  getCustomerDetailsApiCall() async{
+    context.read<DashboardCubit>().callDashBoardApi();
+    var otpModel = await MySharedPreferences.getPhpOTPModel();
+    SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
+    context.read<LoanApplicationCubit>().getCustomerDetailsApiCall({
+      "cust_profile_id": sendPhpOTPModel.data?.custProfileId
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,8 +122,9 @@ class _AadharKycScreen extends State<AadharKycScreen>{
                     Loan112AppBar(
                       customLeading: InkWell(
                         child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
-                        onTap: (){
+                        onTap: () async{
                           context.pop();
+                          await getCustomerDetailsApiCall();
                         },
                       ),
                     ),

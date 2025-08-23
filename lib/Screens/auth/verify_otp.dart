@@ -67,6 +67,7 @@ class _VerifyOTP extends State<VerifyOTP>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
         body: SizedBox.expand(
           child: Stack(
             children: [

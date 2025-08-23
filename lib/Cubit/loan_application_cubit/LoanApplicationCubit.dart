@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
-import 'package:loan112_app/Cubit/same_emit.dart';
+import 'package:loan112_app/Cubit/safe_emit.dart';
 import 'package:loan112_app/Model/GenerateLoanOfferModel.dart';
 import 'package:loan112_app/Model/GetPurposeOfLoanModel.dart';
 import 'package:loan112_app/ParamModel/GetCityAndStateRequest.dart';
@@ -359,9 +359,6 @@ class LoanApplicationCubit extends Cubit<LoanApplicationState> {
       );
     }
   }
-
-
-
 
 }
 
