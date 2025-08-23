@@ -64,6 +64,9 @@ class _DashBoardHome extends State<DashBoardHome> {
             context,
             state.dashBoardModel.message ?? "Unknown Error",
           );
+          if(state.dashBoardModel.status == 4){
+            context.replace(AppRouterName.sessionTimeOut);
+          }
         } else if (state is DeleteCustomerSuccess) {
           DebugPrint.prt("Delete Customer Success");
           EasyLoading.dismiss();

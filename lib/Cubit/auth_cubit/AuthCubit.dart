@@ -3,8 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loan112_app/Constant/ConstText/ConstText.dart';
 import 'package:loan112_app/Constant/PageKeyConstant/PageKeyConstant.dart';
-import 'package:loan112_app/Cubit/same_emit.dart';
+import 'package:loan112_app/Cubit/safe_emit.dart';
 import 'package:loan112_app/Model/SendOTPModel.dart';
 import 'package:loan112_app/Model/SendPhpOTPModel.dart';
 import 'package:loan112_app/ParamModel/SendOTPPramNodeModel.dart';
@@ -20,7 +21,6 @@ class AuthCubit extends Cubit<AuthState> {
   final AuthRepository authRepository;
 
   AuthCubit(this.authRepository) : super(AuthInitial());
-
 
   Future<void> sendOtpNode(String phoneNumber) async {
     //emit(AuthLoading());
@@ -39,8 +39,6 @@ class AuthCubit extends Cubit<AuthState> {
       safeEmit(()=>emit(AuthError("UnExpected Error")));
     }
   }
-
-
 
   Future<void> sendBothOtp(String phoneNumber) async {
     DebugPrint.prt("Inside Method");
@@ -112,14 +110,10 @@ class AuthCubit extends Cubit<AuthState> {
     } catch (e) {
       DebugPrint.prt("Error in sendBothOtp: $e");
       safeEmit(()=>
-          emit(AuthError(e.toString()))
+          emit(AuthError(ConstText.exceptionError))
       );
     }
   }
-
-
-
-
 
   /*
   Future<void> sendOtpHp(String phoneNumber) async {
@@ -169,9 +163,6 @@ class AuthCubit extends Cubit<AuthState> {
 
    */
 
-
-
-
   Future<String> getDeviceId() async {
     final deviceInfoPlugin = DeviceInfoPlugin();
 
@@ -184,7 +175,6 @@ class AuthCubit extends Cubit<AuthState> {
     }
     return "";
   }
-
 
   Future<void> verifyOtpNode(String phoneNumber,String otp) async {
     safeEmit(()=>
@@ -207,7 +197,7 @@ class AuthCubit extends Cubit<AuthState> {
       }
     } catch (e) {
       safeEmit(()=>
-          emit(AuthError(e.toString()))
+          emit(AuthError(ConstText.exceptionError))
       );
     }
   }
@@ -239,7 +229,7 @@ class AuthCubit extends Cubit<AuthState> {
       }
     } catch (e) {
       safeEmit(()=>
-          emit(AuthError(e.toString()))
+          emit(AuthError(ConstText.exceptionError))
       );
     }
   }

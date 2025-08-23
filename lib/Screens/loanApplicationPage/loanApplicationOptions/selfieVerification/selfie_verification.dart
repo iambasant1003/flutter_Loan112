@@ -63,9 +63,9 @@ class _SelfieCameraPageState extends State<SelfieCameraPage> with WidgetsBinding
                   Loan112AppBar(
                     customLeading: InkWell(
                       child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
-                      onTap: (){
+                      onTap: () async{
                         context.pop();
-                        getCustomerDetailsApiCall();
+                        await getCustomerDetailsApiCall();
                       },
                     ),
                   ),

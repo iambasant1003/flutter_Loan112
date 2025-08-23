@@ -31,6 +31,7 @@ import '../Screens/loanApplicationPage/loanApplicationOptions/bankStatement/offl
 import '../Screens/loanApplicationPage/loanApplicationOptions/eKyc/aadhar_ekyc.dart';
 import '../Screens/loanApplicationPage/loanApplicationOptions/eKyc/ekyc_message.dart';
 import '../Screens/loanApplicationPage/loan_application_submit.dart';
+import '../Screens/sessionTimeOut/session_timeout.dart';
 import '../Screens/supportUi/customer_support.dart';
 import 'app_router_name.dart';
 
@@ -108,6 +109,7 @@ final GoRouter appRouter = GoRouter(
       int timerValue = state.extra as int;
       return BankStatementAnalyzer(timerValue: timerValue);
     }),
+    GoRoute(path: AppRouterName.sessionTimeOut,builder: (context,state) => SessionTimeOutLoan112()),
   ],
 );
 

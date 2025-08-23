@@ -1,5 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
@@ -7,6 +8,10 @@ import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Widget/app_bar.dart';
 import 'package:loan112_app/Widget/common_button.dart';
 import '../../../../Constant/ImageConstant/ImageConstants.dart';
+import '../../../../Cubit/dashboard_cubit/DashboardCubit.dart';
+import '../../../../Cubit/loan_application_cubit/LoanApplicationCubit.dart';
+import '../../../../Model/SendPhpOTPModel.dart';
+import '../../../../Utils/MysharePrefenceClass.dart';
 
 class BankStatementScreen extends StatefulWidget {
   const BankStatementScreen({super.key});
@@ -17,6 +22,15 @@ class BankStatementScreen extends StatefulWidget {
 
 class _BankStatementScreen extends State<BankStatementScreen> {
   bool isOnlineSelected = true;
+
+  getCustomerDetailsApiCall() async{
+    context.read<DashboardCubit>().callDashBoardApi();
+    var otpModel = await MySharedPreferences.getPhpOTPModel();
+    SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
+    context.read<LoanApplicationCubit>().getCustomerDetailsApiCall({
+      "cust_profile_id": sendPhpOTPModel.data?.custProfileId
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +52,9 @@ class _BankStatementScreen extends State<BankStatementScreen> {
                 padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
                 child: Loan112AppBar(
                   customLeading: InkWell(
-                    onTap: () {
+                    onTap: () async{
                       context.pop();
+                      await getCustomerDetailsApiCall();
                     },
                     child: Icon(
                       Icons.arrow_back_ios,

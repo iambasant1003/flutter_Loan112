@@ -51,6 +51,8 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
   GetPurposeOfLoanModel? getPurposeOfLoanModel;
   bool _isActive = true;
 
+
+
   @override
   void dispose() {
     _isActive = false;
@@ -97,9 +99,9 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
     return Scaffold(
         appBar: Loan112AppBar(
           customLeading: InkWell(
-            onTap: (){
+            onTap: () async{
               context.pop();
-              getCustomerDetailsApiCall();
+               await getCustomerDetailsApiCall();
             },
             child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
           ),

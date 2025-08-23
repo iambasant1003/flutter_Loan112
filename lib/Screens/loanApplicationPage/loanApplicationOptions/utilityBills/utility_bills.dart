@@ -10,13 +10,16 @@ import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
+import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Widget/common_screen_background.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:widgets_easier/widgets_easier.dart';
 import '../../../../Constant/ConstText/ConstText.dart';
 import '../../../../Constant/FontConstant/FontConstant.dart';
 import '../../../../Constant/ImageConstant/ImageConstants.dart';
+import '../../../../Cubit/dashboard_cubit/DashboardCubit.dart';
 import '../../../../Model/GetUtilityDocTypeModel.dart';
+import '../../../../Model/SendPhpOTPModel.dart' hide Data;
 import '../../../../Model/VerifyOTPModel.dart' hide Data;
 import '../../../../Utils/Debugprint.dart';
 import '../../../../Utils/MysharePrefenceClass.dart';
@@ -125,6 +128,16 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
   }
 
 
+
+  getCustomerDetailsApiCall() async{
+    context.read<DashboardCubit>().callDashBoardApi();
+    var otpModel = await MySharedPreferences.getPhpOTPModel();
+    SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
+    context.read<LoanApplicationCubit>().getCustomerDetailsApiCall({
+      "cust_profile_id": sendPhpOTPModel.data?.custProfileId
+    });
+  }
+
   void getUtilityBillDoc() async{
     var otpModel = await MySharedPreferences.getUserSessionDataNode();
     VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
@@ -178,7 +191,7 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
                 -int.parse((filteredUtilityBillData?.data!.length ?? 0).toString())) >=2){
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (context.mounted) {
-                  context.pop();
+                  context.replace(AppRouterName.addReference);
                 }
               });
             }
@@ -234,8 +247,9 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
                   Loan112AppBar(
                     customLeading: InkWell(
                       child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
-                      onTap: (){
+                      onTap: () async{
                         context.pop();
+                        await getCustomerDetailsApiCall();
                       },
                     ),
                   ),
