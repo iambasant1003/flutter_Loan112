@@ -20,7 +20,7 @@ import 'package:loan112_app/Widget/common_textField.dart';
 import 'package:widgets_easier/widgets_easier.dart';
 import '../../../../../Constant/ColorConst/ColorConstant.dart';
 import '../../../../../Constant/ImageConstant/ImageConstants.dart';
-import '../../../../../Cubit/UploadStatusCubit.dart';
+import '../../../../../Cubit/UploadBankStatementStatusCubit.dart';
 import '../../../../../Model/VerifyOTPModel.dart';
 import '../../../../../Routes/app_router_name.dart';
 import '../../../../../Utils/MysharePrefenceClass.dart';
@@ -126,7 +126,7 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
   @override
   void initState() {
     super.initState();
-    context.read<UploadStatusCubit>().hideSuccess();
+    context.read<UploadBankStatementStatusCubit>().hideSuccess();
   }
 
   @override
@@ -147,7 +147,7 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
             // );
             // context.pop();
             // context.pop();
-            context.read<UploadStatusCubit>().showSuccess();
+            context.read<UploadBankStatementStatusCubit>().showSuccess();
             Future.delayed(const Duration(seconds: 1), () {
               context.replace(
                 AppRouterName.bankStatementAnalyzer,
@@ -430,7 +430,7 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
                             );
                           },
                         ),
-                        BlocBuilder<UploadStatusCubit, bool>(
+                        BlocBuilder<UploadBankStatementStatusCubit, bool>(
                           builder: (context, isUploaded) {
                             if (!isUploaded) {
                               return const SizedBox.shrink(); // return empty if false

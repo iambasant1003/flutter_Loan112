@@ -2,12 +2,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loan112_app/Cubit/NetworkConnectivityCheck/ConnectivityCubit.dart';
 import 'package:loan112_app/Cubit/dashboard_cubit/DashboardCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/AddMoreReferenceCubit.dart';
-import 'package:loan112_app/Cubit/loan_application_cubit/JourneyCubit.dart';
+import 'package:loan112_app/Cubit/loan_application_cubit/JourneyUpdateCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
 import 'package:loan112_app/Cubit/repayment_cubit/RepaymentCubit.dart';
 import '../Cubit/Loan112TimerCubit.dart';
 import '../Cubit/ShowBanStatementAnalyzerStatusCubit.dart';
-import '../Cubit/UploadStatusCubit.dart';
+import '../Cubit/UploadBankStatementStatusCubit.dart';
 import '../Cubit/auth_cubit/AuthCubit.dart';
 import '../di/di_locator.dart';
 
@@ -23,8 +23,8 @@ final List<BlocProvider> appBlocProviders = [
   BlocProvider<DashboardCubit>(
     create: (_) => locator<DashboardCubit>(),
   ),
-  BlocProvider<JourneyCubit>(
-    create: (_) => locator<JourneyCubit>(),
+  BlocProvider<JourneyUpdateCubit>(
+    create: (_) => locator<JourneyUpdateCubit>(),
   ),
   BlocProvider<AddMoreReferenceCubit>(
     create: (_) => locator<AddMoreReferenceCubit>(),
@@ -41,7 +41,7 @@ final List<BlocProvider> appBlocProviders = [
   BlocProvider<Loan112TimerCubit>(
     create: (_) => locator<Loan112TimerCubit>(),
   ),
-  BlocProvider<UploadStatusCubit>(
-    create: (_) => locator<UploadStatusCubit>(),
+  BlocProvider<UploadBankStatementStatusCubit>(
+    create: (_) => locator<UploadBankStatementStatusCubit>(),
   ),
 ];

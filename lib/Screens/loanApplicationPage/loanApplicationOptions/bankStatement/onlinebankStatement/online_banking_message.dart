@@ -43,7 +43,7 @@ class _OnlineBankingMessageScreen extends State<OnlineBankingMessageScreen>{
           onPressed: () {
             context.pop();
             context.pop();
-            context.push(AppRouterName.loanOfferPage,extra: 1).then((val){});
+            context.replace(AppRouterName.loanOfferPage,extra: 1);
           },
           text: "CONTINUE",
         )

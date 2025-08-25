@@ -17,7 +17,7 @@ import 'package:loan112_app/Widget/circular_progress.dart';
 import '../../Constant/ColorConst/ColorConstant.dart';
 import '../../Constant/ImageConstant/ImageConstants.dart';
 import '../../Cubit/dashboard_cubit/DashboardCubit.dart';
-import '../../Cubit/loan_application_cubit/JourneyCubit.dart';
+import '../../Cubit/loan_application_cubit/JourneyUpdateCubit.dart';
 import '../../Model/GetCustomerDetailsModel.dart';
 import '../../Model/VerifyOTPModel.dart';
 import '../../Utils/MysharePrefenceClass.dart';
@@ -61,9 +61,7 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
   @override
   void initState() {
     super.initState();
-    context.read<JourneyCubit>().updateJourneyTabs(
-        {}
-    );
+    context.read<JourneyUpdateCubit>().updateJourneyTabs({});
     getCustomerDetailsApiCall();
   }
 
@@ -110,7 +108,7 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
             }else if(state is GetCustomerDetailsSuccess){
               EasyLoading.dismiss();
               MySharedPreferences.setCustomerDetails(jsonEncode(state.getCustomerDetailsModel.data?.customerDetails));
-              context.read<JourneyCubit>().updateJourneyTabs(
+              context.read<JourneyUpdateCubit>().updateJourneyTabs(
                   state.getCustomerDetailsModel.data?.screenDetails!.toJson() as Map<String,dynamic>
               );
               getCustomerDetailsModel = state.getCustomerDetailsModel;
@@ -198,7 +196,7 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
                             const SizedBox(height: 16),
                             // 👇 Wrap with Expanded
                             if(getCustomerDetailsModel != null)...[
-                              BlocBuilder<JourneyCubit,Map<String,dynamic>>(
+                              BlocBuilder<JourneyUpdateCubit,Map<String,dynamic>>(
                                 builder: (context,state){
                                   DebugPrint.prt("All Step with key $state");
                                   return Expanded(

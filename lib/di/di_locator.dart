@@ -4,7 +4,7 @@ import 'package:loan112_app/Cubit/NetworkConnectivityCheck/ConnectivityCubit.dar
 import 'package:loan112_app/Cubit/ShowBanStatementAnalyzerStatusCubit.dart';
 import 'package:loan112_app/Cubit/dashboard_cubit/DashboardCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/AddMoreReferenceCubit.dart';
-import 'package:loan112_app/Cubit/loan_application_cubit/JourneyCubit.dart';
+import 'package:loan112_app/Cubit/loan_application_cubit/JourneyUpdateCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
 import 'package:loan112_app/Cubit/repayment_cubit/RepaymentCubit.dart';
 import 'package:loan112_app/Repository/auth_Repository.dart';
@@ -13,7 +13,7 @@ import 'package:loan112_app/Repository/loan_application_Repository.dart';
 import 'package:loan112_app/Repository/repayment_repository.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/bankStatement/newBREJourney/bank_statement_analyzer.dart';
 import 'package:loan112_app/Services/http_client_php.dart';
-import '../Cubit/UploadStatusCubit.dart';
+import '../Cubit/UploadBankStatementStatusCubit.dart';
 import '../Cubit/auth_cubit/AuthCubit.dart';
 import '../Services/http_client.dart';
 
@@ -29,7 +29,7 @@ void setupLocator() {
 
   locator.registerLazySingleton<DashBoardRepository>(()=> DashBoardRepository(locator<ApiClassPhp>()));
   locator.registerFactory(()=> DashboardCubit(locator<DashBoardRepository>()));
-  locator.registerFactory(()=> JourneyCubit());
+  locator.registerFactory(()=> JourneyUpdateCubit());
   locator.registerFactory(()=> AddMoreReferenceCubit());
   locator.registerFactory(()=> ConnectivityCubit());
 
@@ -37,6 +37,6 @@ void setupLocator() {
   locator.registerFactory(()=> RePaymentCubit(locator<RepaymentRepository>()));
   locator.registerFactory(()=> ShowBankStatementAnalyzerStatusCubit());
   locator.registerFactory(()=> Loan112TimerCubit());
-  locator.registerFactory(()=> UploadStatusCubit());
+  locator.registerFactory(()=> UploadBankStatementStatusCubit());
 
 }
