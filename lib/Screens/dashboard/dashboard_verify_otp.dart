@@ -87,7 +87,9 @@ class _DashboardVerifyOTP extends State<DashboardVerifyOTP>{
                     openSnackBar(context, state.deleteProfileOTPVerifyModel.message??"",backGroundColor: ColorConstant.blackTextColor);
                     EasyLoading.dismiss();
                     MySharedPreferences.logOutFunctionData();
-                    context.go(AppRouterName.login);
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      context.go(AppRouterName.login);
+                    });
                   }else if(state is DeleteOTPFailed){
                     EasyLoading.dismiss();
                     openSnackBar(context, state.deleteProfileOTPVerifyModel.message ?? "Unexpected Error");

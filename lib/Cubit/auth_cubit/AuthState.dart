@@ -37,3 +37,9 @@ class AuthError extends AuthState {
   final String message;
   AuthError(this.message);
 }
+
+
+class PermissionCheckboxState extends AuthState {
+  final bool isChecked;
+  PermissionCheckboxState({required this.isChecked});
+}

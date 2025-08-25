@@ -22,6 +22,16 @@ class AuthCubit extends Cubit<AuthState> {
 
   AuthCubit(this.authRepository) : super(AuthInitial());
 
+
+
+  bool isPermissionGiven = false;
+
+  void toggleCheckbox(bool? value) {
+    isPermissionGiven = value ?? false;
+    safeEmit(() => emit(PermissionCheckboxState(isChecked: isPermissionGiven)));
+  }
+
+
   Future<void> sendOtpNode(String phoneNumber) async {
     //emit(AuthLoading());
 

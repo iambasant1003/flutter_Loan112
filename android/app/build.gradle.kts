@@ -31,7 +31,6 @@ android {
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
 
-        // ✅ Pulled from local.properties
         versionCode = flutterVersionCode.toInt()
         versionName = flutterVersionName
     }
@@ -43,16 +42,17 @@ android {
             dimension = "default"
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
+            manifestPlaceholders["applicationName"] = "com.example.loan112_app.dev.MyApp"
         }
         create("prod") {
             dimension = "default"
+            manifestPlaceholders["applicationName"] = "com.example.loan112_app.MyApp"
         }
     }
 
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("debug")
-
             isMinifyEnabled = true
             isShrinkResources = true
 
@@ -71,4 +71,11 @@ flutter {
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
     implementation("com.guardsquare:proguard-annotations:7.2.2")
+
+    // ✅ Firebase BOM (manages versions automatically)
+    implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
+
+    // ✅ Firebase SDKs you’re using
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation("com.google.firebase:firebase-analytics-ktx")
 }
