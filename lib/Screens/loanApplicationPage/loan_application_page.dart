@@ -126,6 +126,7 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
               getCustomerDetailsApiCall();
             }else if(state is CalculateDistanceFailed){
               EasyLoading.dismiss();
+              getCustomerDetailsApiCall();
             }
           },
           child: RefreshIndicator(
