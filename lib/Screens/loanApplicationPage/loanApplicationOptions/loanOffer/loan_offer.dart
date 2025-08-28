@@ -8,6 +8,7 @@ import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.da
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
 import 'package:loan112_app/Model/GenerateLoanOfferModel.dart';
 import 'package:loan112_app/Model/GetPurposeOfLoanModel.dart';
+import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:loan112_app/Widget/bottom_dashline.dart';
@@ -50,6 +51,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
   GenerateLoanOfferModel? generateLoanOfferModel;
   GetPurposeOfLoanModel? getPurposeOfLoanModel;
   bool _isActive = true;
+  bool isEnhance = false;
 
 
 
@@ -117,7 +119,6 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
 
             else if (state is GenerateLoanOfferSuccess) {
               EasyLoading.dismiss();
-
               generateLoanOfferModel = state.generateLoanOfferModel;
               getPurposeOfLoanModel = state.getPurposeOfLoanModel;
 
@@ -150,8 +151,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
                 if (context.mounted) {
                   openSnackBar(context, state.generateLoanOfferModel.message ?? "Unknown Error");
                   if(state.generateLoanOfferModel.statusCode == 402){
-                    context.pop();
-                    getCustomerDetailsApiCall();
+                    context.replace(AppRouterName.loanOfferFailed,extra: state.generateLoanOfferModel);
                   }
                 }
               });
@@ -180,7 +180,12 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
 
               Future(() async {
                 if (!_isActive) return;
-                await checkConditionCalculateDistanceApiCall();
+                if(!isEnhance){
+                  await checkConditionCalculateDistanceApiCall();
+                }
+                else{
+                  await getCustomerDetailsApiCall();
+                }
                 if (!_isActive) return;
                 context.pop();
               });
@@ -380,6 +385,9 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
   }
 
   void loanAcceptanceApiCall(BuildContext context, int loanAcceptedId) async {
+    if(loanAcceptedId == 3){
+      isEnhance = true;
+    }
     if (purposeOfLoanId != "") {
       var otpModel = await MySharedPreferences.getUserSessionDataNode();
       VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));

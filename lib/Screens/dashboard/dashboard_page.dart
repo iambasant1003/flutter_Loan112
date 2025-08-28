@@ -53,7 +53,7 @@ class _DashBoardPage extends State<DashBoardPage>{
                   },
                 ),
                 appBar: Loan112AppBar(
-                  leadingSpacing: 25,
+                  leadingSpacing: 40,
                   title: Builder(
                       builder: (context)=> InkWell(
                         onTap: () {
@@ -73,9 +73,11 @@ class _DashBoardPage extends State<DashBoardPage>{
                         onTap: () {
                           Scaffold.of(context).openDrawer();
                         },
-                        child: Icon(
-                          Icons.menu,
+                        child: Image.asset(
+                          ImageConstants.drawerMenuIcon,
                           color: ColorConstant.greyTextColor,
+                          width: 28,
+                          height: 28,
                         ),
                       ),
                     ),

@@ -22,9 +22,6 @@ class DashboardStatusScreen extends StatefulWidget {
 
 class _DashboardStatusScreen extends State<DashboardStatusScreen> {
 
-
-
-
   getCustomerDetailsApiCall() async {
     var otpModel = await MySharedPreferences.getPhpOTPModel();
     SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(
@@ -34,11 +31,11 @@ class _DashboardStatusScreen extends State<DashboardStatusScreen> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: Loan112AppBar(
+        leadingSpacing: 40,
         customLeading: InkWell(
           onTap: () {
             context.pop();
@@ -47,6 +44,11 @@ class _DashboardStatusScreen extends State<DashboardStatusScreen> {
             Icons.arrow_back_ios,
             color: ColorConstant.blackTextColor,
           ),
+        ),
+        title: Image.asset(
+          ImageConstants.loan112AppNameIcon,
+          height: 76,
+          width: 76,
         ),
       ),
       body: SizedBox.expand(
@@ -178,6 +180,4 @@ class _DashboardStatusScreen extends State<DashboardStatusScreen> {
       ],
     );
   }
-
-
 }

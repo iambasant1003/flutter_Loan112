@@ -81,7 +81,7 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
               if((state.uploadSelfieModel.data?.decision ?? "").toLowerCase() == "repeat" &&
                   (state.uploadSelfieModel.data?.checkKycFlag ?? true) == false
               ){
-                await MySharedPreferences.setEnhanceKey("1");
+                await MySharedPreferences.setEnhanceKey("0");
               }else{
                 await MySharedPreferences.setEnhanceKey("0");
               }

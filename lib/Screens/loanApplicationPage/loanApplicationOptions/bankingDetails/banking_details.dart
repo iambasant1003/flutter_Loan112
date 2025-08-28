@@ -404,7 +404,7 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
 
 
   Widget bankAccountType(BuildContext context){
-   return FormField<String>(
+    return FormField<String>(
       validator: (value) {
         if (selectedBankType == null) {
           return 'Please select your bank account type.';
@@ -490,6 +490,8 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
       },
     );
   }
+
+
 
 
   Future<dynamic> showBankVerificationBottomSheet(BuildContext context,{required Future<void> Function() onYesTap,required Future<void> Function() onNoTap}) {

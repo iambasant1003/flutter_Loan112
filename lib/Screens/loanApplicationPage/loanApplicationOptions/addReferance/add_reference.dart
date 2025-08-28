@@ -107,11 +107,6 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
             EasyLoading.dismiss();
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (context.mounted) {
-                openSnackBar(
-                  context,
-                  state.addReferenceModel.data?.finalResult ?? "Success",
-                  backGroundColor: ColorConstant.appThemeColor,
-                );
                 context.replace(AppRouterName.bankDetailsScreen);
               }
             });
