@@ -140,13 +140,6 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
             EasyLoading.show(status: "Please wait...");
           } else if (state is UploadBankStatementSuccess) {
             EasyLoading.dismiss();
-            // openSnackBar(
-            //   context,
-            //   state.uploadBankStatementModel.message ?? "Success",
-            //   backGroundColor: ColorConstant.appThemeColor,
-            // );
-            // context.pop();
-            // context.pop();
             context.read<UploadBankStatementStatusCubit>().showSuccess();
             Future.delayed(const Duration(seconds: 1), () {
               context.replace(
@@ -381,8 +374,8 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
                                       },
                                       child:  Text(
                                         (fileNamePath != null && fileNamePath != "")?
-                                        "Upload files":
-                                        'Select files',
+                                        "Upload file":
+                                        'Select file',
                                         style: TextStyle(fontSize: 14),
                                       ),
                                     ),
@@ -443,8 +436,8 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
                                 ),
                                 Container(
                                   padding: EdgeInsets.symmetric(
-                                      horizontal: FontConstants.horizontalPadding,
-                                      vertical: FontConstants.horizontalPadding
+                                      horizontal: 12.0,
+                                      vertical: 12.0
                                   ),
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.all(Radius.circular(FontConstants.horizontalPadding)),
@@ -457,7 +450,7 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
-                                      Image.asset(ImageConstants.bankStatementUploadSuccess,width: 86,height: 86),
+                                      Image.asset(ImageConstants.bankStatementUploadSuccess,width: 80,height: 80),
                                       Column(
                                         children: [
                                           Text(

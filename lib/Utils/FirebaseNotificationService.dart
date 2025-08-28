@@ -14,18 +14,18 @@ class FirebaseNotificationService {
   static String? fcmToken;
 
   /// Call this once during app startup (e.g. in SplashScreen or main)
-   Future<void> init(BuildContext context) async {
+  Future<void> init(BuildContext context) async {
     // Request notification permissions
     await _requestPermissions();
 
     // Get FCM token
     fcmToken = await _messaging.getToken();
     DebugPrint.prt("📲 FCM Token: $fcmToken");
-    if(fcmToken != null){
+    if (fcmToken != null) {
       MySharedPreferences.setNotificationToken(fcmToken ?? "");
     }
 
-    // Initialize local notifications
+    // Initialize local notifications (only on Android/iOS)
     await _initializeLocalNotifications(context);
 
     // Listen for foreground messages
@@ -63,7 +63,14 @@ class FirebaseNotificationService {
     }
   }
 
-  static Future<void> _initializeLocalNotifications(BuildContext context) async {
+  static Future<void> _initializeLocalNotifications(
+      BuildContext context) async {
+    // Prevent crash on Web / Desktop
+    if (!(Platform.isAndroid || Platform.isIOS)) {
+      DebugPrint.prt("⚠️ Local notifications not supported on this platform");
+      return;
+    }
+
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iOSInit = DarwinInitializationSettings();
 
@@ -81,18 +88,20 @@ class FirebaseNotificationService {
       },
     );
 
-    // Create notification channel (required for Android 8+)
-    const androidChannel = AndroidNotificationChannel(
-      'high_importance_channel',
-      'App Notifications',
-      description: 'This channel is used for important notifications.',
-      importance: Importance.high,
-    );
+    if (Platform.isAndroid) {
+      // Create notification channel (required for Android 8+)
+      const androidChannel = AndroidNotificationChannel(
+        'high_importance_channel',
+        'App Notifications',
+        description: 'This channel is used for important notifications.',
+        importance: Importance.high,
+      );
 
-    await _localNotifications
-        .resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(androidChannel);
+      await _localNotifications
+          .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+          ?.createNotificationChannel(androidChannel);
+    }
   }
 
   static Future<void> _handleForegroundMessage(RemoteMessage message) async {
@@ -121,7 +130,8 @@ class FirebaseNotificationService {
     }
   }
 
-  static void _handleNotificationTap(BuildContext context, Map<String, dynamic>? data) {
+  static void _handleNotificationTap(
+      BuildContext context, Map<String, dynamic>? data) {
     if (data == null || data.isEmpty) return;
 
     final type = data['type'];
@@ -147,8 +157,7 @@ class FirebaseNotificationService {
       final parts = cleaned.split(',').map((e) => e.trim().split(':'));
       return {
         for (final pair in parts)
-          if (pair.length == 2)
-            pair[0].trim(): pair[1].trim(),
+          if (pair.length == 2) pair[0].trim(): pair[1].trim(),
       };
     } catch (e) {
       DebugPrint.prt("❌ Payload parsing error: $e");
@@ -156,5 +165,3 @@ class FirebaseNotificationService {
     }
   }
 }
-
-

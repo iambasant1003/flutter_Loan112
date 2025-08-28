@@ -220,11 +220,6 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
                   selectedDocument = null;
                   needsPassword = false;
                 });
-                openSnackBar(
-                  context,
-                  state.uploadUtilityDocTypeModel.message ?? "",
-                  backGroundColor: ColorConstant.appThemeColor,
-                );
                 getUtilityBillDoc();
               }
             });
@@ -519,8 +514,8 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
                   },
                   child: Text(
                     (fileNamePath != null && fileNamePath != "")?
-                    "Upload files":
-                    'Select files',
+                    "Upload file":
+                    'Select file',
                     style: TextStyle(fontSize: 14),
                   ),
                 )

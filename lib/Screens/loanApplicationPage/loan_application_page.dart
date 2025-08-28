@@ -122,7 +122,7 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
               openSnackBar(context, state.getCustomerDetailsModel.message ?? "Unknown Error");
             }else if(state is CalculateDistanceSuccess){
               EasyLoading.dismiss();
-              openSnackBar(context, "Distance Mapped",backGroundColor: ColorConstant.appThemeColor);
+              //openSnackBar(context, "Distance Mapped",backGroundColor: ColorConstant.appThemeColor);
               getCustomerDetailsApiCall();
             }else if(state is CalculateDistanceFailed){
               EasyLoading.dismiss();
@@ -221,7 +221,7 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
                                                 }else{
                                                   showMessageAboutStep(status);
                                                   if(stepKeys[index].toLowerCase().contains('eligibility') && status !=1 && status != 0){
-                                                    context.push(AppRouterName.checkEligibilityPage);
+                                                    context.push(AppRouterName.checkEligibilityPage,extra: getCustomerDetailsModel?.data?.customerDetails?.existingCustomer ?? false);
                                                   }else if(stepKeys[index].toLowerCase().contains('statement') && status != 1 && status != 0){
                                                     context.push(AppRouterName.bankStatement);
                                                   }else if(stepKeys[index].toLowerCase().contains('ekyc')&& status !=1 && status != 0){
@@ -236,7 +236,7 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
                                                     });
                                                   }else if(stepKeys[index].toLowerCase().contains('residence') &&status!=1 && status != 0){
                                                     context.push(AppRouterName.utilityBillScreen);
-                                                  }else if(stepKeys[index].toLowerCase().contains('bank')&&status!=1 && status != 0){
+                                                  }else if(stepKeys[index].toLowerCase().contains('bank') &&status!=1 && status != 0){
                                                     context.push(AppRouterName.bankDetailsScreen);
                                                   }
                                                 }

@@ -28,10 +28,6 @@ class _LoanListPageState extends State<LoanListPage> {
   TextEditingController amountController = TextEditingController();
 
 
-
-
-
-
   @override
   Widget build(BuildContext context) {
     return widget.loanHistoryModel.data == null?
@@ -105,7 +101,7 @@ class _LoanListPageState extends State<LoanListPage> {
                       )
                           : null,
                       title: Text(
-                        _getLoanTitle(index, loanData?.loanActiveStatus ?? 0),
+                        _getLoanTitle(index, loanData?.loanActiveStatus ?? 0,loanData),
                         style: TextStyle(
                           color: loanData?.loanActiveStatus == 1
                               ? Colors.white
@@ -134,7 +130,7 @@ class _LoanListPageState extends State<LoanListPage> {
 
   Widget _buildDetailsSection(var loanData,int index) {
     if(loanData.loanActiveStatus == 1){
-      amountController.text = (loanData.repaymentAmount ?? 0).toString();
+      amountController.text = (loanData.loanTotalOutstandingAmount ?? 0).toString();
     }
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
@@ -158,13 +154,17 @@ class _LoanListPageState extends State<LoanListPage> {
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
           child: Column(
             children: [
+              _buildRow("Loan Number", "${loanData?.loanNo ?? ""}/-"),
               _buildRow("Sanction Loan Amount (Rs.)", "${loanData?.loanRecommended ?? ""}/-"),
               _buildRow("Rate of Interest (%) Per Day", "${loanData?.roi ?? ""}"),
-              _buildRow("Date of Sanction", formatDate(loanData?.disbursalDate)),
-              _buildRow("Total Repayment Amount (Rs.)", "${loanData?.repaymentAmount ?? ""}/-"),
+              _buildRow("Disbursal Date", loanData?.disbursalDate),
+              _buildRow("Total Repayment Amount (Rs.)", "${loanData?.loanTotalPayableAmount ?? ""}/-"),
               _buildRow("Tenure in Days", "${loanData?.tenure ?? ""}"),
               _buildRow("Repayment Date", loanData?.repaymentDate ?? ""),
               _buildRow("Panel Interest (%) Per day", "${loanData?.panelRoi ?? ""}"),
+              _buildRow("Penalty Amount", "${loanData?.loanTotalPenaltyAmount ?? ""}"),
+              _buildRow("Remaining Amount", "${loanData?.loanTotalOutstandingAmount ?? ""}"),
+              _buildRow("Status", "${loanData?.status ?? ""}"),
               loanData.loanActiveStatus ==1?
               SizedBox(height: 12):
               SizedBox.shrink(),
@@ -193,6 +193,7 @@ class _LoanListPageState extends State<LoanListPage> {
                         Expanded(
                           child: CommonTextField(
                             controller: amountController,
+                            maxLength: 7,
                             hintText: "Amount",
                             keyboardType: TextInputType.number,
                           ),
@@ -226,14 +227,14 @@ class _LoanListPageState extends State<LoanListPage> {
                                 return;
                               }
 
-                              int enteredAmount = int.tryParse(amountText) ?? 0;
-                              int repaymentAmount = int.tryParse(loanData?.repaymentAmount.toString() ?? "0") ?? 0;
+                              int enteredAmount = int.tryParse(amountController.text.trim().toString()) ?? 0;
+                              int repaymentAmount = int.tryParse(loanData?.loanTotalOutstandingAmount.toString() ?? "0") ?? 0;
 
                               if (enteredAmount == 0) {
                                 openSnackBar(context, "Payable amount should be greater than 0");
                                 return;
                               } else if (enteredAmount > repaymentAmount) {
-                                openSnackBar(context, "Payable amount should be less than repayment amount");
+                                openSnackBar(context, "Payable amount should be less than remaining amount");
                                 return;
                               }
 
@@ -316,12 +317,13 @@ class _LoanListPageState extends State<LoanListPage> {
             ),
           ],
         ),
-        if(label != "Panel Interest (%) Per day") SizedBox(height: 18)
+        SizedBox(height: 18)
       ],
     );
   }
 
   String formatDate(String? date) {
+    DebugPrint.prt("Disbursal Date $date");
     if (date == null || date.isEmpty) return '';
     try {
       DateTime parsedDate = DateTime.parse(date);
@@ -331,27 +333,16 @@ class _LoanListPageState extends State<LoanListPage> {
     }
   }
 
-  String _getLoanTitle(int index, int loanActiveStatus) {
+  String _getLoanTitle(int index, int loanActiveStatus,var loanData) {
     // Find first active loan index
     int firstActiveIndex = widget.loanHistoryModel.data
         ?.indexWhere((e) => e.loanActiveStatus == 1) ??
         -1;
 
     if (loanActiveStatus == 1) {
-      return "Active Loan";
+      return "Active Loan ${loanData.loanNo}";
     } else {
-      // If there is an active loan
-      if (firstActiveIndex != -1) {
-        // loans after active loan start numbering from Loan 1
-        int adjustedIndex = index - (firstActiveIndex + 1) + 1;
-        return "Loan $adjustedIndex";
-      } else {
-        // no active loan → start from Loan 1 from beginning
-        return "Loan ${index + 1}";
-      }
+      return "Loan ${loanData.loanNo}";
     }
   }
-
-
-
 }

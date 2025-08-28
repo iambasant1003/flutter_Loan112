@@ -146,11 +146,11 @@ class _PaymentOptionScreen extends State<PaymentOptionScreen> {
             );
           } else if (state is CheckRazorPayPaymentStatusSuccess) {
             EasyLoading.dismiss();
-            openSnackBar(
-              context,
-              state.razorPayCheckPaymentStatusModel.message!,
-              backGroundColor: ColorConstant.appThemeColor,
-            );
+            // openSnackBar(
+            //   context,
+            //   state.razorPayCheckPaymentStatusModel.message!,
+            //   backGroundColor: ColorConstant.appThemeColor,
+            // );
             context.push(AppRouterName.paymentStatusPage);
           } else if (state is CheckRazorPayPaymentStatusFailed) {
             EasyLoading.dismiss();
@@ -161,11 +161,11 @@ class _PaymentOptionScreen extends State<PaymentOptionScreen> {
             );
           } else if (state is CashFreePaymentStatusSuccess) {
             EasyLoading.dismiss();
-            openSnackBar(
-              context,
-              state.cashFreePaymentResponseModel.message!,
-              backGroundColor: ColorConstant.appThemeColor,
-            );
+            // openSnackBar(
+            //   context,
+            //   state.cashFreePaymentResponseModel.message!,
+            //   backGroundColor: ColorConstant.appThemeColor,
+            // );
             context.push(AppRouterName.paymentStatusPage);
           } else if (state is CashFreePaymentStatusFailed) {
             EasyLoading.dismiss();

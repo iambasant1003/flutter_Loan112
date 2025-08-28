@@ -30,7 +30,8 @@ import '../../../../Utils/UpperCaseTextFormatter.dart';
 import '../../../../Utils/validation.dart';
 
 class CheckEligibility extends StatefulWidget{
-  const CheckEligibility({super.key});
+  final bool isExistingCustomer;
+  const CheckEligibility({super.key,required this.isExistingCustomer});
 
   @override
   State<StatefulWidget> createState() => _CheckEligibility();
@@ -83,7 +84,7 @@ class _CheckEligibility extends State<CheckEligibility>{
     });
   }
 
-  void getCustomerDetails() async{
+  Future<void> getCustomerDetails() async{
     String? customerData = await MySharedPreferences.getCustomerDetails();
     DebugPrint.prt("Data on eligibility check $customerData");
     if(customerData != null){
@@ -110,6 +111,11 @@ class _CheckEligibility extends State<CheckEligibility>{
     }
   }
 
+  Future isExistingCustomer() async{
+    context.pop();
+    await getCustomerDetailsApiCall();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -124,10 +130,13 @@ class _CheckEligibility extends State<CheckEligibility>{
 
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!context.mounted) return;
-              if(state.createLeadModel.data!.credauLoanOfferPage!){
+              if(widget.isExistingCustomer){
+                isExistingCustomer();
+              }
+              else if(state.createLeadModel.data!.credauLoanOfferPage!){
                 context.pop();
-                MySharedPreferences.setEnhanceKey("1");
-                context.push(AppRouterName.loanOfferPage,extra: 1);
+                MySharedPreferences.setEnhanceKey("0");
+                context.push(AppRouterName.loanOfferPage,extra: 0);
               } else{
                 context.replace(AppRouterName.aaDarKYCScreen);
               }

@@ -70,13 +70,14 @@ class _BankStatementAnalyzer extends State<BankStatementAnalyzer>{
             listener: (BuildContext context, state) {
               if(state is VerifyBankStatementSuccess){
                 EasyLoading.dismiss();
-                context.read<ShowBankStatementAnalyzerStatusCubit>().show();
+                if (!context.mounted) return;
                 if(state.verifyBankStatementModel.data?.bankStatementFetched == 1){
-                  DebugPrint.prt("Inside if status is one");
                   context.pop();
                   context.pop();
-                  getCustomerDetailsApiCall();
+                  DebugPrint.prt("Inside if status is one first");
+                  context.push(AppRouterName.loanOfferPage, extra: 1);
                 }
+                context.read<ShowBankStatementAnalyzerStatusCubit>().show();
               }else if(state is VerifyBankStatementFailed){
                 EasyLoading.dismiss();
                 openSnackBar(context, state.verifyBankStatementModel.message ?? "Unexpected Error");
@@ -234,13 +235,12 @@ class _BankStatementAnalyzer extends State<BankStatementAnalyzer>{
           if(state is VerifyBankStatementSuccess){
             EasyLoading.dismiss();
             context.read<ShowBankStatementAnalyzerStatusCubit>().show();
+            if (!context.mounted) return;
             if(state.verifyBankStatementModel.data?.bankStatementFetched == 1){
-              DebugPrint.prt("Inside if status is one");
               context.pop();
               context.pop();
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                context.replace(AppRouterName.loanOfferPage, extra: 1);
-              });
+              DebugPrint.prt("Inside if status is one first");
+              context.push(AppRouterName.loanOfferPage, extra: 1);
             }
           }else if(state is VerifyBankStatementFailed){
             EasyLoading.dismiss();
