@@ -119,6 +119,7 @@ class MySharedPreferences {
   static Future<void> setLeadId(String leadId) async {
     String data = leadId;
     final prefs = await _getPreferences();
+    DebugPrint.prt("Save Lead Id $leadId");
     await prefs.setString(saveLeadId, data);
   }
 

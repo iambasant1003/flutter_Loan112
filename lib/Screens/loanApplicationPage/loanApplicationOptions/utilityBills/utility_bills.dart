@@ -141,10 +141,11 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
   void getUtilityBillDoc() async{
     var otpModel = await MySharedPreferences.getUserSessionDataNode();
     VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
-    var leadId = verifyOtpModel.data?.leadId;
-    if(leadId == "" || leadId == null){
-      leadId = await MySharedPreferences.getLeadId();
-    }
+   // var leadId = verifyOtpModel.data?.leadId;
+    //if(leadId == "" || leadId == null){
+     var leadId = await MySharedPreferences.getLeadId();
+     DebugPrint.prt("Lead Id Utility Bill $leadId");
+    //}
     context.read<LoanApplicationCubit>().getUtilityTypeDocApiCall({"leadId":leadId});
   }
 
@@ -574,10 +575,10 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
       VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
 
       var customerId = verifyOtpModel.data?.custId;
-      var leadId = verifyOtpModel.data?.leadId;
-      if(leadId == "" || leadId == null){
-        leadId = await MySharedPreferences.getLeadId();
-      }
+      //var leadId = verifyOtpModel.data?.leadId;
+      //if(leadId == "" || leadId == null){
+       var leadId = await MySharedPreferences.getLeadId();
+     // }
 
       final formData = FormData();
 

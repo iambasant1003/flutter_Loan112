@@ -268,11 +268,11 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
                                     );
 
                                 var customerId = verifyOtpModel.data?.custId;
-                                var leadId = verifyOtpModel.data?.leadId;
-                                if (leadId == "" || leadId == null) {
-                                  leadId =
+                                //var leadId = verifyOtpModel.data?.leadId;
+                               // if (leadId == "" || leadId == null) {
+                                var  leadId =
                                       await MySharedPreferences.getLeadId();
-                                }
+                               // }
 
                                 final formData = FormData();
 

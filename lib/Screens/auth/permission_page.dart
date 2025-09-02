@@ -30,9 +30,7 @@ class _PermissionPage extends State<PermissionPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      allowNotification();
-    });
+    allowNotification();
   }
 
 

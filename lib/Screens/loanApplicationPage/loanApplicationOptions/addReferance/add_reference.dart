@@ -271,6 +271,7 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
             hintText: "Enter mobile number",
           maxLength: 10,
           keyboardType: TextInputType.phone,
+          //textInputAction: TextInputAction.done,
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
           ],
@@ -410,10 +411,10 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
     VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
 
     var customerId = verifyOtpModel.data?.custId;
-    var leadId = verifyOtpModel.data?.leadId;
-    if(leadId == "" || leadId == null){
-      leadId = await MySharedPreferences.getLeadId();
-    }
+    //var leadId = verifyOtpModel.data?.leadId;
+    //if(leadId == "" || leadId == null){
+     var leadId = await MySharedPreferences.getLeadId();
+   // }
 
       referenceParamModel.custId = customerId;
       referenceParamModel.leadId = leadId;

@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Cubit/auth_cubit/AuthCubit.dart';
 import 'package:loan112_app/Cubit/auth_cubit/AuthState.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
+import 'package:loan112_app/Utils/Debugprint.dart';
 import 'package:loan112_app/Utils/MysharePrefenceClass.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -103,6 +104,8 @@ class _VerifyOTP extends State<VerifyOTP>{
                     } else if(state is VerifyOTPSuccess){
                       EasyLoading.dismiss();
                       MySharedPreferences.setUserSessionDataNode(jsonEncode(state.verifyOTPModel));
+                      DebugPrint.prt("Lead Id On verify Otp ${state.verifyOTPModel.data?.leadId}");
+                      MySharedPreferences.setLeadId(state.verifyOTPModel.data?.leadId ?? "");
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         if (mounted) {
                           context.push(AppRouterName.dashboardPage);
