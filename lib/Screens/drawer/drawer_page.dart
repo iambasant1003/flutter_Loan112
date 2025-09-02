@@ -134,7 +134,7 @@ class _Loan112Drawer extends State<Loan112Drawer> {
                                           height: 20,
                                         ),
                                         SizedBox(
-                                            width: MediaQuery.of(context).size.width * 0.45,
+                                            width: MediaQuery.of(context).size.width * 0.4,
                                             child: Row(
                                               children: [
                                                 Expanded(
@@ -186,7 +186,7 @@ class _Loan112Drawer extends State<Loan112Drawer> {
                                         height: 20,
                                       ),
                                       SizedBox(
-                                        width: MediaQuery.of(context).size.width * 0.45,
+                                        width: MediaQuery.of(context).size.width * 0.4,
                                         child: Row(
                                           children: [
                                             Expanded(

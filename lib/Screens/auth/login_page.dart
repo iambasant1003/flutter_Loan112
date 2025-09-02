@@ -1,7 +1,7 @@
 
 
 import 'dart:convert';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+//import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -140,6 +140,7 @@ class _LogInPageState extends State<LogInPage> {
                                             hintText: "Enter your Mobile number",
                                             maxLength: 10,
                                             keyboardType: TextInputType.phone,
+                                            //textInputAction: TextInputAction.done,
                                             inputFormatters: [
                                               FilteringTextInputFormatter.digitsOnly,
                                             ],

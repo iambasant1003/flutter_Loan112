@@ -61,10 +61,10 @@ class _OnlineBankingOption extends State<OnlineBankingOption>{
             context.push(AppRouterName.customerKYCWebview, extra: state.uploadOnlineBankStatementModel.data?.url).then((val) async{
               var otpModel = await MySharedPreferences.getUserSessionDataNode();
               VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
-              var leadId = verifyOtpModel.data?.leadId ?? "";
-              if (leadId == ""){
-                leadId = await MySharedPreferences.getLeadId();
-              }
+              //var leadId = verifyOtpModel.data?.leadId ?? "";
+              //if (leadId == ""){
+               var leadId = await MySharedPreferences.getLeadId();
+             // }
               context.read<LoanApplicationCubit>().fetchBankStatementStatusApiCall(leadId, verifyOtpModel.data?.custId ?? "");
             });
           });
@@ -222,10 +222,10 @@ class _OnlineBankingOption extends State<OnlineBankingOption>{
                   onPressed: () async {
                     var otpModel = await MySharedPreferences.getUserSessionDataNode();
                     VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
-                    var leadId = verifyOtpModel.data?.leadId ?? "";
-                    if (leadId.isEmpty) {
-                      leadId = await MySharedPreferences.getLeadId();
-                    }
+                    //var leadId = verifyOtpModel.data?.leadId ?? "";
+                   // if (leadId.isEmpty) {
+                     var leadId = await MySharedPreferences.getLeadId();
+                   // }
 
                     context.read<LoanApplicationCubit>().fetchOnlineAccountAggregatorApiCall({
                       "custId": verifyOtpModel.data?.custId,

@@ -353,10 +353,10 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
                                             VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
 
                                             var customerId = verifyOtpModel.data?.custId;
-                                            var leadId = verifyOtpModel.data?.leadId;
-                                            if(leadId == "" || leadId == null){
-                                              leadId = await MySharedPreferences.getLeadId();
-                                            }
+                                            //var leadId = verifyOtpModel.data?.leadId;
+                                           // if(leadId == "" || leadId == null){
+                                            var  leadId = await MySharedPreferences.getLeadId();
+                                           // }
 
                                             uploadSalarySlipNJS(
                                                 custId: customerId!,

@@ -61,10 +61,10 @@ class _AadharKycScreen extends State<AadharKycScreen>{
               context.push(AppRouterName.customerKYCWebview, extra: state.customerKycModel.data?.url).then((val) async {
                 var otpModel = await MySharedPreferences.getUserSessionDataNode();
                 VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
-                var leadId = verifyOtpModel.data?.leadId ?? "";
-                if (leadId == "") {
-                  leadId = await MySharedPreferences.getLeadId();
-                }
+                //var leadId = verifyOtpModel.data?.leadId ?? "";
+                //if (leadId == "") {
+                 var leadId = await MySharedPreferences.getLeadId();
+               // }
 
                 await Future.delayed(Duration(milliseconds: 300));
                 if (!context.mounted) return;
@@ -263,10 +263,10 @@ class _AadharKycScreen extends State<AadharKycScreen>{
                                       if (adarOTPController.text.trim() != "" && adarOTPController.text.trim().length == 4) {
                                         var otpModel = await MySharedPreferences.getUserSessionDataNode();
                                         VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
-                                        var leadId = verifyOtpModel.data?.leadId ?? "";
-                                        if (leadId == "") {
-                                          leadId = await MySharedPreferences.getLeadId();
-                                        }
+                                        //var leadId = verifyOtpModel.data?.leadId ?? "";
+                                        //if (leadId == "") {
+                                         var leadId = await MySharedPreferences.getLeadId();
+                                       // }
 
                                         context.read<LoanApplicationCubit>().customerKycApiCall({
                                           "custId": verifyOtpModel.data?.custId,
