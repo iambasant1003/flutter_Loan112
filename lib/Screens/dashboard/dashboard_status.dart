@@ -9,6 +9,7 @@ import 'package:loan112_app/Widget/app_bar.dart';
 import 'package:loan112_app/Widget/common_button.dart';
 import '../../Constant/FontConstant/FontConstant.dart';
 import '../../Constant/ImageConstant/ImageConstants.dart';
+import '../../Cubit/dashboard_cubit/DashboardCubit.dart';
 import '../../Cubit/loan_application_cubit/LoanApplicationCubit.dart';
 import '../../Model/SendPhpOTPModel.dart';
 import '../../Utils/MysharePrefenceClass.dart';
@@ -31,20 +32,25 @@ class _DashboardStatusScreen extends State<DashboardStatusScreen> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: Loan112AppBar(
-        leadingSpacing: 40,
-        customLeading: InkWell(
-          onTap: () {
-            context.pop();
-          },
-          child: Icon(
-            Icons.arrow_back_ios,
-            color: ColorConstant.blackTextColor,
+        customLeading: Padding(
+          padding: EdgeInsets.only(left: FontConstants.horizontalPadding),
+          child: InkWell(
+            onTap: () async{
+              context.pop();
+              context.read<DashboardCubit>().callDashBoardApi();
+            },
+            child: Icon(
+              Icons.arrow_back_ios,
+              color: ColorConstant.blackTextColor,
+            ),
           ),
         ),
+        leadingSpacing: 30,
         title: Image.asset(
           ImageConstants.loan112AppNameIcon,
           height: 76,

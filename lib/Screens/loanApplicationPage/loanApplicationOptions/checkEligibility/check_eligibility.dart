@@ -58,6 +58,7 @@ class _CheckEligibility extends State<CheckEligibility>{
   @override
   void initState() {
     super.initState();
+    DebugPrint.prt("Is Existing Customer ${widget.isExistingCustomer}");
     getCustomerDetails();
   }
 
@@ -86,7 +87,9 @@ class _CheckEligibility extends State<CheckEligibility>{
 
   Future<void> getCustomerDetails() async{
     String? customerData = await MySharedPreferences.getCustomerDetails();
+    String? leadId =  await MySharedPreferences.getLeadId();
     DebugPrint.prt("Data on eligibility check $customerData");
+    DebugPrint.prt("Lead Id $leadId");
     if(customerData != null){
       CustomerDetails customerDetails = CustomerDetails.fromJson(jsonDecode(customerData));
       setState(() {
@@ -130,15 +133,16 @@ class _CheckEligibility extends State<CheckEligibility>{
 
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!context.mounted) return;
-              if(widget.isExistingCustomer){
-                isExistingCustomer();
-              }
-              else if(state.createLeadModel.data!.credauLoanOfferPage!){
+              if(state.createLeadModel.data!.credauLoanOfferPage!){
                 context.pop();
                 MySharedPreferences.setEnhanceKey("0");
                 context.push(AppRouterName.loanOfferPage,extra: 0);
               } else{
-                context.replace(AppRouterName.aaDarKYCScreen);
+                if(state.createLeadModel.data!.isCustomerWithin90Days == 2){
+                  context.replace(AppRouterName.bankStatement);
+                }else{
+                  context.replace(AppRouterName.aaDarKYCScreen);
+                }
               }
             });
           } else if (state is GetPinCodeDetailsSuccess) {
@@ -665,4 +669,8 @@ class _CheckEligibility extends State<CheckEligibility>{
   }
 
 }
+
+
+
+
 
