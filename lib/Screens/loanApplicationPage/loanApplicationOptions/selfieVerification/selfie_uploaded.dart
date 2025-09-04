@@ -59,6 +59,15 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
     super.dispose();
   }
 
+
+  bool _isActive = true;
+
+  @override
+  void dispose() {
+    _isActive = false;
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
