@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class JourneyCubit extends Cubit<Map<String, dynamic>> {
-  JourneyCubit() : super({});
+class JourneyUpdateCubit extends Cubit<Map<String, dynamic>> {
+  JourneyUpdateCubit() : super({});
 
 
   void updateJourneyTabs(Map<String, dynamic> newTabs) {

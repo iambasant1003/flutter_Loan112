@@ -1,5 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
@@ -7,6 +8,11 @@ import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Widget/app_bar.dart';
 import 'package:loan112_app/Widget/common_button.dart';
 import '../../../../Constant/ImageConstant/ImageConstants.dart';
+import '../../../../Cubit/dashboard_cubit/DashboardCubit.dart';
+import '../../../../Cubit/loan_application_cubit/LoanApplicationCubit.dart';
+import '../../../../Model/SendPhpOTPModel.dart';
+import '../../../../Model/VerifyOTPModel.dart';
+import '../../../../Utils/MysharePrefenceClass.dart';
 
 class BankStatementScreen extends StatefulWidget {
   const BankStatementScreen({super.key});
@@ -17,6 +23,20 @@ class BankStatementScreen extends StatefulWidget {
 
 class _BankStatementScreen extends State<BankStatementScreen> {
   bool isOnlineSelected = true;
+
+  getCustomerDetailsApiCall() async{
+    context.read<DashboardCubit>().callDashBoardApi();
+    var nodeOtpModel = await MySharedPreferences.getUserSessionDataNode();
+    VerifyOTPModel verifyOTPModel = VerifyOTPModel.fromJson(jsonDecode(nodeOtpModel));
+    var otpModel = await MySharedPreferences.getPhpOTPModel();
+    SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
+    context.read<LoanApplicationCubit>().getCustomerDetailsApiCall({
+      "cust_profile_id": sendPhpOTPModel.data?.custProfileId
+    });
+    context.read<LoanApplicationCubit>().getLeadIdApiCall({
+      "custId": verifyOTPModel.data?.custId
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,14 +54,24 @@ class _BankStatementScreen extends State<BankStatementScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Loan112AppBar(
-                customLeading: InkWell(
-                  onTap: () {
-                    context.pop();
-                  },
-                  child: Icon(
-                    Icons.arrow_back_ios,
-                    color: ColorConstant.blackTextColor,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 0.0),
+                child: Loan112AppBar(
+                  customLeading: InkWell(
+                    onTap: () async{
+                      context.pop();
+                      await getCustomerDetailsApiCall();
+                    },
+                    child: Icon(
+                      Icons.arrow_back_ios,
+                      color: ColorConstant.blackTextColor,
+                    ),
+                  ),
+                  leadingSpacing: 30,
+                  title: Image.asset(
+                    ImageConstants.loan112AppNameIcon,
+                    height: 76,
+                    width: 76,
                   ),
                 ),
               ),
@@ -247,8 +277,5 @@ class _BankStatementScreen extends State<BankStatementScreen> {
       ),
     );
   }
-
-
-
 
 }

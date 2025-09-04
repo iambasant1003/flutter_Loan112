@@ -11,6 +11,7 @@ import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.da
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
 import 'package:loan112_app/Model/GetCustomerDetailsModel.dart';
 import 'package:loan112_app/ParamModel/AddReferenceParamModel.dart';
+import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:loan112_app/Widget/bottom_dashline.dart';
@@ -19,6 +20,8 @@ import 'package:loan112_app/Widget/common_screen_background.dart';
 import 'package:loan112_app/Widget/common_textField.dart';
 import '../../../../Constant/ColorConst/ColorConstant.dart';
 import '../../../../Constant/FontConstant/FontConstant.dart';
+import '../../../../Cubit/dashboard_cubit/DashboardCubit.dart';
+import '../../../../Model/SendPhpOTPModel.dart';
 import '../../../../Model/VerifyOTPModel.dart';
 import '../../../../Utils/MysharePrefenceClass.dart';
 import '../../../../Utils/validation.dart';
@@ -79,6 +82,15 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
     }
   }
 
+  getCustomerDetailsApiCall() async{
+    context.read<DashboardCubit>().callDashBoardApi();
+    var otpModel = await MySharedPreferences.getPhpOTPModel();
+    SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
+    context.read<LoanApplicationCubit>().getCustomerDetailsApiCall({
+      "cust_profile_id": sendPhpOTPModel.data?.custProfileId
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -95,12 +107,7 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
             EasyLoading.dismiss();
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (context.mounted) {
-                openSnackBar(
-                  context,
-                  state.addReferenceModel.data?.finalResult ?? "Success",
-                  backGroundColor: ColorConstant.appThemeColor,
-                );
-                context.pop();
+                context.replace(AppRouterName.bankDetailsScreen);
               }
             });
           }
@@ -122,8 +129,9 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
                   Loan112AppBar(
                     customLeading: InkWell(
                       child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
-                      onTap: (){
+                      onTap: () async{
                         context.pop();
+                        await getCustomerDetailsApiCall();
                       },
                     ),
                   ),
@@ -133,6 +141,7 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
                         padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
                         child: Form(
                           key: formKey,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -262,6 +271,7 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
             hintText: "Enter mobile number",
           maxLength: 10,
           keyboardType: TextInputType.phone,
+          //textInputAction: TextInputAction.done,
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
           ],
@@ -401,10 +411,10 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
     VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
 
     var customerId = verifyOtpModel.data?.custId;
-    var leadId = verifyOtpModel.data?.leadId;
-    if(leadId == "" || leadId == null){
-      leadId = await MySharedPreferences.getLeadId();
-    }
+    //var leadId = verifyOtpModel.data?.leadId;
+    //if(leadId == "" || leadId == null){
+     var leadId = await MySharedPreferences.getLeadId();
+   // }
 
       referenceParamModel.custId = customerId;
       referenceParamModel.leadId = leadId;

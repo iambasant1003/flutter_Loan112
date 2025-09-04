@@ -5,11 +5,13 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
+import 'Utils/FirebaseNotificationService.dart';
 import 'di/di_locator.dart';
 import 'main.dart';
 
 
 // Handle messages in background
+
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -21,6 +23,7 @@ Future<void> mainCommon(String env) async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
+
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   // Enable Crashlytics in debug mode for testing
   await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
@@ -28,10 +31,12 @@ Future<void> mainCommon(String env) async{
   // Catch uncaught errors
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
 
+  //await AppsFlyerServiceLoan112().initSdk();
+
   // setup DI
   setupLocator();
 
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   //SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: ColorConstant.appThemeColor));
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     systemNavigationBarColor: Colors.blue, // navigation bar color
@@ -39,4 +44,9 @@ Future<void> mainCommon(String env) async{
   ));
   runApp(MyApp(environment: env));
 }
+
+
+
+//In ios Release.xcconfig update that target folder
+//lib/main_dev.dart
 

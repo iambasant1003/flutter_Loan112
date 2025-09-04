@@ -30,18 +30,22 @@ class Data {
   String? leadStatus;
   String? leadId;
   bool? credauLoanOfferPage;
+  int? isCustomerWithin90Days;
 
   Data(
       {this.leadStatusId,
         this.leadStatus,
         this.leadId,
-        this.credauLoanOfferPage});
+        this.credauLoanOfferPage,
+        this.isCustomerWithin90Days
+      });
 
   Data.fromJson(Map<String, dynamic> json) {
     leadStatusId = json['leadStatusId'];
     leadStatus = json['leadStatus'];
     leadId = json['leadId'];
     credauLoanOfferPage = json['credauLoanOfferPage'];
+    isCustomerWithin90Days = json['isCustomerWithin90Days'];
   }
 
   Map<String, dynamic> toJson() {
@@ -50,6 +54,7 @@ class Data {
     data['leadStatus'] = this.leadStatus;
     data['leadId'] = this.leadId;
     data['credauLoanOfferPage'] = this.credauLoanOfferPage;
+    data['isCustomerWithin90Days'] = this.isCustomerWithin90Days;
     return data;
   }
 }

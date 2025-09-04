@@ -67,7 +67,7 @@ class _PaymentOptionScreen extends State<PaymentOptionScreen> {
         ),
         customLeading: Builder(
           builder: (context) => Padding(
-            padding: const EdgeInsets.only(left: 8.0),
+            padding: const EdgeInsets.only(left:0.0),
             child: InkWell(
               onTap: () {
                 context.pop();
@@ -146,11 +146,11 @@ class _PaymentOptionScreen extends State<PaymentOptionScreen> {
             );
           } else if (state is CheckRazorPayPaymentStatusSuccess) {
             EasyLoading.dismiss();
-            openSnackBar(
-              context,
-              state.razorPayCheckPaymentStatusModel.message!,
-              backGroundColor: ColorConstant.appThemeColor,
-            );
+            // openSnackBar(
+            //   context,
+            //   state.razorPayCheckPaymentStatusModel.message!,
+            //   backGroundColor: ColorConstant.appThemeColor,
+            // );
             context.push(AppRouterName.paymentStatusPage);
           } else if (state is CheckRazorPayPaymentStatusFailed) {
             EasyLoading.dismiss();
@@ -161,11 +161,11 @@ class _PaymentOptionScreen extends State<PaymentOptionScreen> {
             );
           } else if (state is CashFreePaymentStatusSuccess) {
             EasyLoading.dismiss();
-            openSnackBar(
-              context,
-              state.cashFreePaymentResponseModel.message!,
-              backGroundColor: ColorConstant.appThemeColor,
-            );
+            // openSnackBar(
+            //   context,
+            //   state.cashFreePaymentResponseModel.message!,
+            //   backGroundColor: ColorConstant.appThemeColor,
+            // );
             context.push(AppRouterName.paymentStatusPage);
           } else if (state is CashFreePaymentStatusFailed) {
             EasyLoading.dismiss();
@@ -194,7 +194,7 @@ class _PaymentOptionScreen extends State<PaymentOptionScreen> {
                 ),
                 SizedBox(height: 12.0),
                 Text(
-                  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since.",
+                  "We are processing your loan payment. Please review the details below and confirm to proceed. Your payment will be securely processed, and you will receive a confirmation once the transaction is complete.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontWeight: FontConstants.w600,

@@ -143,8 +143,7 @@ class _EligibilityStatus extends State<EligibilityStatus>{
                       if(widget.createLeadModel.statusCode == 402){
                         context.push(AppRouterName.dashboardPage);
                       }else{
-                        context.pop();
-                        getCustomerDetailsApiCall();
+                        context.replace(AppRouterName.bankStatement);
                       }
                     },
                     text: "Ok",

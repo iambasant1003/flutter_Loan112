@@ -20,7 +20,9 @@ import 'package:loan112_app/Widget/common_textField.dart';
 import 'package:widgets_easier/widgets_easier.dart';
 import '../../../../../Constant/ColorConst/ColorConstant.dart';
 import '../../../../../Constant/ImageConstant/ImageConstants.dart';
+import '../../../../../Cubit/UploadBankStatementStatusCubit.dart';
 import '../../../../../Model/VerifyOTPModel.dart';
+import '../../../../../Routes/app_router_name.dart';
 import '../../../../../Utils/MysharePrefenceClass.dart';
 import '../../../../../Widget/app_bar.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
@@ -35,7 +37,6 @@ class FetchOfflineBankStatement extends StatefulWidget{
 }
 
 class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
-
 
   List<String> bankStatementInstruction = [
     "Maximum 2 MB file size allowed.",
@@ -53,6 +54,7 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
   String? fileName;
 
   final TextEditingController _passwordController = TextEditingController();
+
 
   Future<void> _pickPdf() async {
     setState(() {
@@ -119,6 +121,14 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
   }
 
 
+
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<UploadBankStatementStatusCubit>().hideSuccess();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<LoanApplicationCubit,LoanApplicationState>(
@@ -130,13 +140,13 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
             EasyLoading.show(status: "Please wait...");
           } else if (state is UploadBankStatementSuccess) {
             EasyLoading.dismiss();
-            openSnackBar(
-              context,
-              state.uploadBankStatementModel.message ?? "Success",
-              backGroundColor: ColorConstant.appThemeColor,
-            );
-            context.pop();
-            context.pop();
+            context.read<UploadBankStatementStatusCubit>().showSuccess();
+            Future.delayed(const Duration(seconds: 1), () {
+              context.replace(
+                AppRouterName.bankStatementAnalyzer,
+                extra: state.uploadBankStatementModel.data?.timerVal,
+              );
+            });
           } else if (state is UploadBankStatementFailed) {
             EasyLoading.dismiss();
             DebugPrint.prt("Upload Bank Statement Failed");
@@ -158,14 +168,23 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Loan112AppBar(
-                  customLeading: InkWell(
-                    onTap: () {
-                      context.pop();
-                    },
-                    child: Icon(
-                      Icons.arrow_back_ios,
-                      color: ColorConstant.blackTextColor,
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 0.0),
+                  child: Loan112AppBar(
+                    customLeading: InkWell(
+                      onTap: () {
+                        context.pop();
+                      },
+                      child: Icon(
+                        Icons.arrow_back_ios,
+                        color: ColorConstant.blackTextColor,
+                      ),
+                    ),
+                    leadingSpacing: 30,
+                    title: Image.asset(
+                      ImageConstants.loan112AppNameIcon,
+                      height: 76,
+                      width: 76,
                     ),
                   ),
                 ),
@@ -270,6 +289,7 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
                                                 fileName = "";
                                                 fileSize = "";
                                                 pdfBytes = null;
+                                                needsPassword = false;
                                               });
                                             },
                                             child: Image.asset(ImageConstants.crossActionIcon,height: 24,width: 24),
@@ -333,10 +353,10 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
                                             VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
 
                                             var customerId = verifyOtpModel.data?.custId;
-                                            var leadId = verifyOtpModel.data?.leadId;
-                                            if(leadId == "" || leadId == null){
-                                              leadId = await MySharedPreferences.getLeadId();
-                                            }
+                                            //var leadId = verifyOtpModel.data?.leadId;
+                                           // if(leadId == "" || leadId == null){
+                                            var  leadId = await MySharedPreferences.getLeadId();
+                                           // }
 
                                             uploadSalarySlipNJS(
                                                 custId: customerId!,
@@ -354,8 +374,8 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
                                       },
                                       child:  Text(
                                         (fileNamePath != null && fileNamePath != "")?
-                                        "Upload files":
-                                        'Select files',
+                                        "Upload file":
+                                        'Select file',
                                         style: TextStyle(fontSize: 14),
                                       ),
                                     ),
@@ -403,6 +423,63 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
                             );
                           },
                         ),
+                        BlocBuilder<UploadBankStatementStatusCubit, bool>(
+                          builder: (context, isUploaded) {
+                            if (!isUploaded) {
+                              return const SizedBox.shrink(); // return empty if false
+                            }
+
+                            return Column(
+                              children: [
+                                SizedBox(
+                                  height: 35.0,
+                                ),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 12.0,
+                                      vertical: 12.0
+                                  ),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.all(Radius.circular(FontConstants.horizontalPadding)),
+                                      border: Border.all(
+                                          color: ColorConstant.textFieldBorderColor,
+                                          width: 1
+                                      )
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Image.asset(ImageConstants.bankStatementUploadSuccess,width: 80,height: 80),
+                                      Column(
+                                        children: [
+                                          Text(
+                                            "Congratulations!",
+                                            style: TextStyle(
+                                                fontSize: FontConstants.f18,
+                                                fontFamily: FontConstants.fontFamily,
+                                                fontWeight: FontConstants.w800,
+                                                color: ColorConstant.blackTextColor
+                                            ),
+                                          ),
+                                          Text(
+                                            "File uploaded successfully",
+                                            style: TextStyle(
+                                                fontWeight: FontConstants.w500,
+                                                fontFamily: FontConstants.fontFamily,
+                                                fontSize: FontConstants.f14,
+                                                color: ColorConstant.greyTextColor
+                                            ),
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -414,9 +491,6 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
       ),
     );
   }
-
-
-
 
   Future<void> uploadSalarySlipNJS({
     required String custId,
@@ -484,8 +558,5 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
     context.read<LoanApplicationCubit>().uploadBankStatementApiCall(formData);
 
   }
-
-
-
 }
 

@@ -11,6 +11,7 @@ import 'package:loan112_app/Widget/app_bar.dart';
 import '../../Constant/ColorConst/ColorConstant.dart';
 import '../../Constant/ImageConstant/ImageConstants.dart';
 import '../../Model/SendPhpOTPModel.dart';
+import '../../Model/VerifyOTPModel.dart';
 import '../../Utils/MysharePrefenceClass.dart';
 import 'loan_list_page.dart';
 
@@ -35,10 +36,10 @@ class _RepaymentPage extends State<RepaymentPage>{
   }
 
   getLoanHistory() async{
-    var otpModel = await MySharedPreferences.getPhpOTPModel();
-    SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
+    var otpModel = await MySharedPreferences.getUserSessionDataNode();
+    VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
     context.read<LoanApplicationCubit>().getLoanHistoryApiCall({
-      "cust_profile_id": sendPhpOTPModel.data?.custProfileId
+      "cust_profile_id": verifyOtpModel.data?.custId,
     });
   }
 
@@ -54,7 +55,7 @@ class _RepaymentPage extends State<RepaymentPage>{
           ),
           customLeading: Builder(
             builder: (context) => Padding(
-              padding: const EdgeInsets.only(left: 8.0),
+              padding: const EdgeInsets.only(left: 0.0),
               child: InkWell(
                 onTap: () {
                   context.pop();

@@ -10,13 +10,16 @@ import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
+import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Widget/common_screen_background.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:widgets_easier/widgets_easier.dart';
 import '../../../../Constant/ConstText/ConstText.dart';
 import '../../../../Constant/FontConstant/FontConstant.dart';
 import '../../../../Constant/ImageConstant/ImageConstants.dart';
+import '../../../../Cubit/dashboard_cubit/DashboardCubit.dart';
 import '../../../../Model/GetUtilityDocTypeModel.dart';
+import '../../../../Model/SendPhpOTPModel.dart' hide Data;
 import '../../../../Model/VerifyOTPModel.dart' hide Data;
 import '../../../../Utils/Debugprint.dart';
 import '../../../../Utils/MysharePrefenceClass.dart';
@@ -125,13 +128,29 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
   }
 
 
+
+  getCustomerDetailsApiCall() async{
+    context.read<DashboardCubit>().callDashBoardApi();
+    var nodeOtpModel = await MySharedPreferences.getUserSessionDataNode();
+    VerifyOTPModel verifyOTPModel = VerifyOTPModel.fromJson(jsonDecode(nodeOtpModel));
+    var otpModel = await MySharedPreferences.getPhpOTPModel();
+    SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
+    context.read<LoanApplicationCubit>().getCustomerDetailsApiCall({
+      "cust_profile_id": sendPhpOTPModel.data?.custProfileId
+    });
+    context.read<LoanApplicationCubit>().getLeadIdApiCall({
+      "custId": verifyOTPModel.data?.custId
+    });
+  }
+
   void getUtilityBillDoc() async{
     var otpModel = await MySharedPreferences.getUserSessionDataNode();
     VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
-    var leadId = verifyOtpModel.data?.leadId;
-    if(leadId == "" || leadId == null){
-      leadId = await MySharedPreferences.getLeadId();
-    }
+   // var leadId = verifyOtpModel.data?.leadId;
+    //if(leadId == "" || leadId == null){
+     var leadId = await MySharedPreferences.getLeadId();
+     DebugPrint.prt("Lead Id Utility Bill $leadId");
+    //}
     context.read<LoanApplicationCubit>().getUtilityTypeDocApiCall({"leadId":leadId});
   }
 
@@ -149,31 +168,36 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
           else if (state is GetUtilityDocTypeLoaded) {
             setState(() {
               getUtilityDocTypeModel = state.getUtilityDocTypeModel;
-              if (selectedDocument != null && getUtilityDocTypeModel?.data != null) {
+              // Filter out any data where isUploaded is false
+              if (state.getUtilityDocTypeModel.data != null) {
+                 filteredUtilityBillData = GetUtilityDocTypeModel(
+                  data: state.getUtilityDocTypeModel.data!
+                      .where((d) => d.isUploaded == false)
+                      .toList(),
+                );
+              }
+
+
+              if (selectedDocument != null && filteredUtilityBillData?.data != null) {
                 Data? match;
-                for (final d in getUtilityDocTypeModel!.data!) {
-                  if (d.docsId == selectedDocument!.docsId) { // replace d.id with your unique field
+                for (final d in filteredUtilityBillData!.data!) {
+                  if (d.docsId == selectedDocument!.docsId) {
                     match = d;
                     break;
                   }
                 }
-                selectedDocument = match; // becomes null if not found
-              }
-              else {
+                selectedDocument = match; // null if not found
+              } else {
                 selectedDocument = null;
               }
             });
+            DebugPrint.prt("Filtered Bill ${filteredUtilityBillData?.data?.length}");
             DebugPrint.prt("Data Doc Length ${getUtilityDocTypeModel?.data?.length}");
-            for(var i =0;i<state.getUtilityDocTypeModel.data!.length;i++){
-              if((state.getUtilityDocTypeModel.data![i].isUploaded ?? false)){
-                count = count+1;
-              }
-            }
-            DebugPrint.prt("Count In Success $count");
-            if(count >=2){
+            if((int.parse((getUtilityDocTypeModel?.data!.length ?? 0).toString())
+                -int.parse((filteredUtilityBillData?.data!.length ?? 0).toString())) >=2){
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (context.mounted) {
-                  context.pop();
+                  context.replace(AppRouterName.addReference);
                 }
               });
             }
@@ -200,12 +224,8 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
                   fileSize = "";
                   pdfBytes = null;
                   selectedDocument = null;
+                  needsPassword = false;
                 });
-                openSnackBar(
-                  context,
-                  state.uploadUtilityDocTypeModel.message ?? "",
-                  backGroundColor: ColorConstant.appThemeColor,
-                );
                 getUtilityBillDoc();
               }
             });
@@ -228,8 +248,9 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
                   Loan112AppBar(
                     customLeading: InkWell(
                       child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
-                      onTap: (){
+                      onTap: () async{
                         context.pop();
+                        await getCustomerDetailsApiCall();
                       },
                     ),
                   ),
@@ -291,10 +312,11 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
 
 
   GetUtilityDocTypeModel? getUtilityDocTypeModel;
+  GetUtilityDocTypeModel? filteredUtilityBillData;
   Data? selectedDocument;
 
   Widget chooseDocumentButton(BuildContext context) {
-    if (getUtilityDocTypeModel?.data != null) {
+    if (filteredUtilityBillData?.data != null) {
       return DropdownButtonHideUnderline(
         child: DropdownButton2<Data>(
           isExpanded: true,
@@ -307,7 +329,7 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
               fontFamily: FontConstants.fontFamily,
             ),
           ),
-          items: getUtilityDocTypeModel!.data!
+          items: filteredUtilityBillData!.data!
               .map((item) => DropdownMenuItem<Data>(
             value: item,
             child: Text(
@@ -430,6 +452,7 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
                       fileName = "";
                       fileSize = "";
                       pdfBytes = null;
+                      needsPassword = false;
                     });
                   },
                   child: Image.asset(ImageConstants.crossActionIcon,height: 24,width: 24),
@@ -497,8 +520,8 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
                   },
                   child: Text(
                     (fileNamePath != null && fileNamePath != "")?
-                    "Upload files":
-                    'Select files',
+                    "Upload file":
+                    'Select file',
                     style: TextStyle(fontSize: 14),
                   ),
                 )
@@ -557,10 +580,10 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
       VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
 
       var customerId = verifyOtpModel.data?.custId;
-      var leadId = verifyOtpModel.data?.leadId;
-      if(leadId == "" || leadId == null){
-        leadId = await MySharedPreferences.getLeadId();
-      }
+      //var leadId = verifyOtpModel.data?.leadId;
+      //if(leadId == "" || leadId == null){
+       var leadId = await MySharedPreferences.getLeadId();
+     // }
 
       final formData = FormData();
 

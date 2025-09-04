@@ -17,7 +17,9 @@ import 'package:loan112_app/Widget/common_button.dart';
 import 'package:loan112_app/Widget/common_textField.dart';
 import '../../../../Constant/ColorConst/ColorConstant.dart';
 import '../../../../Constant/FontConstant/FontConstant.dart';
+import '../../../../Cubit/dashboard_cubit/DashboardCubit.dart';
 import '../../../../Model/BankAccountTypeModel.dart';
+import '../../../../Model/SendPhpOTPModel.dart';
 import '../../../../Model/VerifyOTPModel.dart';
 import '../../../../ParamModel/VerifyIfscParamModel.dart';
 import '../../../../Utils/MysharePrefenceClass.dart';
@@ -67,6 +69,16 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
          ifscCode.text = customerDetails.bankAccountIfsc ?? "";
        });
     }
+  }
+
+
+  getCustomerDetailsApiCall() async{
+    context.read<DashboardCubit>().callDashBoardApi();
+    var otpModel = await MySharedPreferences.getPhpOTPModel();
+    SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
+    context.read<LoanApplicationCubit>().getCustomerDetailsApiCall({
+      "cust_profile_id": sendPhpOTPModel.data?.custProfileId
+    });
   }
 
 
@@ -154,8 +166,9 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
                    Loan112AppBar(
                      customLeading: InkWell(
                        child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
-                       onTap: (){
+                       onTap: () async{
                          context.pop();
+                         await getCustomerDetailsApiCall();
                        },
                      ),
                    ),
@@ -238,13 +251,17 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
                                height: 6.0,
                              ),
                              CommonTextField(
-                                 controller: bankAccount,
-                                 hintText: "Enter your Bank A/C No*",
-                                 keyboardType: TextInputType.number,
-                                 obscureText: true,
-                                 validator: (value){
-                                   return validateBankAccount(value);
-                                 },
+                               controller: bankAccount,
+                               hintText: "Enter your Bank A/C No*",
+                               keyboardType: TextInputType.number,
+                               obscureText: true,
+                               maxLength: 18,
+                               inputFormatters: [
+                                 FilteringTextInputFormatter.digitsOnly, // only allows 0-9
+                               ],
+                               validator: (value) {
+                                 return validateBankAccount(value);
+                               },
                              ),
                              SizedBox(
                                height: 12,
@@ -265,6 +282,10 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
                                  controller: confirmBankAccount,
                                  hintText: "Re-enter your Bank A/C No.",
                                  keyboardType: TextInputType.number,
+                                 maxLength: 18,
+                               inputFormatters: [
+                                 FilteringTextInputFormatter.digitsOnly, // only allows 0-9
+                               ],
                                  validator: (value){
                                    if(value?.trim() != bankAccount.text.trim()){
                                      return "Account numbers do not match";
@@ -309,7 +330,10 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
                              SizedBox(
                                height: 6.0,
                              ),
-                             bankAccountType(context)
+                             bankAccountType(context),
+                             SizedBox(
+                               height: 10.0,
+                             )
                            ],
                          ),
                        ),
@@ -335,18 +359,17 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
                 child: Loan112Button(
                     text: "Submit",
                     onPressed: () async{
-                      //context.push(AppRouterName.loanApplicationSubmit);
-                      //if(formKey.currentState!.validate()){
+                      if(formKey.currentState!.validate()){
 
                       showBankVerificationBottomSheet(
                         context,
                         onYesTap: () async{
                           var otpModel = await MySharedPreferences.getUserSessionDataNode();
                           VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
-                          var leadId = verifyOtpModel.data?.leadId ?? "";
-                          if (leadId == "") {
-                            leadId = await MySharedPreferences.getLeadId();
-                          }
+                         // var leadId = verifyOtpModel.data?.leadId ?? "";
+                          //if (leadId == "") {
+                           var leadId = await MySharedPreferences.getLeadId();
+                          //}
 
                           UpdateBankDetailsParamModel updateBankDetailsData =
                           UpdateBankDetailsParamModel(
@@ -365,7 +388,7 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
                           Navigator.pop(context);
                         },
                       );
-                      //}
+                      }
                     }
                 ),
               ),
@@ -381,7 +404,7 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
 
 
   Widget bankAccountType(BuildContext context){
-   return FormField<String>(
+    return FormField<String>(
       validator: (value) {
         if (selectedBankType == null) {
           return 'Please select your bank account type.';
@@ -467,6 +490,8 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
       },
     );
   }
+
+
 
 
   Future<dynamic> showBankVerificationBottomSheet(BuildContext context,{required Future<void> Function() onYesTap,required Future<void> Function() onNoTap}) {

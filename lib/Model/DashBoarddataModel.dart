@@ -43,6 +43,7 @@ class Data {
   String? contactUsNumber;
   String? contactUsWhatsappNumber;
   String? contactUsEmail;
+  bool? isAccountDeleteVisibility;
 
   Data(
       {this.appBanners,
@@ -64,6 +65,7 @@ class Data {
         this.warningMessage,
         this.contactUsNumber,
         this.contactUsWhatsappNumber,
+        this.isAccountDeleteVisibility,
         this.contactUsEmail});
 
   Data.fromJson(Map<String, dynamic> json) {
@@ -98,6 +100,7 @@ class Data {
     contactUsNumber = json['contact_us_number'];
     contactUsWhatsappNumber = json['contact_us_whatsapp_number'];
     contactUsEmail = json['contact_us_email'];
+    isAccountDeleteVisibility = json['is_account_delete_visibility'];
   }
 
   Map<String, dynamic> toJson() {
@@ -130,6 +133,7 @@ class Data {
     data['contact_us_number'] = this.contactUsNumber;
     data['contact_us_whatsapp_number'] = this.contactUsWhatsappNumber;
     data['contact_us_email'] = this.contactUsEmail;
+    data['is_account_delete_visibility'] = this.isAccountDeleteVisibility;
     return data;
   }
 }

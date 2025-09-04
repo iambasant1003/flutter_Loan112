@@ -64,6 +64,9 @@ class _DashBoardHome extends State<DashBoardHome> {
             context,
             state.dashBoardModel.message ?? "Unknown Error",
           );
+          if(state.dashBoardModel.status == 4){
+            context.replace(AppRouterName.sessionTimeOut);
+          }
         } else if (state is DeleteCustomerSuccess) {
           DebugPrint.prt("Delete Customer Success");
           EasyLoading.dismiss();
@@ -146,7 +149,7 @@ class _DashBoardHome extends State<DashBoardHome> {
                                 ),
                                 //This 2nd Positioned Contains Button
                                 Positioned(
-                                  bottom: -15,
+                                  bottom: -20,
                                   left: 80,
                                   right: 80,
                                   child: GestureDetector(
@@ -185,7 +188,7 @@ class _DashBoardHome extends State<DashBoardHome> {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 20.0),
+                            SizedBox(height: 10.0),
                             (dashBoarddataModel?.data?.activeLoanDetails !=
                                         null &&
                                     (dashBoarddataModel
@@ -203,7 +206,60 @@ class _DashBoardHome extends State<DashBoardHome> {
                                         ?.data!
                                         .activeLoanDetails,
                                   )
-                                : SizedBox.shrink(),
+                                : (dashBoarddataModel?.data?.showLoanHistoryBtnFlag == 1)?
+                                 Padding(
+                                   padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
+                                   child: Column(
+                                     children: [
+                                       SizedBox(
+                                         height: 20.0,
+                                       ),
+                                       InkWell(
+                                         onTap: (){
+                                           context.push(AppRouterName.repaymentPage);
+                                         },
+                                         child: Container(
+                                           decoration: BoxDecoration(
+                                             color: Colors.white,
+                                             borderRadius: BorderRadius.circular(40),
+                                             border: Border.all(
+                                               color: Colors.blue.shade100,
+                                             ),
+                                             boxShadow: [
+                                               BoxShadow(
+                                                 color: Colors.blue.shade50,
+                                                 blurRadius: 8,
+                                                 offset: Offset(0, 2),
+                                               )
+                                             ],
+                                           ),
+                                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                                           child: Row(
+                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                             children: [
+                                               Text(
+                                                   'Check Your Loan History',
+                                                   style: TextStyle(
+                                                       fontSize: FontConstants.f14,
+                                                       fontFamily: FontConstants.fontFamily,
+                                                       fontWeight: FontConstants.w700,
+                                                       color: ColorConstant.blackTextColor
+                                                   )
+                                               ),
+                                               Icon(
+                                                 Icons.arrow_forward,
+                                                 color: ColorConstant.blueTextColor,
+                                                 size: 20,
+                                               ),
+                                             ],
+                                           ),
+                                         ),
+                                       ),
+                                     ],
+                                   ),
+                                 ):
+                            SizedBox.shrink(),
+                            SizedBox(height: 20.0),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

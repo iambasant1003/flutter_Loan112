@@ -8,10 +8,13 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:loan112_app/BlocProvider/app_repository_provider.dart';
 import 'package:loan112_app/BlocProvider/bloc_provider.dart';
+import 'package:loan112_app/Utils/Debugprint.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'Constant/ColorConst/ColorConstant.dart';
 import 'Constant/ConstText/ConstText.dart';
 import 'Routes/app_router.dart';
 import 'Utils/AppConfig.dart';
+
 
 
 class MyApp extends StatefulWidget {
@@ -29,47 +32,65 @@ class MyAppState extends State<MyApp> {
 
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
     // Initialize your config class
     AppConfig.init(widget.environment);
     configLoading();
+    _getPackageName();
   }
 
 
 
 
+  Future<void> _getPackageName() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    DebugPrint.prt("Package Name IOS ${packageInfo.packageName}"); // 👈 Android: applicationId, iOS: bundleIdentifier
+  }
+
   @override
   Widget build(BuildContext context) {
-     return MultiRepositoryProvider(
-       providers: appRepositoryProviders,
-       child: MultiBlocProvider(
-         providers: appBlocProviders,
-         child: ScreenUtilInit(
-           designSize: const Size(414, 896),
-           minTextAdapt: true,
-           splitScreenMode: true,
-           builder: (context, child) {
-             return MaterialApp.router(
-               debugShowCheckedModeBanner: false,
-               title: ConstText.appName,
-               theme: ThemeData(
-                 useMaterial3: false,
-                 fontFamily: ConstText.fontType,
-                 primaryColor: ColorConstant.appThemeColor,
-                 scaffoldBackgroundColor: ColorConstant.whiteColor,
-                 appBarTheme: AppBarTheme(
-                   systemOverlayStyle: SystemUiOverlayStyle(
-                     statusBarColor: ColorConstant.appThemeColor,
-                   ),
-                 ),
-               ),
-               routerConfig: appRouter,
-               builder: EasyLoading.init(),
-             );
-           },
-         ),
-       ),
-     );
+    return MultiRepositoryProvider(
+      providers: appRepositoryProviders,
+      child: MultiBlocProvider(
+        providers: appBlocProviders,
+        child: ScreenUtilInit(
+          designSize: const Size(414, 896),
+          minTextAdapt: true,
+          splitScreenMode: true,
+          builder: (context, child) {
+            return GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                FocusScopeNode currentFocus = FocusScope.of(context);
+
+                if (!currentFocus.hasPrimaryFocus &&
+                    currentFocus.focusedChild != null) {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                }
+              },
+              child: MaterialApp.router(
+                debugShowCheckedModeBanner: false,
+                title: ConstText.appName,
+                theme: ThemeData(
+                  useMaterial3: false,
+                  fontFamily: ConstText.fontType,
+                  primaryColor: ColorConstant.appThemeColor,
+                  scaffoldBackgroundColor: ColorConstant.whiteColor,
+                  appBarTheme: AppBarTheme(
+                    systemOverlayStyle: SystemUiOverlayStyle(
+                      statusBarColor: ColorConstant.appThemeColor,
+                    ),
+                  ),
+                ),
+                routerConfig: appRouter,
+                builder: EasyLoading.init(),
+              ),
+            );
+          },
+        ),
+      ),
+    );
   }
 
 

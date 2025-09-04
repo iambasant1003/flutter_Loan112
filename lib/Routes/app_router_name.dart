@@ -29,6 +29,7 @@ class AppRouterName{
   static var loanApplicationPage = '/loanApplicationPage';
   static var checkEligibilityPage = '/checkEligibility';
   static var eligibilityStatus = '/eligibilityStatus';
+  static var eligibilityFailed = "/eligibilityFailed";
   static var bankStatement = '/bankStatement';
   static var onlineBankStatement = '/onlineBankStatement';
   static var onlineBankStatementMessage = '/onlineBankStatementMessage';
@@ -50,4 +51,7 @@ class AppRouterName{
   static var customerSupport = "/customerSupport";
   static var paymentStatusPage = "/paymentStatusPage";
   static var termsAndConditionWebview = "/termsAndConditionWebview";
+  static var bankStatementAnalyzer = "/bankStatementAnalyzer";
+  static var sessionTimeOut = "/sessionTimeout";
+  static var loanOfferFailed = "/loanOfferFailed";
 }

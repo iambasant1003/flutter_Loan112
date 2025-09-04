@@ -75,8 +75,6 @@ class _DashboardStatusPageStep extends State<DashboardStatusPageStep> {
            model = state.getCustomerDetailsModel;
             status = model!.data?.applicationStatus?.toJson() ?? {};
             currentStep = getCurrentStepDynamic(status!);
-
-
           }
           return  Column(
             children: List.generate(steps.length, (index) {
@@ -87,18 +85,16 @@ class _DashboardStatusPageStep extends State<DashboardStatusPageStep> {
               double widthFactor;
               if (stepStatus == 2) {
                 widthFactor = 1.0;
-              } else if (stepStatus == 1) {
-                widthFactor = 0.7;
               } else {
                 widthFactor = 0.6;
               }
 
               // Determine colors
-              Color bgColor = (stepStatus == 1 || stepStatus == 2)
+              Color bgColor = (stepStatus == 2)
                   ? Colors.blue.shade50
                   : Colors.grey.shade100;
 
-              Color textColor = (stepStatus == 1 || stepStatus == 2)
+              Color textColor = (stepStatus == 2)
                   ? Colors.black
                   : ColorConstant.greyTextColor;
 

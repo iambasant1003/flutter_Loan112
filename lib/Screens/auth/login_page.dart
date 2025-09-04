@@ -1,7 +1,7 @@
 
 
 import 'dart:convert';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+//import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,6 +33,7 @@ class _LogInPageState extends State<LogInPage> {
 
   TextEditingController mobileController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String mobileNumberToPass = "";
 
 
   @override
@@ -55,9 +56,8 @@ class _LogInPageState extends State<LogInPage> {
               } else if(state is AuthNodeSuccess){
                 DebugPrint.prt("Navigation Logic Called To OTP");
                 EasyLoading.dismiss();
-                context.push(AppRouterName.verifyOtp,extra: mobileController.text.trim()).then((val){
-                  mobileController = TextEditingController();
-                });
+                mobileController.clear();
+                context.push(AppRouterName.verifyOtp,extra: mobileNumberToPass);
               }else if(state is AuthError){
                 EasyLoading.dismiss();
                 openSnackBar(context, state.message);
@@ -139,12 +139,18 @@ class _LogInPageState extends State<LogInPage> {
                                             controller: mobileController,
                                             hintText: "Enter your Mobile number",
                                             maxLength: 10,
-                                            keyboardType: TextInputType.phone,
+                                            //keyboardType: TextInputType.phone,
+                                            //textInputAction: TextInputAction.done,
+                                            keyboardType: const TextInputType.numberWithOptions(decimal: false, signed: false),
+                                            textInputAction: TextInputAction.done,
                                             inputFormatters: [
                                               FilteringTextInputFormatter.digitsOnly,
                                             ],
                                             validator: (value) {
                                               return validateMobileNumber(value);
+                                            },
+                                            onEditingComplete: (){
+                                              mobileNumberToPass = mobileController.text.trim();
                                             },
                                             onChanged: (val) {
                                               print("Value is Changing");
@@ -167,6 +173,7 @@ class _LogInPageState extends State<LogInPage> {
                           child: Loan112Button(
                             onPressed: () {
                               if(_formKey.currentState!.validate()){
+                                mobileNumberToPass = mobileController.text.trim();
                                 final phone = mobileController.text.trim();
                                 if (phone.isNotEmpty) {
                                   DebugPrint.prt("LogIn Method Called $phone");

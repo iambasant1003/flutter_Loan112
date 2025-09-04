@@ -17,8 +17,10 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../../../Constant/ColorConst/ColorConstant.dart';
 import '../../../../Constant/FontConstant/FontConstant.dart';
 import '../../../../Constant/ImageConstant/ImageConstants.dart';
+import '../../../../Cubit/dashboard_cubit/DashboardCubit.dart';
 import '../../../../Cubit/loan_application_cubit/LoanApplicationCubit.dart';
 import '../../../../Model/SendPhpOTPModel.dart';
+import '../../../../Model/VerifyOTPModel.dart';
 import '../../../../Utils/MysharePrefenceClass.dart';
 import '../../../../Widget/app_bar.dart';
 import 'package:image/image.dart' as img;
@@ -37,10 +39,16 @@ class _SelfieCameraPageState extends State<SelfieCameraPage> with WidgetsBinding
 
   File? imagePath;
   getCustomerDetailsApiCall() async{
+    context.read<DashboardCubit>().callDashBoardApi();
+    var nodeOtpModel = await MySharedPreferences.getUserSessionDataNode();
+    VerifyOTPModel verifyOTPModel = VerifyOTPModel.fromJson(jsonDecode(nodeOtpModel));
     var otpModel = await MySharedPreferences.getPhpOTPModel();
     SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
     context.read<LoanApplicationCubit>().getCustomerDetailsApiCall({
       "cust_profile_id": sendPhpOTPModel.data?.custProfileId
+    });
+    context.read<LoanApplicationCubit>().getLeadIdApiCall({
+      "custId": verifyOTPModel.data?.custId
     });
   }
 
@@ -63,9 +71,9 @@ class _SelfieCameraPageState extends State<SelfieCameraPage> with WidgetsBinding
                   Loan112AppBar(
                     customLeading: InkWell(
                       child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
-                      onTap: (){
+                      onTap: () async{
                         context.pop();
-                        getCustomerDetailsApiCall();
+                        await getCustomerDetailsApiCall();
                       },
                     ),
                   ),

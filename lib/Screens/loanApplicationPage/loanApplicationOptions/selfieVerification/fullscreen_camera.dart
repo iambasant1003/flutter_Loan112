@@ -120,26 +120,31 @@ class _FullScreenCameraPageState extends State<FullScreenCameraPage> {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Column(
-        children: [
-          CameraPreview(_controller!),
-          SizedBox(
-            height: 15,
-          ),
-          Center(
-            child: GestureDetector(
-              onTap: _takePicture,
-              child: Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 4),
+      body: SafeArea(
+        child: Column(
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.8,
+              child: CameraPreview(_controller!),
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            Center(
+              child: GestureDetector(
+                onTap: _takePicture,
+                child: Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 4),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

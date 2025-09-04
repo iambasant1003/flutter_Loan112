@@ -12,18 +12,13 @@ class CommonTextField extends StatelessWidget {
   final VoidCallback? onEditingComplete;
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
-
-  /// Fully customizable trailing widget
   final Widget? trailingWidget;
-
-  /// Optional click callback if you want the trailingWidget to be wrapped in a clickable
   final VoidCallback? trailingClick;
-
-  /// Optional readOnly flag for fields like DOB
   final bool readOnly;
-
-  /// Optional obscureText flag for password fields
   final bool obscureText;
+  final VoidCallback? onTap;
+  final TextInputAction? textInputAction;
+  final bool? enableInteractiveSelection; // 👈 NEW
 
   const CommonTextField({
     Key? key,
@@ -39,7 +34,10 @@ class CommonTextField extends StatelessWidget {
     this.trailingWidget,
     this.trailingClick,
     this.readOnly = false,
-    this.obscureText = false, // 👈 added with default false
+    this.obscureText = false,
+    this.onTap,
+    this.textInputAction,
+    this.enableInteractiveSelection, // 👈 NEW
   }) : super(key: key);
 
   @override
@@ -62,14 +60,17 @@ class CommonTextField extends StatelessWidget {
       onChanged: onChanged,
       onEditingComplete: onEditingComplete,
       keyboardType: keyboardType,
+      textInputAction: textInputAction,
       inputFormatters: inputFormatters,
       readOnly: readOnly,
-      obscureText: obscureText, // 👈 use the new property
+      obscureText: obscureText,
+      onTap: onTap,
+      enableInteractiveSelection: enableInteractiveSelection, // 👈 apply here
       style: const TextStyle(
         fontFamily: 'Manrope',
         fontWeight: FontWeight.w500,
         fontSize: 14,
-        height: 1.71,
+        height: 1.2,
         letterSpacing: 0,
       ),
       maxLength: maxLength,
@@ -82,26 +83,29 @@ class CommonTextField extends StatelessWidget {
               fontFamily: 'Manrope',
               fontWeight: FontWeight.w500,
               fontSize: 14,
-              height: 1.71,
+              height: 1.43,
               letterSpacing: 0,
               color: Color(0xFF98A2B3),
             ),
         contentPadding: const EdgeInsets.symmetric(
-          vertical: 12,
-          horizontal: 12,
+          horizontal: 14,
+          vertical: 14,
         ),
+        constraints: const BoxConstraints(minHeight: 44),
         enabledBorder: border(normalBorderColor),
         focusedBorder: border(normalBorderColor),
         errorBorder: border(errorBorderColor),
         focusedErrorBorder: border(errorBorderColor),
+        errorStyle: const TextStyle(
+          fontSize: 12,
+          height: 1.2,
+          color: errorBorderColor,
+        ),
         suffixIcon: trailingWidget != null
             ? GestureDetector(
           onTap: trailingClick ?? () {},
           behavior: HitTestBehavior.translucent,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: trailingWidget,
-          ),
+          child: trailingWidget,
         )
             : null,
       ),

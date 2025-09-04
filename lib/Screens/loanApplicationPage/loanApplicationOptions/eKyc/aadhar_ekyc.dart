@@ -1,5 +1,6 @@
 
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -17,6 +18,8 @@ import 'package:loan112_app/Widget/common_button.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../../../Constant/ConstText/ConstText.dart';
 import '../../../../Constant/ImageConstant/ImageConstants.dart';
+import '../../../../Cubit/dashboard_cubit/DashboardCubit.dart';
+import '../../../../Model/SendPhpOTPModel.dart';
 import '../../../../Utils/MysharePrefenceClass.dart';
 
 class AadharKycScreen extends StatefulWidget{
@@ -31,6 +34,20 @@ class _AadharKycScreen extends State<AadharKycScreen>{
   TextEditingController adarOTPController = TextEditingController();
   bool reInitiate = false;
 
+
+  getCustomerDetailsApiCall() async{
+    context.read<DashboardCubit>().callDashBoardApi();
+    var nodeOtpModel = await MySharedPreferences.getUserSessionDataNode();
+    VerifyOTPModel verifyOTPModel = VerifyOTPModel.fromJson(jsonDecode(nodeOtpModel));
+    var otpModel = await MySharedPreferences.getPhpOTPModel();
+    SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
+    context.read<LoanApplicationCubit>().getCustomerDetailsApiCall({
+      "cust_profile_id": sendPhpOTPModel.data?.custProfileId
+    });
+    context.read<LoanApplicationCubit>().getLeadIdApiCall({
+      "custId": verifyOTPModel.data?.custId
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,11 +67,12 @@ class _AadharKycScreen extends State<AadharKycScreen>{
               context.push(AppRouterName.customerKYCWebview, extra: state.customerKycModel.data?.url).then((val) async {
                 var otpModel = await MySharedPreferences.getUserSessionDataNode();
                 VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
-                var leadId = verifyOtpModel.data?.leadId ?? "";
-                if (leadId == "") {
-                  leadId = await MySharedPreferences.getLeadId();
-                }
+                //var leadId = verifyOtpModel.data?.leadId ?? "";
+                //if (leadId == "") {
+                 var leadId = await MySharedPreferences.getLeadId();
+               // }
 
+                await Future.delayed(Duration(milliseconds: 300));
                 if (!context.mounted) return;
                 context.read<LoanApplicationCubit>().customerKycVerificationApiCall({
                   "custId": verifyOtpModel.data?.custId,
@@ -73,11 +91,13 @@ class _AadharKycScreen extends State<AadharKycScreen>{
           }
 
           else if (state is CustomerKYCVerificationSuccess) {
-            EasyLoading.dismiss();
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!context.mounted) return;
               //context.pop();
-              context.replace(AppRouterName.eKycMessageScreen);
+              if(state.ekycVerificationModel.data?.ekycVerifiedFlag == 1){
+                EasyLoading.dismiss();
+                context.replace(AppRouterName.eKycMessageScreen);
+              }
             });
           }
 
@@ -108,8 +128,9 @@ class _AadharKycScreen extends State<AadharKycScreen>{
                     Loan112AppBar(
                       customLeading: InkWell(
                         child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
-                        onTap: (){
+                        onTap: () async{
                           context.pop();
+                          await getCustomerDetailsApiCall();
                         },
                       ),
                     ),
@@ -223,33 +244,141 @@ class _AadharKycScreen extends State<AadharKycScreen>{
                               Center(
                                 child: Image.asset(ImageConstants.digiLockerIcon,width: 150,height: 36),
                               ),
-                              SizedBox(
-                                height: 45,
-                              )
                             ],
                           ),
+                        ),
+                      ),
+                    ),
+                    SafeArea(
+                      child:  SizedBox(
+                        height: 134,
+                        child: Column(
+                          children: [
+                            BottomDashLine(),
+                            SizedBox(
+                              height: 24.0,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: FontConstants.horizontalPadding,
+                              ),
+                              child: Column(
+                                children: [
+                                  Loan112Button(
+                                    onPressed: () async {
+                                      if (adarOTPController.text.trim() != "" && adarOTPController.text.trim().length == 4) {
+                                        var otpModel = await MySharedPreferences.getUserSessionDataNode();
+                                        VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
+                                        //var leadId = verifyOtpModel.data?.leadId ?? "";
+                                        //if (leadId == "") {
+                                         var leadId = await MySharedPreferences.getLeadId();
+                                       // }
+
+                                        context.read<LoanApplicationCubit>().customerKycApiCall({
+                                          "custId": verifyOtpModel.data?.custId,
+                                          "leadId": leadId,
+                                          "requestSource": Platform.isIOS?
+                                              ConstText.requestSourceIOS:
+                                          ConstText.requestSource,
+                                          "aadharNo": adarOTPController.text.trim(),
+                                          "type": 1
+                                        });
+                                      } else {
+                                        openSnackBar(context, "Please Enter last 4 digit of your aadhar number");
+                                      }
+                                    },
+                                    text: reInitiate ? "Reinitiate" : "Get Started",
+                                  ),
+                                  /*
+                  Loan112Button(
+                      onPressed: () async{
+                        if(adarOTPController.text.trim() != "" && adarOTPController.text.trim().length == 4){
+                          var otpModel = await MySharedPreferences.getUserSessionDataNode();
+                          VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
+                          var leadId = verifyOtpModel.data?.leadId ?? "";
+                          if(leadId == ""){
+                            leadId =  await MySharedPreferences.getLeadId();
+                          }
+                          context.read<LoanApplicationCubit>().customerKycApiCall({
+                              "custId":verifyOtpModel.data?.custId,
+                              "leadId": leadId,
+                              "requestSource": Platform.isIOS?ConstText.requestSourceIOS:
+                              ConstText.requestSource,,
+                              "aadharNo":adarOTPController.text.trim(),
+                              "type":1
+                          });
+                        }else{
+                          openSnackBar(context, "Please Enter last 4 digit of your aadhar number");
+                        }
+                      },
+                      text: "Get Started"
+                  ),
+                   */
+                                  SizedBox(
+                                    height: 24.0,
+                                  ),
+                                  Center(
+                                    child: InkWell(
+                                      onTap: (){
+                                        context.push(AppRouterName.customerSupport);
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "Need  Help..?",
+                                            style: TextStyle(
+                                                color: Color(0xff2B3C74),
+                                                fontSize: FontConstants.f14,
+                                                fontWeight: FontConstants.w600,
+                                                fontFamily: FontConstants.fontFamily
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 10.0,
+                                          ),
+                                          Text(
+                                            "contact us",
+                                            style: TextStyle(
+                                                color: Color(0xff000000),
+                                                fontSize: FontConstants.f14,
+                                                fontWeight: FontConstants.w600,
+                                                fontFamily: FontConstants.fontFamily
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 10.0,
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
                         ),
                       ),
                     )
                   ],
                 )
-            )
+            ),
           ],
         ),
       ),
+      /*
       bottomNavigationBar: SafeArea(
         child:  SizedBox(
-          height: 135,
+          height: 124,
           child: Column(
             children: [
               BottomDashLine(),
               SizedBox(
-                height: 8.0,
+                height: 24.0,
               ),
               Padding(
                 padding: EdgeInsets.symmetric(
                     horizontal: FontConstants.horizontalPadding,
-                    vertical: FontConstants.horizontalPadding
                 ),
                 child: Column(
                   children: [
@@ -289,7 +418,8 @@ class _AadharKycScreen extends State<AadharKycScreen>{
                           context.read<LoanApplicationCubit>().customerKycApiCall({
                               "custId":verifyOtpModel.data?.custId,
                               "leadId": leadId,
-                              "requestSource":ConstText.requestSource,
+                              "requestSource": Platform.isIOS?ConstText.requestSourceIOS:
+                              ConstText.requestSource,,
                               "aadharNo":adarOTPController.text.trim(),
                               "type":1
                           });
@@ -301,7 +431,7 @@ class _AadharKycScreen extends State<AadharKycScreen>{
                   ),
                    */
                     SizedBox(
-                      height: 23.0,
+                      height: 8.0,
                     ),
                     Center(
                       child: InkWell(
@@ -335,7 +465,10 @@ class _AadharKycScreen extends State<AadharKycScreen>{
                           ],
                         ),
                       ),
-                    )
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
                   ],
                 ),
               )
@@ -343,6 +476,8 @@ class _AadharKycScreen extends State<AadharKycScreen>{
           ),
         ),
       )
+
+       */
     );
   }
 

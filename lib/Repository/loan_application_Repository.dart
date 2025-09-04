@@ -21,8 +21,10 @@ import 'package:loan112_app/Services/http_client_php.dart';
 import '../Constant/ApiUrlConstant/ApiUrlConstant.dart';
 import '../Model/AddReferenceModel.dart';
 import '../Model/CheckBankStatementStatusModel.dart';
+import '../Model/GetLeadIdResponseModel.dart';
 import '../Model/UpdateBankAccountModel.dart';
 import '../Model/UploadOnlineBankStatementModel.dart';
+import '../Model/VerifyBankStatementModel.dart';
 import '../Services/ApiResponseStatus.dart';
 import '../Services/http_client.dart';
 import '../Utils/Debugprint.dart';
@@ -170,6 +172,34 @@ class LoanApplicationRepository {
     }
   }
 
+
+  Future<ApiResponse<GetLeadIdResponseModel>> getLeadIdFunction(Map<String,dynamic> dataObj) async{
+    try {
+      final response = await apiClass.post(getLeadId, dataObj, isHeader: true);
+      DebugPrint.prt("API Response Lead Id Data ${response.data}");
+
+      final Map<String, dynamic> responseData = response.data;
+
+      final int statusCode = responseData['statusCode'] ?? 500;
+      final ApiResponseStatus status = mapStatusCode(statusCode);
+
+      if (status == ApiResponseStatus.success) {
+        final data = GetLeadIdResponseModel.fromJson(responseData);
+        return ApiResponse.success(data);
+      } else {
+        final error = GetLeadIdResponseModel.fromJson(responseData);
+        DebugPrint.prt("Error Message ${error.message}, ${error.statusCode}");
+        return ApiResponse.error(status, error: error);
+      }
+    } catch (e) {
+      DebugPrint.prt("Exception in get Lead Id: $e");
+      final error = GetLeadIdResponseModel(
+        statusCode: 500,
+        message: ConstText.exceptionError,
+      );
+      return ApiResponse.error(ApiResponseStatus.serverError, error: error);
+    }
+  }
 
   Future<ApiResponse<CustomerKycModel>> customerKYCFunction(Map<String,dynamic> dataObj) async{
     try {
@@ -546,13 +576,12 @@ class LoanApplicationRepository {
     }
   }
 
-  Future<ApiResponse<CheckBankStatementStatusModel>> checkBankStatementStatusApiCallFunction({required String leadId,required String customerId}) async{
+  Future<ApiResponse<CheckBankStatementStatusModel>> checkBankStatementStatusApiCallFunction(Map<String,dynamic> dataObj) async{
     try {
-      final response = await apiClass.get("$checkBankStatementStatus?custId=$customerId&leadId=$leadId",isHeader: true);
+      final response = await apiClass.put(checkBankStatementStatus,dataObj,isHeader: true);
       DebugPrint.prt("API Response Check BankStatement Status ${response.data}");
 
       final Map<String, dynamic> responseData = response.data;
-
 
       final ApiResponseStatus status = mapApiResponseStatus(responseData);
 
@@ -578,13 +607,13 @@ class LoanApplicationRepository {
 
   Future<ApiResponse<GetLoanHistoryModel>> getLoanHistoryApiCallFunction(Map<String,dynamic> dataObj) async{
     try {
-      final response = await apiClassPhp.post(getLoanHistory,dataObj,isHeader: true);
+      final response = await apiClass.post(getLoanHistory,dataObj,isHeader: true);
       DebugPrint.prt("API Response Get Loan History ${response.data}");
 
       final Map<String, dynamic> responseData = response.data;
 
 
-      final ApiResponseStatus status = mapApiResponseStatusPhp(responseData);
+      final ApiResponseStatus status = mapApiResponseStatus(responseData);
 
       if (status == ApiResponseStatus.success) {
         DebugPrint.prt("Get Loan History Success Response Model $responseData}");
@@ -592,13 +621,13 @@ class LoanApplicationRepository {
         return ApiResponse.success(data);
       } else {
         final error = GetLoanHistoryModel.fromJson(responseData);
-        DebugPrint.prt("Get Loan History Type Error Message ${error.message}, ${error.status}");
+        DebugPrint.prt("Get Loan History Type Error Message ${error.message}, ${error.statusCode}");
         return ApiResponse.error(status, error: error);
       }
     } catch (e) {
       DebugPrint.prt("Exception in Get Loan History data : $e");
       final error = GetLoanHistoryModel(
-        status: 500,
+        statusCode: 500,
         message: ConstText.exceptionError,
       );
       return ApiResponse.error(ApiResponseStatus.serverError, error: error);
@@ -634,6 +663,34 @@ class LoanApplicationRepository {
     }
   }
 
+  Future<ApiResponse<VerifyBankStatementModel>> verifyBankStatementApiCallFunction(Map<String,dynamic> dataObj) async{
+    try {
+      final response = await apiClass.post(bankStatementVerification,dataObj,isHeader: true);
+      DebugPrint.prt("API Response verify Bank Statement ${response.data}");
+
+      final Map<String, dynamic> responseData = response.data;
+
+
+      final ApiResponseStatus status = mapApiResponseStatus(responseData);
+
+      if (status == ApiResponseStatus.success) {
+        DebugPrint.prt("verify Bank Statement Success Response Model $responseData}");
+        final data =VerifyBankStatementModel.fromJson(responseData);
+        return ApiResponse.success(data);
+      } else {
+        final error = VerifyBankStatementModel.fromJson(responseData);
+        DebugPrint.prt("verify Bank Statement Error Message ${error.message}, ${error.statusCode}");
+        return ApiResponse.error(status, error: error);
+      }
+    } catch (e) {
+      DebugPrint.prt("Exception in verify Bank Statement data : $e");
+      final error = VerifyBankStatementModel(
+        statusCode: 500,
+        message: ConstText.exceptionError,
+      );
+      return ApiResponse.error(ApiResponseStatus.serverError, error: error);
+    }
+  }
 
 }
 

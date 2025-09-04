@@ -29,6 +29,13 @@ String? validateDateOfBirth(String? value){
   return null;
 }
 
+String? validateSalaryDate(String? value){
+  if (value == null || value.isEmpty) {
+    return 'Please enter your date of birth';
+  }
+  return null;
+}
+
 String? validateIndianPinCode(String? value) {
   if (value == null || value.isEmpty) {
     return 'Please enter your PIN code';
@@ -134,15 +141,26 @@ String? validateBankAccount(String? value) {
 }
 
 
-Future<Position> getCurrentPosition() async {
+Future<Position> getCurrentPositionFast() async {
   LocationPermission permission = await Geolocator.checkPermission();
   if (permission == LocationPermission.denied) {
     permission = await Geolocator.requestPermission();
   }
 
+  // Try last known location first (instant if available)
+  Position? lastPosition = await Geolocator.getLastKnownPosition();
+
+  if (lastPosition != null) {
+    // Return immediately if we just need "good enough"
+    return lastPosition;
+  }
+
+  // Otherwise, fetch new position but with a lower timeout
   return await Geolocator.getCurrentPosition(
-    desiredAccuracy: LocationAccuracy.high,
+    desiredAccuracy: LocationAccuracy.medium, // Medium is much faster
+    timeLimit: const Duration(seconds: 5),
   );
 }
+
 
 

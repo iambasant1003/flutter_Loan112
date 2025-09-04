@@ -25,7 +25,6 @@ class UploadBankStatementModel {
     return data;
   }
 }
-
 class Data {
   int? fieldCount;
   int? affectedRows;
@@ -34,6 +33,7 @@ class Data {
   int? serverStatus;
   int? warningStatus;
   int? changedRows;
+  int? timerVal;
 
   Data(
       {this.fieldCount,
@@ -42,7 +42,8 @@ class Data {
         this.info,
         this.serverStatus,
         this.warningStatus,
-        this.changedRows});
+        this.changedRows,
+        this.timerVal});
 
   Data.fromJson(Map<String, dynamic> json) {
     fieldCount = json['fieldCount'];
@@ -52,6 +53,7 @@ class Data {
     serverStatus = json['serverStatus'];
     warningStatus = json['warningStatus'];
     changedRows = json['changedRows'];
+    timerVal = json['timerVal'];
   }
 
   Map<String, dynamic> toJson() {
@@ -63,6 +65,7 @@ class Data {
     data['serverStatus'] = this.serverStatus;
     data['warningStatus'] = this.warningStatus;
     data['changedRows'] = this.changedRows;
+    data['timerVal'] = this.timerVal;
     return data;
   }
 }

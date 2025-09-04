@@ -15,6 +15,7 @@ import 'package:loan112_app/Widget/common_button.dart';
 import '../../../../Constant/ColorConst/ColorConstant.dart';
 import '../../../../Constant/FontConstant/FontConstant.dart';
 import '../../../../Constant/ImageConstant/ImageConstants.dart';
+import '../../../../Cubit/dashboard_cubit/DashboardCubit.dart';
 import '../../../../Cubit/loan_application_cubit/LoanApplicationState.dart';
 import '../../../../Model/SendPhpOTPModel.dart';
 import '../../../../Model/VerifyOTPModel.dart';
@@ -36,13 +37,26 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
 
 
   getCustomerDetailsApiCall() async {
+    context.read<DashboardCubit>().callDashBoardApi();
+    var nodeOtpModel = await MySharedPreferences.getUserSessionDataNode();
+    VerifyOTPModel verifyOTPModel = VerifyOTPModel.fromJson(jsonDecode(nodeOtpModel));
     var otpModel = await MySharedPreferences.getPhpOTPModel();
-    SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(
-      jsonDecode(otpModel),
-    );
+    SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
     context.read<LoanApplicationCubit>().getCustomerDetailsApiCall({
-      "cust_profile_id": sendPhpOTPModel.data?.custProfileId,
+      "cust_profile_id": sendPhpOTPModel.data?.custProfileId
     });
+    context.read<LoanApplicationCubit>().getLeadIdApiCall({
+      "custId": verifyOTPModel.data?.custId
+    });
+  }
+
+
+  bool _isActive = true;
+
+  @override
+  void dispose() {
+    _isActive = false;
+    super.dispose();
   }
 
   @override
@@ -60,8 +74,8 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
           } else if (state is UploadSelfieSuccess) {
             EasyLoading.dismiss();
 
-            WidgetsBinding.instance.addPostFrameCallback((_) async {
-              if (!context.mounted) return;
+            Future(() async{
+              if (!_isActive) return;
 
               openSnackBar(
                 context,
@@ -71,38 +85,33 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
               );
               if((state.uploadSelfieModel.data?.decision ?? "").toLowerCase() == "repeat" &&
                   (state.uploadSelfieModel.data?.checkKycFlag ?? true) == false
-                ){
-                  await MySharedPreferences.setEnhanceKey("1");
+              ){
+                await MySharedPreferences.setEnhanceKey("0");
               }else{
                 await MySharedPreferences.setEnhanceKey("0");
               }
               if((state.uploadSelfieModel.data?.loanAmount ?? 0)>0
                   && (state.uploadSelfieModel.data?.decision ?? "").toLowerCase() == "approve"){
-                 var enhanceKey = await MySharedPreferences.getEnhanceKey();
-                 context.pop();
-                 context.push(AppRouterName.loanOfferPage,extra: int.parse(enhanceKey));
+                var enhanceKey = await MySharedPreferences.getEnhanceKey();
+                context.pop();
+                context.push(AppRouterName.loanOfferPage,extra: int.parse(enhanceKey));
               }else{
                 context.replace(
                   AppRouterName.eligibilityStatus,
                   extra: state.uploadSelfieModel,
                 );
               }
-              // Future.delayed(Duration(milliseconds: 500), () {
-              //   if (!context.mounted) return;
-              //   context.pop();
-              // });
-              //
-              // getCustomerDetailsApiCall();
             });
+
           } else if (state is UploadSelfieError) {
             EasyLoading.dismiss();
 
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (!context.mounted) return;
+              if (!_isActive) return;
 
               if (state.uploadSelfieModel.statusCode == 402) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (!context.mounted) return;
+                  if (!_isActive) return;
                   context.replace(
                     AppRouterName.eligibilityStatus,
                     extra: state.uploadSelfieModel,
@@ -110,6 +119,8 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
                 });
               }
               else if (state.uploadSelfieModel.message?.toLowerCase() == "already done") {
+                if(!_isActive) return;
+                openSnackBar(context, state.uploadSelfieModel.message ?? "Already done");
               }
               else {
                 openSnackBar(
@@ -142,9 +153,9 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
                         Icons.arrow_back_ios,
                         color: ColorConstant.blackTextColor,
                       ),
-                      onTap: () {
+                      onTap: () async{
                         context.pop();
-                        getCustomerDetailsApiCall();
+                        await getCustomerDetailsApiCall();
                       },
                     ),
                   ),
@@ -262,11 +273,11 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
                                     );
 
                                 var customerId = verifyOtpModel.data?.custId;
-                                var leadId = verifyOtpModel.data?.leadId;
-                                if (leadId == "" || leadId == null) {
-                                  leadId =
+                                //var leadId = verifyOtpModel.data?.leadId;
+                               // if (leadId == "" || leadId == null) {
+                                var  leadId =
                                       await MySharedPreferences.getLeadId();
-                                }
+                               // }
 
                                 final formData = FormData();
 

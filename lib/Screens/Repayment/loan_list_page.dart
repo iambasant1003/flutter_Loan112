@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
 import 'package:loan112_app/Model/GetLoanHistoryModel.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
+import 'package:loan112_app/Utils/Debugprint.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:loan112_app/Widget/common_textField.dart';
 import '../../Cubit/loan_application_cubit/LoanApplicationCubit.dart';
@@ -22,9 +24,8 @@ class LoanListPage extends StatefulWidget {
 }
 
 class _LoanListPageState extends State<LoanListPage> {
-  int? _expandedIndex = 0; // By default first card expanded
+  int? _expandedIndex = 0;
   TextEditingController amountController = TextEditingController();
-
 
 
   @override
@@ -37,7 +38,7 @@ class _LoanListPageState extends State<LoanListPage> {
         bool isExpanded = _expandedIndex == index;
         var loanData = widget.loanHistoryModel.data?[index];
 
-        return Column(
+        return  Column(
           children: [
             GestureDetector(
               onTap: () {
@@ -52,7 +53,7 @@ class _LoanListPageState extends State<LoanListPage> {
               child: Container(
                 margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  gradient: index == 0
+                  gradient: loanData?.loanActiveStatus == 1
                       ? LinearGradient(
                     colors: [
                       Color(0xFF2B3C74), // dark blue
@@ -62,7 +63,7 @@ class _LoanListPageState extends State<LoanListPage> {
                     end: Alignment.centerRight,
                   )
                       : null,
-                  color: index == 0 ? null : (isExpanded ? Colors.blue[50] : Colors.white),
+                  color: loanData?.loanActiveStatus == 1 ? null : (isExpanded ? Colors.blue[50] : Colors.white),
                   border: Border.all(
                     color: isExpanded ? Colors.blue : Colors.grey.shade300,
                     width: 1.5,
@@ -79,7 +80,7 @@ class _LoanListPageState extends State<LoanListPage> {
                 child: Column(
                   children: [
                     ListTile(
-                      leading: index == 0
+                      leading: loanData?.loanActiveStatus == 1
                           ? Container(
                         height: 24,
                         width: 24,
@@ -100,9 +101,9 @@ class _LoanListPageState extends State<LoanListPage> {
                       )
                           : null,
                       title: Text(
-                        index == 0 ? 'Active Loan' : "Loan $index",
+                        _getLoanTitle(index, loanData?.loanActiveStatus ?? 0,loanData),
                         style: TextStyle(
-                          color: index == 0
+                          color: loanData?.loanActiveStatus == 1
                               ? Colors.white
                               : (isExpanded ? Colors.blue : Colors.black),
                           fontWeight: FontWeight.bold,
@@ -110,25 +111,27 @@ class _LoanListPageState extends State<LoanListPage> {
                       ),
                       trailing: Icon(
                         isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                        color: index == 0
+                        color: loanData?.loanActiveStatus == 1
                             ? Colors.white
                             : (isExpanded ? Colors.blue : Colors.black),
                       ),
                     ),
                   ],
                 ),
-              )
+              ),
             ),
-            if(isExpanded) SizedBox(height: 12.0),
-            if (isExpanded) _buildDetailsSection(loanData,index),
+            if (isExpanded) SizedBox(height: 12.0),
+            if (isExpanded) _buildDetailsSection(loanData, index),
           ],
         );
       },
     );
   }
 
-
   Widget _buildDetailsSection(var loanData,int index) {
+    if(loanData.loanActiveStatus == 1){
+      amountController.text = (loanData.loanTotalOutstandingAmount ?? 0).toString();
+    }
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
       child: Container(
@@ -151,17 +154,21 @@ class _LoanListPageState extends State<LoanListPage> {
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
           child: Column(
             children: [
+              _buildRow("Loan Number", "${loanData?.loanNo ?? ""}/-"),
               _buildRow("Sanction Loan Amount (Rs.)", "${loanData?.loanRecommended ?? ""}/-"),
               _buildRow("Rate of Interest (%) Per Day", "${loanData?.roi ?? ""}"),
-              _buildRow("Date of Sanction", loanData?.disbursalDate ?? ""),
-              _buildRow("Total Repayment Amount (Rs.)", "${loanData?.repaymentAmount ?? ""}/-"),
+              _buildRow("Disbursal Date", loanData?.disbursalDate),
+              _buildRow("Total Repayment Amount (Rs.)", "${loanData?.loanTotalPayableAmount ?? ""}/-"),
               _buildRow("Tenure in Days", "${loanData?.tenure ?? ""}"),
               _buildRow("Repayment Date", loanData?.repaymentDate ?? ""),
-              _buildRow("Panel Interest (%) Per day", "${loanData?.penalRoi ?? ""}"),
-              index ==0?
+              _buildRow("Panel Interest (%) Per day", "${loanData?.panelRoi ?? ""}"),
+              _buildRow("Penalty Amount", "${loanData?.loanTotalPenaltyAmount ?? ""}"),
+              _buildRow("Remaining Amount", "${loanData?.loanTotalOutstandingAmount ?? ""}"),
+              _buildRow("Status", "${loanData?.status ?? ""}"),
+              loanData.loanActiveStatus ==1?
               SizedBox(height: 12):
               SizedBox.shrink(),
-              index ==0?
+              loanData.loanActiveStatus ==1?
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
@@ -184,15 +191,14 @@ class _LoanListPageState extends State<LoanListPage> {
                     Row(
                       children: [
                         Expanded(
-                            child: CommonTextField(
-                                controller: amountController,
-                                hintText: "Amount",
-                                keyboardType: TextInputType.number,
-                            )
+                          child: CommonTextField(
+                            controller: amountController,
+                            maxLength: 7,
+                            hintText: "Amount",
+                            keyboardType: TextInputType.number,
+                          ),
                         ),
-                        SizedBox(
-                          width: 5.0,
-                        ),
+                        SizedBox(width: 5.0),
                         Container(
                           height: 30,
                           decoration: BoxDecoration(
@@ -215,20 +221,34 @@ class _LoanListPageState extends State<LoanListPage> {
                           ),
                           child: TextButton(
                             onPressed: () {
-                              if(amountController.text.trim() != ""){
-                                context.push(
-                                    AppRouterName.paymentOptionScreen,
-                                    extra: {
-                                      'loanData':loanData,
-                                      'amount': amountController.text.trim().toString(),
-                                    }
-                                ).then((val){
-                                  amountController.text = "";
-                                  getLoanHistory();
-                                });
-                              }else{
+                              String amountText = amountController.text.trim();
+                              if (amountText.isEmpty) {
                                 openSnackBar(context, "Please enter amount");
+                                return;
                               }
+
+                              int enteredAmount = int.tryParse(amountController.text.trim().toString()) ?? 0;
+                              int repaymentAmount = int.tryParse(loanData?.loanTotalOutstandingAmount.toString() ?? "0") ?? 0;
+
+                              if (enteredAmount == 0) {
+                                openSnackBar(context, "Payable amount should be greater than 0");
+                                return;
+                              } else if (enteredAmount > repaymentAmount) {
+                                openSnackBar(context, "Payable amount should be less than remaining amount");
+                                return;
+                              }
+
+                              // If all validations pass → navigate
+                              context.push(
+                                AppRouterName.paymentOptionScreen,
+                                extra: {
+                                  'loanData': loanData,
+                                  'amount': amountText,
+                                },
+                              ).then((val) {
+                                amountController.clear();
+                                getLoanHistory();
+                              });
                             },
                             style: TextButton.styleFrom(
                               padding: EdgeInsets.symmetric(horizontal: 20),
@@ -297,8 +317,32 @@ class _LoanListPageState extends State<LoanListPage> {
             ),
           ],
         ),
-        if(label != "Panel Interest (%) Per day") SizedBox(height: 18)
+        SizedBox(height: 18)
       ],
     );
+  }
+
+  String formatDate(String? date) {
+    DebugPrint.prt("Disbursal Date $date");
+    if (date == null || date.isEmpty) return '';
+    try {
+      DateTime parsedDate = DateTime.parse(date);
+      return DateFormat('dd-MM-yyyy').format(parsedDate);
+    } catch (e) {
+      return ''; // or handle error
+    }
+  }
+
+  String _getLoanTitle(int index, int loanActiveStatus,var loanData) {
+    // Find first active loan index
+    int firstActiveIndex = widget.loanHistoryModel.data
+        ?.indexWhere((e) => e.loanActiveStatus == 1) ??
+        -1;
+
+    if (loanActiveStatus == 1) {
+      return "Active Loan ${loanData.loanNo}";
+    } else {
+      return "Loan ${loanData.loanNo}";
+    }
   }
 }

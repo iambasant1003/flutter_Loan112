@@ -67,13 +67,15 @@ const Loan112VerifyStatusPage({
                     ],
                   ),
                   const SizedBox(height: 65),
-                  Text(
-                   isSuccess? "Congratulations!":"Try Again",
-                    style: TextStyle(
-                      fontSize: FontConstants.f22,
-                      fontWeight: FontConstants.w800,
-                      fontFamily: FontConstants.fontFamily,
-                      color: ColorConstant.blackTextColor,
+                  Center(
+                    child: Text(
+                      isSuccess? "Congratulations!":"Try Again",
+                      style: TextStyle(
+                        fontSize: FontConstants.f22,
+                        fontWeight: FontConstants.w800,
+                        fontFamily: FontConstants.fontFamily,
+                        color: ColorConstant.blackTextColor,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 12.0),
@@ -87,13 +89,15 @@ const Loan112VerifyStatusPage({
                   SizedBox(
                     height: 12,
                   ),
-                  Text(
-                    statusMessage,
-                    style: TextStyle(
-                      fontSize: FontConstants.f14,
-                      fontFamily: FontConstants.fontFamily,
-                      fontWeight: FontConstants.w500,
-                      color: ColorConstant.blackTextColor,
+                  Center(
+                    child: Text(
+                      statusMessage,
+                      style: TextStyle(
+                        fontSize: FontConstants.f14,
+                        fontFamily: FontConstants.fontFamily,
+                        fontWeight: FontConstants.w500,
+                        color: ColorConstant.blackTextColor,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 43.0),
@@ -116,7 +120,10 @@ const Loan112VerifyStatusPage({
                     const SizedBox(height: 16.0),
                   ],
                 ),
-              )
+              ),
+              SizedBox(
+                height: 18.0,
+              ),
             ],
           ),
         ],
@@ -125,3 +132,4 @@ const Loan112VerifyStatusPage({
   }
 
 }
+

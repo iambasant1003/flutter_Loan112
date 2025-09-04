@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Widget/common_success.dart';
 import '../../../../Constant/ImageConstant/ImageConstants.dart';
 import '../../../../Cubit/dashboard_cubit/DashboardCubit.dart';
@@ -24,8 +25,8 @@ class _EkycMessageScreen extends State<EkycMessageScreen>{
   Future<void> _handleContinue() async {
     if (!_isApiCalled) {
       _isApiCalled = true;
-      await _getCustomerDetails();
-      if (mounted) context.pop();
+      // await _getCustomerDetails();
+      if (mounted) context.replace(AppRouterName.selfieScreenPath);
     }
   }
 
@@ -74,3 +75,4 @@ class _EkycMessageScreen extends State<EkycMessageScreen>{
   }
 
 }
+

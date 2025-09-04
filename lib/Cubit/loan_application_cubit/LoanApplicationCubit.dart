@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
+import 'package:loan112_app/Cubit/safe_emit.dart';
 import 'package:loan112_app/Model/GenerateLoanOfferModel.dart';
 import 'package:loan112_app/Model/GetPurposeOfLoanModel.dart';
 import 'package:loan112_app/ParamModel/GetCityAndStateRequest.dart';
@@ -23,79 +24,115 @@ class LoanApplicationCubit extends Cubit<LoanApplicationState> {
 
   Future<void> checkEligibilityApiCall(Map<String,dynamic> dataObj) async {
     DebugPrint.prt("Data Object Check Eligibility $dataObj");
-    emit(LoanApplicationLoading());
+    safeEmit(()=>emit(LoanApplicationLoading()));
     final response = await loanApplicationRepository.checkEligibilityFunction(dataObj);
     if (response.status == ApiResponseStatus.success) {
-      emit(CreateLeadSuccess(response.data!));
+      safeEmit(()=>emit(CreateLeadSuccess(response.data!)));
     } else {
-      emit(CreateLeadError(response.error!));
+      safeEmit(()=>emit(CreateLeadError(response.error!)));
     }
   }
 
   Future<void> getPinCodeDetailsApiCall(Map<String,dynamic> dataObj) async {
 
-    emit(LoanApplicationLoading());
+    safeEmit(()=>emit(LoanApplicationLoading()));
     try {
       final response = await loanApplicationRepository.getPinCodeDetailsFunction(dataObj);
       DebugPrint.prt("PinCode Status ${response.status}");
       if (response.status == ApiResponseStatus.success) {
-        emit(GetPinCodeDetailsSuccess(response.data!));
+        safeEmit(()=>emit(GetPinCodeDetailsSuccess(response.data!)));
       } else {
-        emit(LoanApplicationError(response.error?.message ?? "Please Enter valid PinCode"));
+        safeEmit(()=>emit(GetPinCodeDetailsError(response.error?.message ?? "Please Enter valid PinCode")));
       }
     } catch (e) {
-      emit(LoanApplicationError("Please Enter valid PinCode"));
+      safeEmit(()=>emit(GetPinCodeDetailsError("Please Enter valid PinCode")));
     }
   }
 
   Future<void> uploadSelfieApiCall(FormData dataObj) async {
-    emit(LoanApplicationLoading());
+    safeEmit(()=>emit(LoanApplicationLoading()));
     final response = await loanApplicationRepository.uploadSelfieFunction(dataObj);
 
     if (response.status == ApiResponseStatus.success) {
-      emit(UploadSelfieSuccess(response.data!));
+      safeEmit(()=>
+          emit(UploadSelfieSuccess(response.data!))
+      );
     } else {
-      emit(UploadSelfieError(response.error!));
+      safeEmit(()=>
+          emit(UploadSelfieError(response.error!))
+      );
     }
   }
 
   Future<void> getCustomerDetailsApiCall(Map<String,dynamic> dataObj) async{
-    emit(LoanApplicationLoading());
+    safeEmit(()=>
+        emit(LoanApplicationLoading())
+    );
     final response = await loanApplicationRepository.getCustomerDetailsFunction(dataObj);
 
     if (response.status == ApiResponseStatus.success) {
-      emit(GetCustomerDetailsSuccess(response.data!));
+      safeEmit(()=>
+          emit(GetCustomerDetailsSuccess(response.data!))
+      );
     } else {
-      emit(GetCustomerDetailsError(response.error!));
+      safeEmit(()=>
+          emit(GetCustomerDetailsError(response.error!))
+      );
     }
   }
 
 
+  Future<void> getLeadIdApiCall(Map<String,dynamic> dataObj) async{
+    // safeEmit(()=>
+    //     emit(LoanApplicationLoading())
+    // );
+    final response = await loanApplicationRepository.getLeadIdFunction(dataObj);
+
+    if (response.status == ApiResponseStatus.success) {
+      safeEmit(()=>
+          emit(GetLeadIdSuccess(response.data!))
+      );
+    } else {
+      safeEmit(()=>
+          emit(GetLeadIdError(response.error!))
+      );
+    }
+  }
+
+
+
+
   Future<void> customerKycApiCall(Map<String,dynamic> dataObj) async{
-    emit(LoanApplicationLoading());
+    safeEmit(()=>
+        emit(LoanApplicationLoading())
+    );
     final response = await loanApplicationRepository.customerKYCFunction(dataObj);
      DebugPrint.prt("KYC Api Response Status ${response.status}");
     if (response.status == ApiResponseStatus.success) {
-      emit(CustomerKYCSuccess(response.data!));
+      safeEmit(()=>emit(CustomerKYCSuccess(response.data!)));
     } else {
-      emit(CustomerKYCError(response.error!));
+      safeEmit(()=>emit(CustomerKYCError(response.error!)));
     }
   }
 
   Future<void> customerKycVerificationApiCall(Map<String,dynamic> dataObj) async{
-    emit(LoanApplicationLoading());
+    safeEmit(()=>
+        emit(LoanApplicationLoading())
+    );
     final response = await loanApplicationRepository.customerKYCVerificationFunction(dataObj);
     DebugPrint.prt("KYC Api Verification Response Status ${response.status}");
     if (response.status == ApiResponseStatus.success) {
-      emit(CustomerKYCVerificationSuccess(response.data!));
+      safeEmit(()=>emit(CustomerKYCVerificationSuccess(response.data!)));
     } else {
-      emit(CustomerKYCVerificationError(response.error!));
+      safeEmit(()=> emit(CustomerKYCVerificationError(response.error!)));
     }
   }
 
 
   Future<void>  getPurposeOfLoanApiCall(Map<String,dynamic> dataObj) async{
-    emit(LoanApplicationLoading());
+    safeEmit(()=>
+        emit(LoanApplicationLoading())
+    );
     final responseList =await Future.wait([
           loanApplicationRepository.generateLoanOfferApiCallFunction(dataObj),
           loanApplicationRepository.getPurposeOfLoanApiCallFunction(dataObj)
@@ -105,169 +142,243 @@ class LoanApplicationCubit extends Cubit<LoanApplicationState> {
         responseList[1].status == ApiResponseStatus.success){
       GenerateLoanOfferModel generateLoanOfferModel = GenerateLoanOfferModel.fromJson(jsonDecode(jsonEncode(responseList[0].data)));
       GetPurposeOfLoanModel getPurposeOfLoanModel = GetPurposeOfLoanModel.fromJson(jsonDecode(jsonEncode(responseList[1].data)));
-      emit(GenerateLoanOfferSuccess(generateLoanOfferModel,getPurposeOfLoanModel));
+      safeEmit(()=>emit(GenerateLoanOfferSuccess(generateLoanOfferModel,getPurposeOfLoanModel)));
       DebugPrint.prt("Emitted generate Loan Offer");
     }
     else{
       if(responseList[0].status != ApiResponseStatus.success){
         DebugPrint.prt("InSide Else if Block ${responseList[0].error}");
         GenerateLoanOfferModel generateLoanOfferModel = GenerateLoanOfferModel.fromJson(jsonDecode(jsonEncode(responseList[0].error)));
-        emit(GenerateLoanOfferError(generateLoanOfferModel));
+        safeEmit(()=>emit(GenerateLoanOfferError(generateLoanOfferModel)));
       }else if(responseList[1].status != ApiResponseStatus.success){
         DebugPrint.prt("InSide Else else Block");
         GetPurposeOfLoanModel getPurposeOfLoanModel = GetPurposeOfLoanModel.fromJson(jsonDecode(jsonEncode(responseList[1].error)));
-        emit(GetPurposeOfLoanFailed(getPurposeOfLoanModel));
+        safeEmit(()=> emit(GetPurposeOfLoanFailed(getPurposeOfLoanModel)));
       }
     }
   }
 
 
   Future<void> loanAcceptanceApiCall(Map<String,dynamic> dataObj) async{
-    emit(LoanAcceptanceLoading());
+    safeEmit(()=>
+        emit(LoanAcceptanceLoading())
+    );
     final response = await loanApplicationRepository.loanAcceptanceApiCallFunction(dataObj);
     DebugPrint.prt("Accept Loan Offer Response Status ${response.status}");
     if (response.status == ApiResponseStatus.success) {
-      emit(LoanAcceptanceSuccess(response.data!));
+      safeEmit(()=> emit(LoanAcceptanceSuccess(response.data!)));
     } else {
-      emit(LoanAcceptanceError(response.error!));
+      safeEmit(() => emit(LoanAcceptanceError(response.error!)));
     }
   }
 
   Future<void> getUtilityTypeDocApiCall(Map<String,dynamic> dataObj) async{
-    emit(LoanApplicationLoading());
+    safeEmit(()=>
+        emit(LoanApplicationLoading())
+    );
     final response = await loanApplicationRepository.getUtilityTyeApiCallFunction(dataObj);
     DebugPrint.prt("Get Utility Doc Type Response Status ${response.status}");
     if (response.status == ApiResponseStatus.success) {
-      emit(GetUtilityDocTypeLoaded(response.data!));
+      safeEmit(()=>emit(GetUtilityDocTypeLoaded(response.data!)));
     } else {
-      emit(LoanApplicationError(response.error?.message ?? "Unknown Error"));
+      safeEmit(()=> emit(LoanApplicationError(response.error?.message ?? "Unknown Error")));
     }
   }
 
 
   Future<void> uploadUtilityTypeDocApiCall(FormData dataObj) async{
-    emit(LoanApplicationLoading());
+    safeEmit(()=>
+        emit(LoanApplicationLoading())
+    );
     final response = await loanApplicationRepository.uploadUtilityTypeDocApiCallFunction(dataObj);
     DebugPrint.prt("Upload Utility Doc Type Response Status ${response.status}");
     if (response.status == ApiResponseStatus.success) {
-      emit(UploadUtilityDocSuccess(response.data!));
+      safeEmit(()=>emit(UploadUtilityDocSuccess(response.data!)));
     } else {
-      emit(UploadUtilityDocError(response.error?.message ?? "Unknown Error"));
+      safeEmit(()=> emit(UploadUtilityDocError(response.error?.message ?? "Unknown Error")));
     }
   }
 
   Future<void> uploadBankStatementApiCall(FormData dataObj) async{
-    emit(LoanApplicationLoading());
+    safeEmit(()=>
+        emit(LoanApplicationLoading())
+    );
     final response = await loanApplicationRepository.uploadBankStatementApiCallFunction(dataObj);
     DebugPrint.prt("Upload BankStatement Response Status ${response.status}");
     if (response.status == ApiResponseStatus.success) {
-      emit(UploadBankStatementSuccess(response.data!));
+      safeEmit(()=>emit(UploadBankStatementSuccess(response.data!)));
     } else {
       DebugPrint.prt("Inside Else Block of response");
-      emit(UploadBankStatementFailed(response.error!));
+      safeEmit(()=>emit(UploadBankStatementFailed(response.error!)));
     }
   }
 
 
   Future<void> addReferenceApiCall(Map<String,dynamic> dataObj) async{
-    emit(LoanApplicationLoading());
+    safeEmit(()=>
+        emit(LoanApplicationLoading())
+    );
     final response = await loanApplicationRepository.addReferenceApiCallFunction(dataObj);
     DebugPrint.prt("Upload Reference Response Status ${response.status}");
     if (response.status == ApiResponseStatus.success) {
-      emit(AddReferenceSuccess(response.data!));
+      safeEmit(()=>
+          emit(AddReferenceSuccess(response.data!))
+      );
     } else {
       DebugPrint.prt("Inside Else Block of response");
-      emit(AddReferenceFailed(response.error!));
+      safeEmit(()=>
+          emit(AddReferenceFailed(response.error!))
+      );
     }
   }
 
 
   Future<void> updateBankDetailsApiCall(Map<String,dynamic> dataObj) async{
-    emit(LoanApplicationLoading());
+    safeEmit(()=>
+        emit(LoanApplicationLoading())
+    );
     final response = await loanApplicationRepository.updateBankingDetailsApiCallFunction(dataObj);
     DebugPrint.prt("Update Bank Details Response Status ${response.status}");
     if (response.status == ApiResponseStatus.success) {
-      emit(UpdateBankDetailsSuccess(response.data!));
+      safeEmit(()=>
+          emit(UpdateBankDetailsSuccess(response.data!))
+      );
     } else {
       DebugPrint.prt("Inside Else Block of response");
-      emit(UpdateBankDetailsFailed(response.error!));
+      safeEmit(()=>
+          emit(UpdateBankDetailsFailed(response.error!))
+      );
     }
   }
 
   Future<void> verifyIfscCodeApiCall(Map<String,dynamic> dataObj) async{
-    emit(LoanApplicationLoading());
+    safeEmit(()=>emit(LoanApplicationLoading()));
     final response = await loanApplicationRepository.verifyIfscCodeApiCallFunction(dataObj);
     DebugPrint.prt("Verify ifsc Code Response Status ${response.status}");
     if (response.status == ApiResponseStatus.success) {
-      emit(VerifyIfscCodeSuccess(response.data!));
+      safeEmit(()=>
+          emit(VerifyIfscCodeSuccess(response.data!))
+      );
     } else {
       DebugPrint.prt("Inside Else Block of response");
-      emit(VerifyIfscCodeFailed(response.error!));
+      safeEmit(()=>
+          emit(VerifyIfscCodeFailed(response.error!))
+      );
     }
   }
 
   Future<void> getBankAccountTypeApiCall(Map<String,dynamic> dataObj) async{
-    emit(LoanApplicationLoading());
+    safeEmit(()=>
+        emit(LoanApplicationLoading())
+    );
     final response = await loanApplicationRepository.bankAccountTypeApiCallFunction(dataObj);
     DebugPrint.prt("Get Bank Account Type Response Status ${response.status}");
     if (response.status == ApiResponseStatus.success) {
-      emit(BankAccountTypeSuccess(response.data!));
+      safeEmit(()=>
+          emit(BankAccountTypeSuccess(response.data!))
+      );
     } else {
       DebugPrint.prt("Inside Else Block of response");
-      emit(BankAccountTypeFailed(response.error!));
+      safeEmit(()=>
+          emit(BankAccountTypeFailed(response.error!))
+      );
     }
   }
 
   Future<void> fetchOnlineAccountAggregatorApiCall(Map<String,dynamic> dataObj) async{
-    emit(LoanApplicationLoading());
+    safeEmit(()=>
+        emit(LoanApplicationLoading())
+    );
     final response = await loanApplicationRepository.fetchAccountAggregatorApiCallFunction(dataObj);
     DebugPrint.prt("Fetch Account Aggregator Response Status ${response.status}");
     if (response.status == ApiResponseStatus.success) {
-      emit(OnlineAccountAggregatorSuccess(response.data!));
+      safeEmit(()=>
+          emit(OnlineAccountAggregatorSuccess(response.data!))
+      );
     } else {
       DebugPrint.prt("Inside Else Block of response");
-      emit(OnlineAccountAggregatorFailed(response.error!));
+      safeEmit(()=>
+          emit(OnlineAccountAggregatorFailed(response.error!))
+      );
     }
   }
 
   Future<void> fetchBankStatementStatusApiCall(String leadId,String customerId) async{
-    emit(LoanApplicationLoading());
-    final response = await loanApplicationRepository.checkBankStatementStatusApiCallFunction(leadId: leadId, customerId: customerId);
+    safeEmit(()=>
+        emit(LoanApplicationLoading())
+    );
+    final response = await loanApplicationRepository.checkBankStatementStatusApiCallFunction(
+      {
+        "custId":customerId,
+        "leadId":leadId
+      }
+    );
     DebugPrint.prt("Fetch Bank Statement Status Response Status ${response.status}");
     if (response.status == ApiResponseStatus.success) {
-      emit(CheckBankStatementStatusSuccess(response.data!));
+      safeEmit(()=>
+          emit(CheckBankStatementStatusSuccess(response.data!))
+      );
     } else {
       DebugPrint.prt("Inside Else Block of response");
-      emit(CheckBankStatementStatusFailed(response.error!));
+      safeEmit(()=>
+          emit(CheckBankStatementStatusFailed(response.error!))
+      );
     }
   }
 
   Future<void> getLoanHistoryApiCall(Map<String,dynamic> dataObj) async{
-    emit(LoanApplicationLoading());
+    safeEmit(()=>
+        emit(LoanApplicationLoading())
+    );
     final response = await loanApplicationRepository.getLoanHistoryApiCallFunction(dataObj);
     DebugPrint.prt("Get Loan History Response Status ${response.status}");
     if (response.status == ApiResponseStatus.success) {
-      emit(GetLoanHistorySuccess(response.data!));
+      safeEmit(()=>
+          emit(GetLoanHistorySuccess(response.data!))
+      );
     } else {
       DebugPrint.prt("Inside Else Block of response");
-      emit(GetLoanHistoryFailed(response.error!));
+      safeEmit(()=>
+          emit(GetLoanHistoryFailed(response.error!))
+      );
     }
   }
 
   Future<void> calculateDistanceApiCall(Map<String,dynamic> dataObj) async{
-    emit(LoanApplicationLoading());
+    safeEmit(()=>
+        emit(LoanApplicationLoading())
+    );
     final response = await loanApplicationRepository.calculateDistanceApiCallFunction(dataObj);
     DebugPrint.prt("Calculate Distance Response Status ${response.status}");
     if (response.status == ApiResponseStatus.success) {
-      emit(CalculateDistanceSuccess(response.data!));
+      safeEmit(()=>
+          emit(CalculateDistanceSuccess(response.data!))
+      );
     } else {
       DebugPrint.prt("Inside Else Block of response");
-      emit(CalculateDistanceFailed(response.error!));
+      safeEmit(()=>
+          emit(CalculateDistanceFailed(response.error!))
+      );
     }
   }
 
-
-
+  Future<void> verifyBankStatementApiCall(Map<String,dynamic> dataObj) async{
+    safeEmit(()=>
+        emit(LoanApplicationLoading())
+    );
+    final response = await loanApplicationRepository.verifyBankStatementApiCallFunction(dataObj);
+    DebugPrint.prt("Verify Bank Statement Response Status ${response.status}");
+    if (response.status == ApiResponseStatus.success) {
+      safeEmit(()=>
+          emit(VerifyBankStatementSuccess(response.data!))
+      );
+    } else {
+      DebugPrint.prt("Inside Else Block of response");
+      safeEmit(()=>
+          emit(VerifyBankStatementFailed(response.error!))
+      );
+    }
+  }
 
 }
 

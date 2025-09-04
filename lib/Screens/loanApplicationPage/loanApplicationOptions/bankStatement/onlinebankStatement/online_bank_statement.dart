@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
+import 'package:loan112_app/Constant/ConstText/ConstText.dart';
 import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
 import 'package:loan112_app/Constant/ImageConstant/ImageConstants.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
@@ -61,10 +63,10 @@ class _OnlineBankingOption extends State<OnlineBankingOption>{
             context.push(AppRouterName.customerKYCWebview, extra: state.uploadOnlineBankStatementModel.data?.url).then((val) async{
               var otpModel = await MySharedPreferences.getUserSessionDataNode();
               VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
-              var leadId = verifyOtpModel.data?.leadId ?? "";
-              if (leadId == ""){
-                leadId = await MySharedPreferences.getLeadId();
-              }
+              //var leadId = verifyOtpModel.data?.leadId ?? "";
+              //if (leadId == ""){
+               var leadId = await MySharedPreferences.getLeadId();
+             // }
               context.read<LoanApplicationCubit>().fetchBankStatementStatusApiCall(leadId, verifyOtpModel.data?.custId ?? "");
             });
           });
@@ -209,35 +211,40 @@ class _OnlineBankingOption extends State<OnlineBankingOption>{
             ),
           ),
         ),
-        bottomNavigationBar: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const BottomDashLine(), // Make sure BottomDashLine uses double.infinity width
-            const SizedBox(height: 24),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
-              child: Loan112Button(
-                onPressed: () async {
-                  var otpModel = await MySharedPreferences.getUserSessionDataNode();
-                  VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
-                  var leadId = verifyOtpModel.data?.leadId ?? "";
-                  if (leadId.isEmpty) {
-                    leadId = await MySharedPreferences.getLeadId();
-                  }
+        bottomNavigationBar: SafeArea(
+          bottom: true,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const BottomDashLine(), // Make sure BottomDashLine uses double.infinity width
+              const SizedBox(height: 24),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
+                child: Loan112Button(
+                  onPressed: () async {
+                    var otpModel = await MySharedPreferences.getUserSessionDataNode();
+                    VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
+                    //var leadId = verifyOtpModel.data?.leadId ?? "";
+                   // if (leadId.isEmpty) {
+                     var leadId = await MySharedPreferences.getLeadId();
+                   // }
 
-                  context.read<LoanApplicationCubit>().fetchOnlineAccountAggregatorApiCall({
-                    "custId": verifyOtpModel.data?.custId,
-                    "leadId": leadId,
-                    "docType": "bank",
-                    "bankVerifyType" :  "1",
-                    "requestSource" :  "WHATSAPP-JOURNEY"
-                  });
-                },
-                text: 'INITIATE',
+                    context.read<LoanApplicationCubit>().fetchOnlineAccountAggregatorApiCall({
+                      "custId": verifyOtpModel.data?.custId,
+                      "leadId": leadId,
+                      "docType": "bank",
+                      "bankVerifyType" :  "1",
+                      "requestSource" :  Platform.isIOS?
+                          ConstText.requestSourceIOS:
+                          ConstText.requestSource
+                    });
+                  },
+                  text: 'INITIATE',
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-          ],
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );

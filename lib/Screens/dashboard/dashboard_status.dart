@@ -9,6 +9,7 @@ import 'package:loan112_app/Widget/app_bar.dart';
 import 'package:loan112_app/Widget/common_button.dart';
 import '../../Constant/FontConstant/FontConstant.dart';
 import '../../Constant/ImageConstant/ImageConstants.dart';
+import '../../Cubit/dashboard_cubit/DashboardCubit.dart';
 import '../../Cubit/loan_application_cubit/LoanApplicationCubit.dart';
 import '../../Model/SendPhpOTPModel.dart';
 import '../../Utils/MysharePrefenceClass.dart';
@@ -21,9 +22,6 @@ class DashboardStatusScreen extends StatefulWidget {
 }
 
 class _DashboardStatusScreen extends State<DashboardStatusScreen> {
-
-
-
 
   getCustomerDetailsApiCall() async {
     var otpModel = await MySharedPreferences.getPhpOTPModel();
@@ -39,14 +37,24 @@ class _DashboardStatusScreen extends State<DashboardStatusScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: Loan112AppBar(
-        customLeading: InkWell(
-          onTap: () {
-            context.pop();
-          },
-          child: Icon(
-            Icons.arrow_back_ios,
-            color: ColorConstant.blackTextColor,
+        customLeading: Padding(
+          padding: EdgeInsets.only(left: 0),
+          child: InkWell(
+            onTap: () async{
+              context.pop();
+              context.read<DashboardCubit>().callDashBoardApi();
+            },
+            child: Icon(
+              Icons.arrow_back_ios,
+              color: ColorConstant.blackTextColor,
+            ),
           ),
+        ),
+        leadingSpacing: 30,
+        title: Image.asset(
+          ImageConstants.loan112AppNameIcon,
+          height: 76,
+          width: 76,
         ),
       ),
       body: SizedBox.expand(
@@ -178,6 +186,4 @@ class _DashboardStatusScreen extends State<DashboardStatusScreen> {
       ],
     );
   }
-
-
 }

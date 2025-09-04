@@ -7,6 +7,7 @@ import 'package:loan112_app/Model/CustomerKycModel.dart';
 import 'package:loan112_app/Model/EkycVerifictionModel.dart';
 import 'package:loan112_app/Model/GenerateLoanOfferModel.dart';
 import 'package:loan112_app/Model/GetCustomerDetailsModel.dart';
+import 'package:loan112_app/Model/GetLeadIdResponseModel.dart';
 import 'package:loan112_app/Model/GetPinCodeDetailsModel.dart';
 import 'package:loan112_app/Model/GetPurposeOfLoanModel.dart';
 import 'package:loan112_app/Model/GetUtilityDocTypeModel.dart';
@@ -20,6 +21,7 @@ import '../../Model/GetLoanHistoryModel.dart';
 import '../../Model/UpdateBankAccountModel.dart';
 import '../../Model/UploadBankStatementModel.dart';
 import '../../Model/UploadOnlineBankStatementModel.dart';
+import '../../Model/VerifyBankStatementModel.dart';
 
 abstract class LoanApplicationState {}
 
@@ -54,6 +56,11 @@ class GetPinCodeDetailsSuccess extends LoanApplicationState{
   GetPinCodeDetailsSuccess(this.pinCodeDetailsModel);
 }
 
+class GetPinCodeDetailsError extends LoanApplicationState{
+  final String pinCodeDetailsModel;
+  GetPinCodeDetailsError(this.pinCodeDetailsModel);
+}
+
 class UploadSelfieSuccess extends LoanApplicationState{
   final UploadSelfieModel uploadSelfieModel;
   UploadSelfieSuccess(this.uploadSelfieModel);
@@ -67,6 +74,16 @@ class UploadSelfieError extends LoanApplicationState{
 class GetCustomerDetailsSuccess extends LoanApplicationState{
   final GetCustomerDetailsModel getCustomerDetailsModel;
   GetCustomerDetailsSuccess(this.getCustomerDetailsModel);
+}
+
+class GetLeadIdSuccess extends LoanApplicationState{
+  final GetLeadIdResponseModel getLeadIdResponseModel;
+  GetLeadIdSuccess(this.getLeadIdResponseModel);
+}
+
+class GetLeadIdError extends LoanApplicationState{
+  final GetLeadIdResponseModel getLeadIdResponseModel;
+  GetLeadIdError(this.getLeadIdResponseModel);
 }
 
 class GetCustomerDetailsError extends LoanApplicationState{
@@ -230,6 +247,16 @@ class CalculateDistanceSuccess extends LoanApplicationState{
 class CalculateDistanceFailed extends LoanApplicationState{
   final CalculateDistanceResponseModel calculateDistanceResponseModel;
   CalculateDistanceFailed(this.calculateDistanceResponseModel);
+}
+
+class VerifyBankStatementSuccess extends LoanApplicationState{
+  final VerifyBankStatementModel verifyBankStatementModel;
+  VerifyBankStatementSuccess(this.verifyBankStatementModel);
+}
+
+class VerifyBankStatementFailed extends LoanApplicationState{
+  final VerifyBankStatementModel verifyBankStatementModel;
+  VerifyBankStatementFailed(this.verifyBankStatementModel);
 }
 
 

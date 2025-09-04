@@ -1,7 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Model/CheckBankStatementStatusModel.dart';
 import 'package:loan112_app/Model/CreateLeadModel.dart';
-import 'package:loan112_app/Model/DashBoarddataModel.dart';
+import 'package:loan112_app/Model/GenerateLoanOfferModel.dart';
 import 'package:loan112_app/Model/UpdateBankAccountModel.dart';
 import 'package:loan112_app/Model/UploadSelfieModel.dart';
 import 'package:loan112_app/Screens/Repayment/payment_screen.dart';
@@ -13,6 +13,7 @@ import 'package:loan112_app/Screens/dashboard/dashboard_status.dart';
 import 'package:loan112_app/Screens/dashboard/dashboard_verify_otp.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/addReferance/add_reference.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/bankStatement/bank_statement.dart';
+import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/bankStatement/newBREJourney/bank_statement_analyzer.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/bankStatement/onlinebankStatement/online_bank_statement.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/bankStatement/onlinebankStatement/online_banking_message.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/bankingDetails/banking_details.dart';
@@ -20,6 +21,7 @@ import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/c
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/checkEligibility/eligibility_status.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/eKyc/customer_kyc_webview.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/loanOffer/loan_offer.dart';
+import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/loanOffer/loan_offer_failed.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/selfieVerification/selfie_uploaded.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/selfieVerification/selfie_verification.dart';
 import 'package:loan112_app/Screens/loanApplicationPage/loanApplicationOptions/utilityBills/utility_bills.dart';
@@ -29,9 +31,11 @@ import '../Screens/Repayment/repayment_page.dart';
 import '../Screens/auth/permission_page.dart';
 import '../Screens/auth/splash.dart';
 import '../Screens/loanApplicationPage/loanApplicationOptions/bankStatement/offlineBankStatement/offline_bank_statement.dart';
+import '../Screens/loanApplicationPage/loanApplicationOptions/checkEligibility/eligibility_status_lead.dart';
 import '../Screens/loanApplicationPage/loanApplicationOptions/eKyc/aadhar_ekyc.dart';
 import '../Screens/loanApplicationPage/loanApplicationOptions/eKyc/ekyc_message.dart';
 import '../Screens/loanApplicationPage/loan_application_submit.dart';
+import '../Screens/sessionTimeOut/session_timeout.dart';
 import '../Screens/supportUi/customer_support.dart';
 import 'app_router_name.dart';
 
@@ -49,10 +53,21 @@ final GoRouter appRouter = GoRouter(
     }),
     GoRoute(path: AppRouterName.dashboardPage,builder: (context,state)=> DashBoardPage()),
     GoRoute(path: AppRouterName.loanApplicationPage,builder: (context,state)=> LoanApplicationPage()),
-    GoRoute(path: AppRouterName.checkEligibilityPage,builder: (context,state)=> CheckEligibility()),
+    GoRoute(path: AppRouterName.checkEligibilityPage,builder: (context,state){
+      bool existingUser = state.extra as bool;
+      return CheckEligibility(isExistingCustomer: existingUser);
+    }),
+    GoRoute(path: AppRouterName.eligibilityFailed,builder: (context,state){
+      final model = state.extra as CreateLeadModel;
+      return EligibilityStatusLead(createLeadModel: model);
+    }),
     GoRoute(path: AppRouterName.eligibilityStatus,builder: (context,state){
       final model = state.extra as UploadSelfieModel;
       return EligibilityStatus(createLeadModel: model);
+    }),
+    GoRoute(path: AppRouterName.loanOfferFailed,builder: (context,state){
+      final model = state.extra as GenerateLoanOfferModel;
+      return LoanOfferFailed(generateLoanOfferModel: model);
     }),
     GoRoute(path: AppRouterName.bankStatement,builder: (context,state)=> BankStatementScreen()),
     GoRoute(path: AppRouterName.onlineBankStatement,builder: (context,state)=> OnlineBankingOption()),
@@ -105,6 +120,11 @@ final GoRouter appRouter = GoRouter(
       String webUrl = state.extra as String;
       return TermsAndConditionScreen(webUrl: webUrl);
     }),
+    GoRoute(path: AppRouterName.bankStatementAnalyzer,builder: (context,state) {
+      int timerValue = state.extra as int;
+      return BankStatementAnalyzer(timerValue: timerValue);
+    }),
+    GoRoute(path: AppRouterName.sessionTimeOut,builder: (context,state) => SessionTimeOutLoan112()),
   ],
 );
 

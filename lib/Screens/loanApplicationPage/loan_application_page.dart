@@ -17,7 +17,7 @@ import 'package:loan112_app/Widget/circular_progress.dart';
 import '../../Constant/ColorConst/ColorConstant.dart';
 import '../../Constant/ImageConstant/ImageConstants.dart';
 import '../../Cubit/dashboard_cubit/DashboardCubit.dart';
-import '../../Cubit/loan_application_cubit/JourneyCubit.dart';
+import '../../Cubit/loan_application_cubit/JourneyUpdateCubit.dart';
 import '../../Model/GetCustomerDetailsModel.dart';
 import '../../Model/VerifyOTPModel.dart';
 import '../../Utils/MysharePrefenceClass.dart';
@@ -32,9 +32,6 @@ class LoanApplicationPage extends StatefulWidget{
 }
 
 class _LoanApplicationPage extends State<LoanApplicationPage> {
-
-  final int currentStep = 1;
-
 
   final List<String> step = [
     "check_eligibility",
@@ -53,7 +50,7 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
     "Selfie Verification",
     "Fetch Bank Statement",
     "Get Loan Offer",
-    "Utility bills",
+    "Current Residence Proof",
     "Add References",
     "Banking Details"
   ];
@@ -61,19 +58,21 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
   @override
   void initState() {
     super.initState();
-    context.read<JourneyCubit>().updateJourneyTabs(
-        {}
-    );
+    context.read<JourneyUpdateCubit>().updateJourneyTabs({});
     getCustomerDetailsApiCall();
   }
 
-
   getCustomerDetailsApiCall() async{
     context.read<DashboardCubit>().callDashBoardApi();
+    var nodeOtpModel = await MySharedPreferences.getUserSessionDataNode();
+    VerifyOTPModel verifyOTPModel = VerifyOTPModel.fromJson(jsonDecode(nodeOtpModel));
     var otpModel = await MySharedPreferences.getPhpOTPModel();
     SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
     context.read<LoanApplicationCubit>().getCustomerDetailsApiCall({
       "cust_profile_id": sendPhpOTPModel.data?.custProfileId
+    });
+    context.read<LoanApplicationCubit>().getLeadIdApiCall({
+      "custId": verifyOTPModel.data?.custId
     });
   }
 
@@ -110,21 +109,30 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
             }else if(state is GetCustomerDetailsSuccess){
               EasyLoading.dismiss();
               MySharedPreferences.setCustomerDetails(jsonEncode(state.getCustomerDetailsModel.data?.customerDetails));
-              context.read<JourneyCubit>().updateJourneyTabs(
+              context.read<JourneyUpdateCubit>().updateJourneyTabs(
                   state.getCustomerDetailsModel.data?.screenDetails!.toJson() as Map<String,dynamic>
               );
               getCustomerDetailsModel = state.getCustomerDetailsModel;
               MySharedPreferences.setEnhanceKey((state.getCustomerDetailsModel.data?.screenDetails?.isEnhance ?? "").toString());
               setState(() {});
+              // if(state.getCustomerDetailsModel.data?.screenDetails?.residenceProofUpload == 2){
+              //   context.push(AppRouterName.utilityBillScreen);
+              // }
             }else if(state is GetCustomerDetailsError){
               EasyLoading.dismiss();
               openSnackBar(context, state.getCustomerDetailsModel.message ?? "Unknown Error");
             }else if(state is CalculateDistanceSuccess){
               EasyLoading.dismiss();
-              openSnackBar(context, "Distance Mapped",backGroundColor: ColorConstant.appThemeColor);
+              //openSnackBar(context, "Distance Mapped",backGroundColor: ColorConstant.appThemeColor);
               getCustomerDetailsApiCall();
             }else if(state is CalculateDistanceFailed){
               EasyLoading.dismiss();
+              getCustomerDetailsApiCall();
+            }else if(state is GetLeadIdSuccess){
+              MySharedPreferences.setLeadId(state.getLeadIdResponseModel.data?.leadId ?? "");
+              DebugPrint.prt("Get Lead Id Success ${state.getLeadIdResponseModel.data?.leadId}");
+            }else if(state is GetLeadIdError){
+              DebugPrint.prt("Get Lead Id Error ${state.getLeadIdResponseModel.message}");
             }
           },
           child: RefreshIndicator(
@@ -195,7 +203,7 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
                             const SizedBox(height: 16),
                             // 👇 Wrap with Expanded
                             if(getCustomerDetailsModel != null)...[
-                              BlocBuilder<JourneyCubit,Map<String,dynamic>>(
+                              BlocBuilder<JourneyUpdateCubit,Map<String,dynamic>>(
                                 builder: (context,state){
                                   DebugPrint.prt("All Step with key $state");
                                   return Expanded(
@@ -214,39 +222,28 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
                                                 DebugPrint.prt("Current Status $status");
                                                 if(status == null){
                                                   if(stepKeys[index].toLowerCase().contains('eligibility')){
-                                                    context.push(AppRouterName.checkEligibilityPage).then((val){
-                                                      getCustomerDetailsApiCall();
-                                                    });
+                                                    context.push(AppRouterName.checkEligibilityPage);
                                                   }
                                                 }else{
+                                                  showMessageAboutStep(status);
                                                   if(stepKeys[index].toLowerCase().contains('eligibility') && status !=1 && status != 0){
-                                                    context.push(AppRouterName.checkEligibilityPage).then((val){
-                                                      getCustomerDetailsApiCall();
-                                                    });
-                                                  }else if(stepKeys[index].toLowerCase().contains('statement')&& status != 1 && status != 0){
-                                                    context.push(AppRouterName.bankStatement).then((val){
-                                                      getCustomerDetailsApiCall();
-                                                    });
+                                                    context.push(AppRouterName.checkEligibilityPage,extra: getCustomerDetailsModel?.data?.customerDetails?.existingCustomer ?? false);
+                                                  }else if(stepKeys[index].toLowerCase().contains('statement') && status != 1 && status != 0){
+                                                    context.push(AppRouterName.bankStatement);
                                                   }else if(stepKeys[index].toLowerCase().contains('ekyc')&& status !=1 && status != 0){
-                                                    context.push(AppRouterName.aaDarKYCScreen).then((val){
-                                                      getCustomerDetailsApiCall();
-                                                    });
+                                                    context.push(AppRouterName.aaDarKYCScreen);
                                                   }else if(stepKeys[index].toLowerCase().contains('selfie')&& status!=1 && status != 0){
                                                     context.push(AppRouterName.selfieScreenPath).then((val){});
                                                   }else if(stepKeys[index].toLowerCase().contains("offer") &&status!=1 && status != 0){
                                                     context.push(AppRouterName.loanOfferPage,extra: getCustomerDetailsModel?.data?.screenDetails?.isEnhance).then((val){});
                                                   }else if(stepKeys[index].toLowerCase().contains('reference')&&status!=1 && status != 0){
                                                     context.push(AppRouterName.addReference).then((val){
-                                                      getCustomerDetailsApiCall();
+                                                     // getCustomerDetailsApiCall();
                                                     });
-                                                  }else if(stepKeys[index].toLowerCase().contains('utility')&&status!=1 && status != 0){
-                                                    context.push(AppRouterName.utilityBillScreen).then((val){
-                                                      getCustomerDetailsApiCall();
-                                                    });
-                                                  }else if(stepKeys[index].toLowerCase().contains('bank')&&status!=1 && status != 0){
-                                                    context.push(AppRouterName.bankDetailsScreen).then((val){
-                                                      getCustomerDetailsApiCall();
-                                                    });
+                                                  }else if(stepKeys[index].toLowerCase().contains('residence') &&status!=1 && status != 0){
+                                                    context.push(AppRouterName.utilityBillScreen);
+                                                  }else if(stepKeys[index].toLowerCase().contains('bank') &&status!=1 && status != 0){
+                                                    context.push(AppRouterName.bankDetailsScreen);
                                                   }
                                                 }
                                               },
@@ -257,15 +254,13 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
                                             ),
                                             // add line below except for last item
                                             if (index != stepKeys.length - 1)
-                                              const SizedBox(height: 4),
-                                            if (index != stepKeys.length - 1)
                                               Padding(
                                                 padding: const EdgeInsets.only(left: 20.0),
                                                 child: Container(
-                                                  height: 20,
+                                                  height: 12,
                                                   width: 2,
-                                                  color: index < currentStep - 1
-                                                      ? Colors.blue // completed line color
+                                                  color: status ==1
+                                                      ? Color(0xFF5171DA) // completed line color
                                                       : Colors.grey.shade300, // pending line color
                                                 ),
                                               ),
@@ -296,6 +291,22 @@ class _LoanApplicationPage extends State<LoanApplicationPage> {
     );
   }
 
+  showMessageAboutStep(int stepStatus){
+    DebugPrint.prt("Status On Tap $stepStatus");
+    if(stepStatus == 0){
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          openSnackBar(context, "Previous step is pending");
+        }
+      });
+    }else if(stepStatus == 1){
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if(mounted){
+          openSnackBar(context, "Already done");
+        }
+      });
+    }
+  }
 
 }
 

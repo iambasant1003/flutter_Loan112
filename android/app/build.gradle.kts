@@ -1,11 +1,15 @@
 plugins {
     id("com.android.application")
-    id("kotlin-android")
+    id("org.jetbrains.kotlin.android")
     // Flutter Gradle plugin must come after Android/Kotlin plugins
     id("dev.flutter.flutter-gradle-plugin")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
 }
+
+// 🔥 Load values from local.properties
+val flutterVersionCode = project.findProperty("flutter.versionCode")?.toString() ?: "1"
+val flutterVersionName = project.findProperty("flutter.versionName")?.toString() ?: "1.0.0"
 
 android {
     namespace = "com.example.loan112_app"
@@ -15,11 +19,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-
-        // ✅ Kotlin DSL syntax
         isCoreLibraryDesugaringEnabled = true
     }
-
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
@@ -27,10 +28,11 @@ android {
 
     defaultConfig {
         applicationId = "com.example.loan112_app"
-        minSdk = 23
+        minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+
+        versionCode = flutterVersionCode.toInt()
+        versionName = flutterVersionName
     }
 
     flavorDimensions += "default"
@@ -40,22 +42,18 @@ android {
             dimension = "default"
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
+            manifestPlaceholders["applicationName"] = "com.example.loan112_app.dev.MyApp"
         }
         create("prod") {
             dimension = "default"
+            manifestPlaceholders["applicationName"] = "com.example.loan112_app.MyApp"
         }
     }
 
     buildTypes {
         release {
-            // Uncomment if using Crashlytics:
-            // isMinifyEnabled = false
-            // isShrinkResources = false
-            // proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("debug")
-
-            // ensure R8 sees your custom rules file
-            isMinifyEnabled = true            // R8 runs only when minify is enabled
+            isMinifyEnabled = true
             isShrinkResources = true
 
             proguardFiles(
@@ -71,7 +69,13 @@ flutter {
 }
 
 dependencies {
-    // ✅ Add this line for desugaring support
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
     implementation("com.guardsquare:proguard-annotations:7.2.2")
+
+    // ✅ Firebase BOM (manages versions automatically)
+    implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
+
+    // ✅ Firebase SDKs you’re using
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation("com.google.firebase:firebase-analytics-ktx")
 }

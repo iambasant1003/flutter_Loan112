@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Constant/ApiUrlConstant/WebviewUrl.dart';
 import 'package:loan112_app/Constant/ColorConst/ColorConstant.dart';
@@ -9,6 +11,8 @@ import 'package:loan112_app/Utils/MysharePrefenceClass.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../Constant/FontConstant/FontConstant.dart';
+import '../../Cubit/auth_cubit/AuthCubit.dart';
+import '../../Cubit/auth_cubit/AuthState.dart';
 import '../../Routes/app_router_name.dart';
 import '../../Utils/FirebaseNotificationService.dart';
 import '../../Widget/common_button.dart';
@@ -22,8 +26,6 @@ class PermissionPage extends StatefulWidget {
 }
 
 class _PermissionPage extends State<PermissionPage> {
-  bool allPermissionAccepted = false;
-
 
   @override
   void initState() {
@@ -125,22 +127,32 @@ class _PermissionPage extends State<PermissionPage> {
       ),
       bottomNavigationBar: SafeArea(
         bottom: true,
-        child: SizedBox(
-          width: 162,
-          height: 85,
-          child: Padding(
-            padding: EdgeInsets.all(FontConstants.horizontalPadding),
-            child: Loan112Button(
-              onPressed: () {
-                if (allPermissionAccepted) {
-                  takeAllRequiredPermission(context);
-                }else{
-                  openSnackBar(context, "Please accept our Terms & Conditions and Privacy Policy.");
-                }
-              },
-              text: "Allow",
-            ),
-          ),
+        child: BlocBuilder<AuthCubit, AuthState>(
+          builder: (context,state){
+            final authCubit = context.read<AuthCubit>();
+            bool checked = authCubit.isPermissionGiven;
+
+            if (state is PermissionCheckboxState) {
+              checked = state.isChecked;
+            }
+            return SizedBox(
+              width: 162,
+              height: 85,
+              child: Padding(
+                padding: EdgeInsets.all(FontConstants.horizontalPadding),
+                child: Loan112Button(
+                  onPressed: () {
+                    if (checked) {
+                      takeAllRequiredPermission(context);
+                    }else{
+                      openSnackBar(context, "Please accept our Terms & Conditions and Privacy Policy.");
+                    }
+                  },
+                  text: "Allow",
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -164,7 +176,7 @@ class _PermissionPage extends State<PermissionPage> {
             await Permission.notification.isPermanentlyDenied)
     ) {
       MySharedPreferences.setPermissionStatus(true);
-      context.push(AppRouterName.login);
+      context.go(AppRouterName.login);
     } else {
       openAppSettings();
     }
@@ -294,13 +306,15 @@ class _PermissionPage extends State<PermissionPage> {
                 imagePath: ImageConstants.permissionScreenDevice,
               ),
               SizedBox(height: 12),
-              permissionTypeWidget(
-                context,
-                title: 'SMS',
-                subtitle: 'The app periodically collects and transmits SMS data like sender names, SMS body and received time to our servers and third parties. This data is used to assess your income, spending patterns and your loan affordability. This helps us in quick credit assessment and help us in facilitating best offers to customers easily and at the same time prevent fraud.',
-                imagePath: ImageConstants.permissionScreenSMS,
-              ),
-              SizedBox(height: 12),
+              if(Platform.isAndroid)...[
+                permissionTypeWidget(
+                  context,
+                  title: 'SMS',
+                  subtitle: 'The app periodically collects and transmits SMS data like sender names, SMS body and received time to our servers and third parties. This data is used to assess your income, spending patterns and your loan affordability. This helps us in quick credit assessment and help us in facilitating best offers to customers easily and at the same time prevent fraud.',
+                  imagePath: ImageConstants.permissionScreenSMS,
+                ),
+                SizedBox(height: 12),
+              ],
               permissionTypeWidget(
                 context,
                 title: 'Camera',
@@ -320,82 +334,91 @@ class _PermissionPage extends State<PermissionPage> {
 
 
   Widget consentBoxUI(BuildContext context){
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Checkbox(
-          value: allPermissionAccepted,
-          onChanged: (val) {
-            setState(() {
-              allPermissionAccepted = val!;
-            });
-          },
-        ),
-        Expanded(
-          child: RichText(
-            textAlign: TextAlign.start,
-            text: TextSpan(
-              text: 'By proceeding, you agree to our ',
-              style: TextStyle(
-                color: ColorConstant.greyTextColor,
-                fontSize: FontConstants.f12,
-                fontFamily: FontConstants.fontFamily,
-                fontWeight: FontConstants.w500,
-              ),
-              children: [
-                TextSpan(
-                  text: 'Terms & Conditions',
-                  style: TextStyle(
-                    color: ColorConstant.blueTextColor,
-                    fontSize: FontConstants.f12,
-                    fontFamily: FontConstants.fontFamily,
-                    fontWeight: FontConstants.w500,
-                  ),
-                  recognizer:
-                  TapGestureRecognizer()
-                    ..onTap = () {
-                      context.push(AppRouterName.termsAndConditionWebview,extra: UrlsNods.TermAndCondition);
-                    },
-                ),
-                TextSpan(
-                  text: ' and ',
-                  style: TextStyle(
-                    color: ColorConstant.greyTextColor,
-                    fontSize: FontConstants.f12,
-                    fontFamily: FontConstants.fontFamily,
-                    fontWeight: FontConstants.w500,
-                  ),
-                ),
-                TextSpan(
-                  text: 'Privacy Policy',
-                  style: TextStyle(
-                    color: ColorConstant.blueTextColor,
-                    fontSize: FontConstants.f12,
-                    fontFamily: FontConstants.fontFamily,
-                    fontWeight: FontConstants.w500,
-                  ),
-                  recognizer:
-                  TapGestureRecognizer()
-                    ..onTap = () {
-                      context.push(AppRouterName.termsAndConditionWebview,extra: UrlsNods.privacy);
-                    },
-                ),
-                TextSpan(
-                  text:
-                  ' and consent to receive WhatsApp and email communications.',
-                  style: TextStyle(
-                    color: ColorConstant.greyTextColor,
-                    fontSize: FontConstants.f12,
-                    fontFamily: FontConstants.fontFamily,
-                    fontWeight: FontConstants.w500,
-                  ),
-                ),
-              ],
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context,state){
+        final authCubit = context.read<AuthCubit>();
+        bool checked = authCubit.isPermissionGiven;
+
+        if (state is PermissionCheckboxState) {
+          checked = state.isChecked;
+        }
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Checkbox(
+              value: checked,
+              onChanged: (val) {
+                context.read<AuthCubit>()
+                    .toggleCheckbox(val);
+              },
             ),
-          ),
-        ),
-      ],
+            Expanded(
+              child: RichText(
+                textAlign: TextAlign.start,
+                text: TextSpan(
+                  text: 'By proceeding, you agree to our ',
+                  style: TextStyle(
+                    color: ColorConstant.greyTextColor,
+                    fontSize: FontConstants.f12,
+                    fontFamily: FontConstants.fontFamily,
+                    fontWeight: FontConstants.w500,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: 'Terms & Conditions',
+                      style: TextStyle(
+                        color: ColorConstant.blueTextColor,
+                        fontSize: FontConstants.f12,
+                        fontFamily: FontConstants.fontFamily,
+                        fontWeight: FontConstants.w500,
+                      ),
+                      recognizer:
+                      TapGestureRecognizer()
+                        ..onTap = () {
+                          context.push(AppRouterName.termsAndConditionWebview,extra: UrlsNods.TermAndCondition);
+                        },
+                    ),
+                    TextSpan(
+                      text: ' and ',
+                      style: TextStyle(
+                        color: ColorConstant.greyTextColor,
+                        fontSize: FontConstants.f12,
+                        fontFamily: FontConstants.fontFamily,
+                        fontWeight: FontConstants.w500,
+                      ),
+                    ),
+                    TextSpan(
+                      text: 'Privacy Policy',
+                      style: TextStyle(
+                        color: ColorConstant.blueTextColor,
+                        fontSize: FontConstants.f12,
+                        fontFamily: FontConstants.fontFamily,
+                        fontWeight: FontConstants.w500,
+                      ),
+                      recognizer:
+                      TapGestureRecognizer()
+                        ..onTap = () {
+                          context.push(AppRouterName.termsAndConditionWebview,extra: UrlsNods.privacy);
+                        },
+                    ),
+                    TextSpan(
+                      text:
+                      ' and consent to receive WhatsApp and email communications.',
+                      style: TextStyle(
+                        color: ColorConstant.greyTextColor,
+                        fontSize: FontConstants.f12,
+                        fontFamily: FontConstants.fontFamily,
+                        fontWeight: FontConstants.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

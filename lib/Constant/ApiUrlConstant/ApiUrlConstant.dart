@@ -9,6 +9,7 @@ const String sendOTPhp = "saveCustomerProfile$andRD";
 const String verifyOTPhp = "saveCustomerProfile$andRD";
 const String dashBoard = "getDashboardDetails$andRD";
 const String getCustomerDetailsPHP = "getCustomerProfile$andRD";
+const String getLeadId = "get-lead-id";
 const String uploadSelfie = "upload-selfie";
 const String checkEligibility = "journey-create-leads";
 const String getPinCodeDetails = "getCityStateByPincode$andRD";
@@ -27,13 +28,14 @@ const String updateBankingDetails = "customer-banking";
 const String verifyIfscCode = "getBankDetailsByIfsc$andRD";
 const String bankAccountType = "getMasterBankType$andRD";
 const String uploadOnlineBankStatement = "whatsapp/journey-upload-docs";
-const String checkBankStatementStatus = "wati-bank-statement-status";
-const String getLoanHistory = "getLoanHistory$andRD";
+const String checkBankStatementStatus = "account-aggregator-verification";
+const String getLoanHistory = "getLoanHistory";
 const String initiateCashFreePayment = "initiateCashfreeRequest$andRD";
 const String completeCashFreePayment = "completeCashfreePayment$andRD";
 const String initiateRazorpayPayment = "initiateRazorRequest$andRD";
 const String completeRazorpayPayment = "completeRazorRequest$andRD";
 const String calculateDistance = "calculate-distance";
+const String bankStatementVerification   = "bank-statement-verifification";
 
 
 
