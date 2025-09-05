@@ -30,7 +30,7 @@ class LoanOfferFailed extends StatefulWidget{
 class _LoanOfferFailed extends State<LoanOfferFailed>{
 
 
-
+/*
   getCustomerDetailsApiCall() async{
     context.read<DashboardCubit>().callDashBoardApi();
     var nodeOtpModel = await MySharedPreferences.getUserSessionDataNode();
@@ -44,6 +44,8 @@ class _LoanOfferFailed extends State<LoanOfferFailed>{
       "custId": verifyOTPModel.data?.custId
     });
   }
+
+ */
 
 
   @override

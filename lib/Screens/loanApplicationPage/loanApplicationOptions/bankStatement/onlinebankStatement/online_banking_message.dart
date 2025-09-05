@@ -32,25 +32,29 @@ class _OnlineBankingMessageScreen extends State<OnlineBankingMessageScreen>{
         onBackPress: (){
           context.pop();
           context.pop();
-          context.push(AppRouterName.loanOfferPage,extra: 1).then((val){});
+          if(widget.checkBankStatementStatusModel.data?.aaConsentStatus == 1){
+            context.push(AppRouterName.loanOfferPage,extra: 1).then((val){});
+          }
         },
-        isSuccess: widget.checkBankStatementStatusModel.success ?? false,
+        isSuccess: widget.checkBankStatementStatusModel.data?.aaConsentStatus == 1,
         statusType: (widget.checkBankStatementStatusModel.data?.aaConsentStatus == 1 && (widget.checkBankStatementStatusModel.success ?? false))?
         "Congratulations!":"Failed",
-        statusMessage: (widget.checkBankStatementStatusModel.data?.aaConsentStatus == 1 && (widget.checkBankStatementStatusModel.success ?? false))?
-        "Bank Statement Fetched Successfully.":"Unable to fetch Bank Statement.",
+        statusMessage: widget.checkBankStatementStatusModel.data?.message ?? "",
         iconTypePath: ImageConstants.oneMoneyIcon,
         loan112button: Loan112Button(
           onPressed: () {
             context.pop();
             context.pop();
-            context.replace(AppRouterName.loanOfferPage,extra: 1);
+            if(widget.checkBankStatementStatusModel.data?.aaConsentStatus == 1){
+              context.replace(AppRouterName.loanOfferPage,extra: 1);
+            }
           },
           text: "CONTINUE",
         )
     );
   }
 
+  /*
   getCustomerDetailsApiCall() async{
     context.read<DashboardCubit>().callDashBoardApi();
     var nodeOtpModel = await MySharedPreferences.getUserSessionDataNode();
@@ -64,6 +68,8 @@ class _OnlineBankingMessageScreen extends State<OnlineBankingMessageScreen>{
       "custId": verifyOTPModel.data?.custId
     });
   }
+
+   */
 
 
 }

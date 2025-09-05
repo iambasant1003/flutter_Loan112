@@ -78,6 +78,7 @@ class _CheckEligibility extends State<CheckEligibility>{
   }
 
 
+  /*
   getCustomerDetailsApiCall() async{
     context.read<DashboardCubit>().callDashBoardApi();
     var nodeOtpModel = await MySharedPreferences.getUserSessionDataNode();
@@ -91,6 +92,8 @@ class _CheckEligibility extends State<CheckEligibility>{
       "custId": verifyOTPModel.data?.custId
     });
   }
+
+   */
 
   Future<void> getCustomerDetails() async{
     String? customerData = await MySharedPreferences.getCustomerDetails();
@@ -126,7 +129,7 @@ class _CheckEligibility extends State<CheckEligibility>{
 
   Future isExistingCustomer() async{
     context.pop();
-    await getCustomerDetailsApiCall();
+    //await getCustomerDetailsApiCall();
   }
 
   @override
@@ -211,7 +214,7 @@ class _CheckEligibility extends State<CheckEligibility>{
                     customLeading: InkWell(
                       onTap: () async{
                         context.pop();
-                        await getCustomerDetailsApiCall();
+                        //await getCustomerDetailsApiCall();
                       },
                       child: Icon(Icons.arrow_back_ios, color: ColorConstant.blackTextColor),
                     ),

@@ -62,6 +62,7 @@ class AuthCubit extends Cubit<AuthState> {
       final geoLong = position.longitude.toString();
       final deviceId = await getDeviceId();
       final fcmToken = await MySharedPreferences.getNotificationData();
+      final appFlyerId = await MySharedPreferences.getAppsFlyerKey();
 
       DebugPrint.prt("Position $position, GeoLat $geoLat, GeoLong $geoLong, DeviceId $deviceId");
 
@@ -79,7 +80,7 @@ class AuthCubit extends Cubit<AuthState> {
         ..utmMedium = ""
         ..utmCampaign = ""
         ..fcmToken = fcmToken
-        ..appfylerUid = ""
+        ..appfylerUid = appFlyerId
         ..appfylerAdvertiserId = ""
         ..deviceId = deviceId ?? "";
 

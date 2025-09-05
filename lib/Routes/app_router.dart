@@ -37,6 +37,7 @@ import '../Screens/loanApplicationPage/loanApplicationOptions/eKyc/ekyc_message.
 import '../Screens/loanApplicationPage/loan_application_submit.dart';
 import '../Screens/sessionTimeOut/session_timeout.dart';
 import '../Screens/supportUi/customer_support.dart';
+import '../main.dart';
 import 'app_router_name.dart';
 
 
@@ -126,6 +127,9 @@ final GoRouter appRouter = GoRouter(
     }),
     GoRoute(path: AppRouterName.sessionTimeOut,builder: (context,state) => SessionTimeOutLoan112()),
   ],
+  observers: [
+    routeObserver
+  ]
 );
 
 

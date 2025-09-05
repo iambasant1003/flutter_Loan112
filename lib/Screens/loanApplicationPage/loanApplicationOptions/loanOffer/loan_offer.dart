@@ -82,6 +82,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
   }
 
 
+  /*
   getCustomerDetailsApiCall() async{
     context.read<DashboardCubit>().callDashBoardApi();
     var nodeOtpModel = await MySharedPreferences.getUserSessionDataNode();
@@ -96,6 +97,8 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
     });
   }
 
+   */
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -103,7 +106,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
         customLeading: InkWell(
           onTap: () async{
             context.pop();
-            await getCustomerDetailsApiCall();
+            //await getCustomerDetailsApiCall();
           },
           child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
         ),
@@ -185,7 +188,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
                 await checkConditionCalculateDistanceApiCall();
               }
               else{
-                await getCustomerDetailsApiCall();
+                //await getCustomerDetailsApiCall();
               }
               if (!_isActive) return;
               context.pop();
@@ -200,7 +203,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
                 openSnackBar(context, state.loanAcceptanceModel.message ?? "Unknown Error");
                 if(state.loanAcceptanceModel.statusCode == 403){
                   context.pop();
-                  getCustomerDetailsApiCall();
+                  //getCustomerDetailsApiCall();
                 }
               }
             });
@@ -392,11 +395,8 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
     if (purposeOfLoanId != "") {
       var otpModel = await MySharedPreferences.getUserSessionDataNode();
       VerifyOTPModel verifyOtpModel = VerifyOTPModel.fromJson(jsonDecode(otpModel));
-      var leadIdData = verifyOtpModel.data?.leadId;
+      var leadIdData = await MySharedPreferences.getLeadId();
 
-      if (leadIdData == "" || leadIdData == null) {
-        leadIdData = await MySharedPreferences.getLeadId();
-      }
 
       if (!context.mounted) return; // ✅ make sure context is valid
 

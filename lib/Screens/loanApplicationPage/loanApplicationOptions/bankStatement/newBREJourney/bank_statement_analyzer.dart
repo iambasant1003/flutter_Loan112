@@ -225,7 +225,7 @@ class _BankStatementAnalyzer extends State<BankStatementAnalyzer>{
           onTap:() async{
             context.pop();
             context.pop();
-             await getCustomerDetailsApiCall();
+             //await getCustomerDetailsApiCall();
           },
           child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
         ),
@@ -477,6 +477,7 @@ class _BankStatementAnalyzer extends State<BankStatementAnalyzer>{
     context.read<LoanApplicationCubit>().verifyBankStatementApiCall(dataObj);
   }
 
+  /*
   Future<void> getCustomerDetailsApiCall() async{
     context.read<DashboardCubit>().callDashBoardApi();
     var nodeOtpModel = await MySharedPreferences.getUserSessionDataNode();
@@ -490,6 +491,8 @@ class _BankStatementAnalyzer extends State<BankStatementAnalyzer>{
       "custId": verifyOTPModel.data?.custId
     });
   }
+
+   */
 
   String getStatementText(int fetchBankStatementVal){
     if(fetchBankStatementVal == 2){

@@ -16,6 +16,7 @@ class MySharedPreferences {
   static const chatUsNumber = "chatUsNumber";
   static const callUsNumber = "callUsNumber";
   static const isEnhanceKey = "isEnhance";
+  static const appsFlyerKeyset = "appsFlyerKey";
 
 
   static Future<SharedPreferences> _getPreferences() async {
@@ -71,6 +72,24 @@ class MySharedPreferences {
 
     if (email != null) {
       return email;
+    } else {
+      return "";
+    }
+  }
+
+
+  static Future<void> setAppsFlyerKey(String appFlyerKey) async {
+    String data = appFlyerKey;
+    final prefs = await _getPreferences();
+    await prefs.setString(appsFlyerKeyset, data);
+  }
+
+  static Future<String> getAppsFlyerKey() async {
+    final prefs = await _getPreferences();
+    String? appFlyerKey = prefs.getString(appsFlyerKeyset);
+
+    if (appFlyerKey != null) {
+      return appFlyerKey;
     } else {
       return "";
     }

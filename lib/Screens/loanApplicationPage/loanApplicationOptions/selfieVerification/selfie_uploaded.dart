@@ -36,6 +36,7 @@ class SelfieUploadedPage extends StatefulWidget {
 class _SelfieUploadedPage extends State<SelfieUploadedPage> {
 
 
+  /*
   getCustomerDetailsApiCall() async {
     context.read<DashboardCubit>().callDashBoardApi();
     var nodeOtpModel = await MySharedPreferences.getUserSessionDataNode();
@@ -50,14 +51,7 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
     });
   }
 
-
-  bool _isActive = true;
-
-  @override
-  void dispose() {
-    _isActive = false;
-    super.dispose();
-  }
+   */
 
 
   bool _isActive = true;
@@ -67,6 +61,9 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
     _isActive = false;
     super.dispose();
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +161,7 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
                       ),
                       onTap: () async{
                         context.pop();
-                        await getCustomerDetailsApiCall();
+                        //await getCustomerDetailsApiCall();
                       },
                     ),
                   ),
@@ -297,6 +294,8 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
                                   ..add(
                                     MapEntry(
                                       'requestSource',
+                                      Platform.isIOS?
+                                      ConstText.requestSourceIOS:
                                       ConstText.requestSource,
                                     ),
                                   );

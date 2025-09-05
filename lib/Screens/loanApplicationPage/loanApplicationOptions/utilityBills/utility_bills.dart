@@ -129,6 +129,7 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
 
 
 
+  /*
   getCustomerDetailsApiCall() async{
     context.read<DashboardCubit>().callDashBoardApi();
     var nodeOtpModel = await MySharedPreferences.getUserSessionDataNode();
@@ -142,6 +143,8 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
       "custId": verifyOTPModel.data?.custId
     });
   }
+
+   */
 
   void getUtilityBillDoc() async{
     var otpModel = await MySharedPreferences.getUserSessionDataNode();
@@ -250,7 +253,7 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
                       child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
                       onTap: () async{
                         context.pop();
-                        await getCustomerDetailsApiCall();
+                        //await getCustomerDetailsApiCall();
                       },
                     ),
                   ),
@@ -591,7 +594,9 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
       formData.fields
         ..add(MapEntry('custId', customerId?? ""))
         ..add(MapEntry('leadId', leadId))
-        ..add(MapEntry('requestSource', ConstText.requestSource))
+        ..add(MapEntry('requestSource',  Platform.isIOS?
+        ConstText.requestSourceIOS:
+        ConstText.requestSource))
         ..add(MapEntry('docType', selectedDocument?.docType ?? ""
         ));
 

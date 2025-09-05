@@ -24,6 +24,7 @@ class BankStatementScreen extends StatefulWidget {
 class _BankStatementScreen extends State<BankStatementScreen> {
   bool isOnlineSelected = true;
 
+  /*
   getCustomerDetailsApiCall() async{
     context.read<DashboardCubit>().callDashBoardApi();
     var nodeOtpModel = await MySharedPreferences.getUserSessionDataNode();
@@ -37,6 +38,8 @@ class _BankStatementScreen extends State<BankStatementScreen> {
       "custId": verifyOTPModel.data?.custId
     });
   }
+
+   */
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +63,7 @@ class _BankStatementScreen extends State<BankStatementScreen> {
                   customLeading: InkWell(
                     onTap: () async{
                       context.pop();
-                      await getCustomerDetailsApiCall();
+                      //await getCustomerDetailsApiCall();
                     },
                     child: Icon(
                       Icons.arrow_back_ios,

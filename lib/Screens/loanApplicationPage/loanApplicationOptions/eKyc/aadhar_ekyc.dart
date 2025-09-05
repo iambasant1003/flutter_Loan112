@@ -35,6 +35,7 @@ class _AadharKycScreen extends State<AadharKycScreen>{
   bool reInitiate = false;
 
 
+  /*
   getCustomerDetailsApiCall() async{
     context.read<DashboardCubit>().callDashBoardApi();
     var nodeOtpModel = await MySharedPreferences.getUserSessionDataNode();
@@ -48,6 +49,8 @@ class _AadharKycScreen extends State<AadharKycScreen>{
       "custId": verifyOTPModel.data?.custId
     });
   }
+
+   */
 
   @override
   Widget build(BuildContext context) {
@@ -130,7 +133,7 @@ class _AadharKycScreen extends State<AadharKycScreen>{
                         child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
                         onTap: () async{
                           context.pop();
-                          await getCustomerDetailsApiCall();
+                          //await getCustomerDetailsApiCall();
                         },
                       ),
                     ),

@@ -509,7 +509,9 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
     formData.fields
       ..add(MapEntry('custId', custId))
       ..add(MapEntry('leadId', leadId))
-      ..add(MapEntry('requestSource', requestSource))
+      ..add(MapEntry('requestSource',  Platform.isIOS?
+      ConstText.requestSourceIOS:
+      ConstText.requestSource))
       ..add(MapEntry('docType', docType));
 
     if (salarySlipPassword != null) {

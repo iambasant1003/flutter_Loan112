@@ -1,6 +1,3 @@
-
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,10 +12,10 @@ import 'Constant/ConstText/ConstText.dart';
 import 'Routes/app_router.dart';
 import 'Utils/AppConfig.dart';
 
-
+/// 👇 declare a global RouteObserver
+final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
 class MyApp extends StatefulWidget {
-
   final String environment;
 
   const MyApp({super.key, required this.environment});
@@ -28,24 +25,17 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
-
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    // Initialize your config class
     AppConfig.init(widget.environment);
     configLoading();
     _getPackageName();
   }
 
-
-
-
   Future<void> _getPackageName() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    DebugPrint.prt("Package Name IOS ${packageInfo.packageName}"); // 👈 Android: applicationId, iOS: bundleIdentifier
+    DebugPrint.prt("Package Name IOS ${packageInfo.packageName}");
   }
 
   @override
@@ -63,7 +53,6 @@ class MyAppState extends State<MyApp> {
               behavior: HitTestBehavior.opaque,
               onTap: () {
                 FocusScopeNode currentFocus = FocusScope.of(context);
-
                 if (!currentFocus.hasPrimaryFocus &&
                     currentFocus.focusedChild != null) {
                   FocusManager.instance.primaryFocus?.unfocus();
@@ -83,7 +72,7 @@ class MyAppState extends State<MyApp> {
                     ),
                   ),
                 ),
-                routerConfig: appRouter,
+                routerConfig: appRouter, // 👈 keep this only
                 builder: EasyLoading.init(),
               ),
             );
@@ -92,9 +81,6 @@ class MyAppState extends State<MyApp> {
       ),
     );
   }
-
-
-
 
   void configLoading() {
     EasyLoading.instance
@@ -110,7 +96,5 @@ class MyAppState extends State<MyApp> {
       ..maskColor = Colors.blue.withOpacity(0.5)
       ..userInteractions = false
       ..dismissOnTap = false;
-    //..customAnimation = CustomAnimation();
   }
-
 }

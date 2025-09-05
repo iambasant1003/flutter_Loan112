@@ -120,7 +120,7 @@ class _VerifyOTP extends State<VerifyOTP>{
                    child: Column(
                      children: [
                        Padding(
-                         padding: EdgeInsets.only(bottom: 11.0,left: 10.0),
+                         padding: EdgeInsets.only(bottom: 11.0,left: 0.0),
                          child: Loan112AppBar(
                            customLeading: InkWell(
                              child: Icon(Icons.arrow_back_ios,
@@ -129,7 +129,7 @@ class _VerifyOTP extends State<VerifyOTP>{
                                GoRouter.of(context).pop();
                              },
                            ),
-                           leadingSpacing: 15,
+                           leadingSpacing: 30,
                            title: Image.asset(
                              ImageConstants.loan112AppNameIcon,
                              height: 76,

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:appsflyer_sdk/appsflyer_sdk.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,12 +31,54 @@ class _PermissionPage extends State<PermissionPage> {
   @override
   void initState() {
     super.initState();
+    _initAppsFlyer();
     allowNotification();
   }
 
 
   void allowNotification() async{
     await FirebaseNotificationService().init(context);
+  }
+
+  AppsflyerSdk? _appsflyerSdk;
+
+  void _initAppsFlyer() async {
+    final options = AppsFlyerOptions(
+      afDevKey: "", // Replace this
+      appId: "6747157984", // iOS App ID (can be empty for Android)
+      showDebug: true,
+      timeToWaitForATTUserAuthorization: 50,
+    );
+
+    _appsflyerSdk = AppsflyerSdk(options);
+
+    var result = await _appsflyerSdk!.initSdk(
+      registerConversionDataCallback: true,
+      registerOnAppOpenAttributionCallback: true,
+      registerOnDeepLinkingCallback: true,
+    );
+
+    _appsflyerSdk!.onInstallConversionData((data) {
+      debugPrint("🔁 Conversion Data: $data");
+    });
+
+    _appsflyerSdk!.onAppOpenAttribution((data) {
+      debugPrint("📥 Attribution Data: $data");
+    });
+
+    _appsflyerSdk!.onDeepLinking((data) {
+      debugPrint("🔗 Deep Link Data: $data");
+    });
+
+    DebugPrint.prt("AppFlyer result $result");
+    // if (result['status'] == 'OK')
+    if (result['status'] == 'OK') {
+      final appsFlyerId = await _appsflyerSdk?.getAppsFlyerUID();
+      DebugPrint.prt("AppFlyer Id $appsFlyerId");
+      if (appsFlyerId != null) {
+        MySharedPreferences.setAppsFlyerKey(appsFlyerId);
+      }
+    }
   }
 
   @override
@@ -158,7 +201,6 @@ class _PermissionPage extends State<PermissionPage> {
     );
   }
 
-
   void takeAllRequiredPermission(BuildContext context) async{
     final cameraPermission = await Permission.camera.request();
     final microPhonePermission = await Permission.microphone.request();
@@ -181,7 +223,6 @@ class _PermissionPage extends State<PermissionPage> {
       openAppSettings();
     }
   }
-
 
   Widget permissionTypeWidget(
     BuildContext context, {
@@ -253,7 +294,6 @@ class _PermissionPage extends State<PermissionPage> {
       ],
     );
   }
-
 
   Widget permissionContainerWidget(BuildContext context){
     return Column(
@@ -331,7 +371,6 @@ class _PermissionPage extends State<PermissionPage> {
       ],
     );
   }
-
 
   Widget consentBoxUI(BuildContext context){
     return BlocBuilder<AuthCubit, AuthState>(
@@ -421,7 +460,4 @@ class _PermissionPage extends State<PermissionPage> {
       },
     );
   }
-
-
-
 }

@@ -29,6 +29,7 @@ class _EligibilityStatus extends State<EligibilityStatus>{
 
 
 
+  /*
   getCustomerDetailsApiCall() async{
     var otpModel = await MySharedPreferences.getPhpOTPModel();
     SendPhpOTPModel sendPhpOTPModel = SendPhpOTPModel.fromJson(jsonDecode(otpModel));
@@ -36,6 +37,8 @@ class _EligibilityStatus extends State<EligibilityStatus>{
       "cust_profile_id": sendPhpOTPModel.data?.custProfileId
     });
   }
+
+   */
 
 
   @override
@@ -49,7 +52,7 @@ class _EligibilityStatus extends State<EligibilityStatus>{
               context.push(AppRouterName.dashboardPage);
             }else{
               context.pop();
-              getCustomerDetailsApiCall();
+              //getCustomerDetailsApiCall();
             }
           },
           child: Icon(

@@ -38,6 +38,7 @@ class SelfieCameraPage extends StatefulWidget {
 class _SelfieCameraPageState extends State<SelfieCameraPage> with WidgetsBindingObserver{
 
   File? imagePath;
+  /*
   getCustomerDetailsApiCall() async{
     context.read<DashboardCubit>().callDashBoardApi();
     var nodeOtpModel = await MySharedPreferences.getUserSessionDataNode();
@@ -51,6 +52,8 @@ class _SelfieCameraPageState extends State<SelfieCameraPage> with WidgetsBinding
       "custId": verifyOTPModel.data?.custId
     });
   }
+
+   */
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +76,7 @@ class _SelfieCameraPageState extends State<SelfieCameraPage> with WidgetsBinding
                       child: Icon(Icons.arrow_back_ios,color: ColorConstant.blackTextColor),
                       onTap: () async{
                         context.pop();
-                        await getCustomerDetailsApiCall();
+                        //await getCustomerDetailsApiCall();
                       },
                     ),
                   ),

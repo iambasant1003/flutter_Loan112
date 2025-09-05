@@ -60,7 +60,9 @@ const Loan112VerifyStatusPage({
                             shape: BoxShape.circle,
                           ),
                           child: Center(
-                            child: SvgPicture.asset(ImageConstants.successIcon),
+                            child: isSuccess?
+                            SvgPicture.asset(ImageConstants.successIcon):
+                            Image.asset(ImageConstants.failedIcon),
                           ),
                         ),
                       )
@@ -89,14 +91,18 @@ const Loan112VerifyStatusPage({
                   SizedBox(
                     height: 12,
                   ),
-                  Center(
-                    child: Text(
-                      statusMessage,
-                      style: TextStyle(
-                        fontSize: FontConstants.f14,
-                        fontFamily: FontConstants.fontFamily,
-                        fontWeight: FontConstants.w500,
-                        color: ColorConstant.blackTextColor,
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: FontConstants.horizontalPadding),
+                    child: Center(
+                      child: Text(
+                        statusMessage,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: FontConstants.f14,
+                          fontFamily: FontConstants.fontFamily,
+                          fontWeight: FontConstants.w500,
+                          color: ColorConstant.blackTextColor,
+                        ),
                       ),
                     ),
                   ),
