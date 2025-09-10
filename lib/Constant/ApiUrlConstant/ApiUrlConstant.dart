@@ -27,7 +27,7 @@ const String addReFeRance ="add-reference";
 const String updateBankingDetails = "customer-banking";
 const String verifyIfscCode = "getBankDetailsByIfsc$andRD";
 const String bankAccountType = "getMasterBankType$andRD";
-const String uploadOnlineBankStatement = "whatsapp/journey-upload-docs";
+const String uploadOnlineBankStatement = "journey-upload-docs";
 const String checkBankStatementStatus = "account-aggregator-verification";
 const String getLoanHistory = "getLoanHistory";
 const String initiateCashFreePayment = "initiateCashfreeRequest$andRD";
@@ -36,6 +36,7 @@ const String initiateRazorpayPayment = "initiateRazorRequest$andRD";
 const String completeRazorpayPayment = "completeRazorRequest$andRD";
 const String calculateDistance = "calculate-distance";
 const String bankStatementVerification   = "bank-statement-verifification";
+const String appVersionCheck = "checkInstantAppVersion$andRD";
 
 
 

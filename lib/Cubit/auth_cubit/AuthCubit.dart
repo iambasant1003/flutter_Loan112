@@ -6,11 +6,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loan112_app/Constant/ConstText/ConstText.dart';
 import 'package:loan112_app/Constant/PageKeyConstant/PageKeyConstant.dart';
 import 'package:loan112_app/Cubit/safe_emit.dart';
+import 'package:loan112_app/Model/AppVersionResponseModel.dart';
 import 'package:loan112_app/Model/SendOTPModel.dart';
 import 'package:loan112_app/Model/SendPhpOTPModel.dart';
+import 'package:loan112_app/ParamModel/AppVersionRequestModel.dart';
 import 'package:loan112_app/ParamModel/SendOTPPramNodeModel.dart';
 import 'package:loan112_app/ParamModel/SendOTPPramPHPModel.dart';
 import 'package:loan112_app/Services/ApiResponseStatus.dart';
+import 'package:loan112_app/Utils/AppConfig.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
 import 'package:loan112_app/Utils/MysharePrefenceClass.dart';
 import '../../Repository/auth_Repository.dart';
@@ -22,15 +25,12 @@ class AuthCubit extends Cubit<AuthState> {
 
   AuthCubit(this.authRepository) : super(AuthInitial());
 
-
-
   bool isPermissionGiven = false;
 
   void toggleCheckbox(bool? value) {
     isPermissionGiven = value ?? false;
     safeEmit(() => emit(PermissionCheckboxState(isChecked: isPermissionGiven)));
   }
-
 
   Future<void> sendOtpNode(String phoneNumber) async {
     //emit(AuthLoading());
@@ -241,6 +241,40 @@ class AuthCubit extends Cubit<AuthState> {
     } catch (e) {
       safeEmit(()=>
           emit(AuthError(ConstText.exceptionError))
+      );
+    }
+  }
+
+  Future<void> checkAppVersionApiCall() async {
+    AppVersionRequestModel appVersionRequestModel = AppVersionRequestModel();
+    appVersionRequestModel.version = AppConfig.appVersion;
+    appVersionRequestModel.fcmToken = "";
+    appVersionRequestModel.appName = "LN";
+    appVersionRequestModel.deviceId = await getDeviceId();
+
+    safeEmit(()=>
+        emit(AuthLoading())
+    );
+    try {
+      final response = await authRepository.verifyAppVersionApiCallFunction(appVersionRequestModel.toJson());
+      DebugPrint.prt("Check AppVersion Success $response");
+      if (response.status == ApiResponseStatus.success) {
+        safeEmit(()=>
+            emit(CheckAppVersionSuccess(response.data!))
+        );
+      } else {
+        safeEmit(()=>
+            emit(CheckAppVersionFailed(response.error!))
+        );
+      }
+    } catch (e) {
+      safeEmit(()=>
+          emit(CheckAppVersionFailed(
+            AppVersionResponseModel(
+              status: 500,
+              message: ConstText.exceptionError
+            )
+          ))
       );
     }
   }

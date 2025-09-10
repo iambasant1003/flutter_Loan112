@@ -7,6 +7,8 @@ import '../../Constant/ColorConst/ColorConstant.dart';
 import '../../Constant/FontConstant/FontConstant.dart';
 import '../../Constant/ImageConstant/ImageConstants.dart';
 import '../../Model/UpdateBankAccountModel.dart';
+import '../../Utils/CleverTapEventsName.dart';
+import '../../Utils/CleverTapLogger.dart';
 import '../../Widget/app_bar.dart';
 import '../../Widget/common_button.dart';
 import '../../Widget/eligibility_status_background.dart';
@@ -21,6 +23,14 @@ class LoanApplicationSubmit extends StatefulWidget{
 
 class _LoanApplicationSubmit extends State<LoanApplicationSubmit> {
 
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    CleverTapLogger.logEvent(CleverTapEventsName.APPLICATION_SUBMITTED, isSuccess: true);
+  }
 
   @override
   Widget build(BuildContext context) {

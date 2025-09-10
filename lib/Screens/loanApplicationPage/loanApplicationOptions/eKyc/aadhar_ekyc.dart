@@ -1,6 +1,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:clevertap_plugin/clevertap_plugin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -11,6 +12,7 @@ import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.da
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
 import 'package:loan112_app/Model/VerifyOTPModel.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
+import 'package:loan112_app/Utils/CleverTapEventsName.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:loan112_app/Widget/app_bar.dart';
 import 'package:loan112_app/Widget/bottom_dashline.dart';
@@ -20,6 +22,7 @@ import '../../../../Constant/ConstText/ConstText.dart';
 import '../../../../Constant/ImageConstant/ImageConstants.dart';
 import '../../../../Cubit/dashboard_cubit/DashboardCubit.dart';
 import '../../../../Model/SendPhpOTPModel.dart';
+import '../../../../Utils/CleverTapLogger.dart';
 import '../../../../Utils/MysharePrefenceClass.dart';
 
 class AadharKycScreen extends StatefulWidget{
@@ -63,6 +66,7 @@ class _AadharKycScreen extends State<AadharKycScreen>{
 
           else if (state is CustomerKYCSuccess) {
             EasyLoading.dismiss();
+            CleverTapLogger.logEvent(CleverTapEventsName.EKYC_INITIATED, isSuccess: true);
 
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!context.mounted) return;
@@ -87,6 +91,7 @@ class _AadharKycScreen extends State<AadharKycScreen>{
 
           else if (state is CustomerKYCError) {
             EasyLoading.dismiss();
+            CleverTapLogger.logEvent(CleverTapEventsName.EKYC_INITIATED, isSuccess: false);
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!context.mounted) return;
               openSnackBar(context, state.customerKycModel.message ?? "Unknown Error");
@@ -94,6 +99,7 @@ class _AadharKycScreen extends State<AadharKycScreen>{
           }
 
           else if (state is CustomerKYCVerificationSuccess) {
+            CleverTapLogger.logEvent(CleverTapEventsName.EKYC_VERIFIED, isSuccess: true);
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!context.mounted) return;
               //context.pop();
@@ -106,6 +112,7 @@ class _AadharKycScreen extends State<AadharKycScreen>{
 
           else if (state is CustomerKYCVerificationError) {
             EasyLoading.dismiss();
+            CleverTapLogger.logEvent(CleverTapEventsName.EKYC_VERIFIED, isSuccess: false);
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!context.mounted) return;
               openSnackBar(context, state.ekycVerificationModel.message ?? "Unknown Error");

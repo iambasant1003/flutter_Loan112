@@ -27,6 +27,8 @@ import '../../../../Constant/ImageConstant/ImageConstants.dart';
 import '../../../../Cubit/dashboard_cubit/DashboardCubit.dart';
 import '../../../../Model/SendPhpOTPModel.dart';
 import '../../../../ParamModel/GetCityAndStateRequest.dart';
+import '../../../../Utils/CleverTapEventsName.dart';
+import '../../../../Utils/CleverTapLogger.dart';
 import '../../../../Utils/UpperCaseTextFormatter.dart';
 import '../../../../Utils/validation.dart';
 
@@ -141,6 +143,7 @@ class _CheckEligibility extends State<CheckEligibility>{
             EasyLoading.show(status: "Please Wait...");
           } else if (state is CreateLeadSuccess) {
             EasyLoading.dismiss();
+            CleverTapLogger.logEvent(CleverTapEventsName.CHECK_ELIGIBILITY_NEW, isSuccess: true);
             DebugPrint.prt("Create Lead Success");
             MySharedPreferences.setLeadId(state.createLeadModel.data?.leadId ?? "");
 
@@ -181,11 +184,13 @@ class _CheckEligibility extends State<CheckEligibility>{
           } else if (state is CreateLeadError) {
             EasyLoading.dismiss();
             if(state.createLeadModel.statusCode == 402){
+              CleverTapLogger.logEvent(CleverTapEventsName.CHECK_ELIGIBILITY_NEW, isSuccess: false);
               context.replace(
                 AppRouterName.eligibilityStatus,
                 extra: state.createLeadModel,
               );
             }else{
+              CleverTapLogger.logEvent(CleverTapEventsName.CHECK_ELIGIBILITY_NEW, isSuccess: false);
               openSnackBar(context, state.createLeadModel.message ?? "UnExpected Error");
             }
           } else if (state is LoanApplicationError) {
@@ -597,19 +602,12 @@ class _CheckEligibility extends State<CheckEligibility>{
   void _pickNextSalaryDate(BuildContext context) async{
     final pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime(
-        DateTime.now().year,
-        DateTime.now().month,
-        DateTime.now().day,
-      ),
-      firstDate: DateTime(
-        DateTime.now().year,
-        DateTime.now().month,
-        DateTime.now().day,
-      ),
-      lastDate: DateTime.now().add(Duration(days: 40)),
-      locale: const Locale('en', 'GB'),   // Forces DD/MM/YYYY entry
+      initialDate: DateTime.now().add(const Duration(days: 1)), // Start from tomorrow
+      firstDate: DateTime.now().add(const Duration(days: 1)),  // Prevent today selection
+      lastDate: DateTime.now().add(const Duration(days: 40)),
+      locale: const Locale('en', 'GB'), // Forces DD/MM/YYYY
     );
+
 
     if (pickedDate != null) {
       dateOfBirthPassed = DateFormat('yyyy-MM-dd').format(pickedDate);

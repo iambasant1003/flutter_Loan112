@@ -13,6 +13,8 @@ import '../../Constant/ColorConst/ColorConstant.dart';
 import '../../Constant/FontConstant/FontConstant.dart';
 import '../../Constant/ImageConstant/ImageConstants.dart';
 import '../../Cubit/dashboard_cubit/DashboardCubit.dart';
+import '../../Utils/CleverTapEventsName.dart';
+import '../../Utils/CleverTapLogger.dart';
 import '../../Widget/circular_progress.dart';
 import '../../Widget/common_button.dart';
 import 'dashboard_loan_details.dart';
@@ -30,6 +32,8 @@ class _DashBoardHome extends State<DashBoardHome> {
     super.initState();
     context.read<DashboardCubit>().callDashBoardApi();
   }
+
+
 
   final PageController _controller = PageController(viewportFraction: 1.0);
   DashBoarddataModel? dashBoarddataModel;
@@ -65,15 +69,17 @@ class _DashBoardHome extends State<DashBoardHome> {
             state.dashBoardModel.message ?? "Unknown Error",
           );
           if(state.dashBoardModel.status == 4){
-            context.replace(AppRouterName.sessionTimeOut);
+            context.go(AppRouterName.sessionTimeOut);
           }
         } else if (state is DeleteCustomerSuccess) {
           DebugPrint.prt("Delete Customer Success");
+          CleverTapLogger.logEvent(CleverTapEventsName.DELETE_ACCOUNT_OTP_SENT, isSuccess: true);
           EasyLoading.dismiss();
           Navigator.of(context).pop();
           context.push(AppRouterName.dashBoardOTP);
         } else if (state is DeleteCustomerFailed) {
           DebugPrint.prt("Delete Customer Failed");
+          CleverTapLogger.logEvent(CleverTapEventsName.DELETE_ACCOUNT_OTP_SENT, isSuccess: false);
           Navigator.of(context).pop();
           EasyLoading.dismiss();
           openSnackBar(
@@ -360,7 +366,8 @@ class _DashBoardHome extends State<DashBoardHome> {
                 ),
               ),
             );
-          } else {
+          }
+          else {
             return commonScaffold(
               context,
               bodyPart: SizedBox.expand(

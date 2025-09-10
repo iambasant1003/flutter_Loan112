@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 //import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:clevertap_plugin/clevertap_plugin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,6 +19,8 @@ import 'package:loan112_app/Widget/common_system_ui.dart';
 import '../../Constant/FontConstant/FontConstant.dart';
 import '../../Cubit/auth_cubit/AuthCubit.dart';
 import '../../Cubit/auth_cubit/AuthState.dart';
+import '../../Utils/CleverTapEventsName.dart';
+import '../../Utils/CleverTapLogger.dart';
 import '../../Widget/common_button.dart';
 import '../../Widget/common_textField.dart';
 
@@ -57,9 +60,11 @@ class _LogInPageState extends State<LogInPage> {
                 DebugPrint.prt("Navigation Logic Called To OTP");
                 EasyLoading.dismiss();
                 mobileController.clear();
+                CleverTapLogger.logEvent(CleverTapEventsName.OTP_SENT, isSuccess: true);
                 context.push(AppRouterName.verifyOtp,extra: mobileNumberToPass);
               }else if(state is AuthError){
                 EasyLoading.dismiss();
+                CleverTapLogger.logEvent(CleverTapEventsName.OTP_SENT, isSuccess: false);
                 openSnackBar(context, state.message);
               }
             },
@@ -177,6 +182,9 @@ class _LogInPageState extends State<LogInPage> {
                                 final phone = mobileController.text.trim();
                                 if (phone.isNotEmpty) {
                                   DebugPrint.prt("LogIn Method Called $phone");
+                                  CleverTapPlugin.onUserLogin({
+                                    'Identity': phone,
+                                  });
                                   context.read<AuthCubit>().sendBothOtp(phone);
                                 } else {
                                   ScaffoldMessenger.of(context).showSnackBar(

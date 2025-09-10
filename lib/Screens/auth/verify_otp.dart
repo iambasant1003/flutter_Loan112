@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:clevertap_plugin/clevertap_plugin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,13 +9,14 @@ import 'package:go_router/go_router.dart';
 import 'package:loan112_app/Cubit/auth_cubit/AuthCubit.dart';
 import 'package:loan112_app/Cubit/auth_cubit/AuthState.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
-import 'package:loan112_app/Utils/Debugprint.dart';
+import 'package:loan112_app/Utils/CleverTapEventsName.dart';
 import 'package:loan112_app/Utils/MysharePrefenceClass.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../Constant/ColorConst/ColorConstant.dart';
 import '../../Constant/FontConstant/FontConstant.dart';
 import '../../Constant/ImageConstant/ImageConstants.dart';
+import '../../Utils/CleverTapLogger.dart';
 import '../../Widget/app_bar.dart';
 import '../../Widget/common_button.dart';
 
@@ -62,6 +64,7 @@ class _VerifyOTP extends State<VerifyOTP>{
 
 
   void _resendOtp() {
+    CleverTapLogger.logEvent(CleverTapEventsName.OTP_RESENT, isSuccess: true);
     context.read<AuthCubit>().sendBothOtp(widget.mobileNumber);
   }
 
@@ -104,6 +107,7 @@ class _VerifyOTP extends State<VerifyOTP>{
                     } else if(state is VerifyOTPSuccess){
                       EasyLoading.dismiss();
                       MySharedPreferences.setUserSessionDataNode(jsonEncode(state.verifyOTPModel));
+                      CleverTapLogger.logEvent(CleverTapEventsName.OTP_VERIFY, isSuccess: true);
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         if (mounted) {
                           context.push(AppRouterName.dashboardPage);
@@ -111,10 +115,11 @@ class _VerifyOTP extends State<VerifyOTP>{
                       });
                     }else if(state is AuthError){
                       EasyLoading.dismiss();
+                      CleverTapLogger.logEvent(CleverTapEventsName.OTP_VERIFY, isSuccess: false);
                       openSnackBar(context, state.message);
                     }
                   },
-                 child: SafeArea(
+                  child: SafeArea(
                    top: true,
                    bottom: true,
                    child: Column(
@@ -281,7 +286,7 @@ class _VerifyOTP extends State<VerifyOTP>{
                                openSnackBar(context, "Please Enter OTP");
                              }
                            },
-                           text: "Verify otp",
+                           text: "Verify otp".toUpperCase(),
                          ),
                        ),
                      ],

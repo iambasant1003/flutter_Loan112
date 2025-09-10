@@ -9,12 +9,14 @@ import 'package:loan112_app/Cubit/repayment_cubit/RepaymentState.dart';
 import 'package:loan112_app/Routes/app_router_name.dart';
 import 'package:loan112_app/Screens/Repayment/paymentGateway/cashfree_pg_service.dart';
 import 'package:loan112_app/Screens/Repayment/paymentGateway/razorpay_service.dart';
+import 'package:loan112_app/Utils/CleverTapEventsName.dart';
 import 'package:loan112_app/Utils/Debugprint.dart';
 import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:loan112_app/Widget/bottom_dashline.dart';
 import 'package:loan112_app/Widget/common_button.dart';
 import '../../Constant/ImageConstant/ImageConstants.dart';
 import 'package:loan112_app/Model/GetLoanHistoryModel.dart';
+import '../../Utils/CleverTapLogger.dart';
 import '../../Widget/app_bar.dart';
 
 class PaymentOptionScreen extends StatefulWidget {
@@ -86,6 +88,7 @@ class _PaymentOptionScreen extends State<PaymentOptionScreen> {
             EasyLoading.show(status: "Please wait...");
           } else if (state is RazorpayPaymentInitiateSuccess) {
             EasyLoading.dismiss();
+            CleverTapLogger.logEvent(CleverTapEventsName.RAZORPAY_PAYMENT_INITIATED, isSuccess: true);
             DebugPrint.prt(
               "Razorpay Payment Initiated ${state.razorPayInitiatePaymentResponseSuccessModel}",
             );
@@ -107,6 +110,7 @@ class _PaymentOptionScreen extends State<PaymentOptionScreen> {
             }
           } else if (state is RazorpayPaymentInitiateFailed) {
             EasyLoading.dismiss();
+            CleverTapLogger.logEvent(CleverTapEventsName.RAZORPAY_PAYMENT_INITIATED, isSuccess: false);
             openSnackBar(
               context,
               state.razorPayInitiatePaymentResponseModel.message ??
@@ -114,6 +118,7 @@ class _PaymentOptionScreen extends State<PaymentOptionScreen> {
             );
           } else if (state is CashFreeInitiateSuccess) {
             EasyLoading.dismiss();
+            CleverTapLogger.logEvent(CleverTapEventsName.CASHEFREE_PAYMENT_INITIATED, isSuccess: true);
             DebugPrint.prt(
               "CashFree initialization success ${state.cashFreePaymentInitializationResponse.data?.toJson()}",
             );
@@ -139,6 +144,7 @@ class _PaymentOptionScreen extends State<PaymentOptionScreen> {
             );
           } else if (state is CashFreeInitiateFailed) {
             EasyLoading.dismiss();
+            CleverTapLogger.logEvent(CleverTapEventsName.CASHEFREE_PAYMENT_INITIATED, isSuccess: false);
             openSnackBar(
               context,
               state.cashFreePaymentInitializationResponse.message ??
@@ -146,6 +152,7 @@ class _PaymentOptionScreen extends State<PaymentOptionScreen> {
             );
           } else if (state is CheckRazorPayPaymentStatusSuccess) {
             EasyLoading.dismiss();
+            CleverTapLogger.logEvent(CleverTapEventsName.RAZORPAY_PAYMENT_DONE, isSuccess: true);
             // openSnackBar(
             //   context,
             //   state.razorPayCheckPaymentStatusModel.message!,
@@ -154,6 +161,7 @@ class _PaymentOptionScreen extends State<PaymentOptionScreen> {
             context.push(AppRouterName.paymentStatusPage);
           } else if (state is CheckRazorPayPaymentStatusFailed) {
             EasyLoading.dismiss();
+            CleverTapLogger.logEvent(CleverTapEventsName.RAZORPAY_PAYMENT_DONE, isSuccess: false);
             openSnackBar(
               context,
               state.razorPayCheckPaymentStatusModel.message!,
@@ -161,6 +169,7 @@ class _PaymentOptionScreen extends State<PaymentOptionScreen> {
             );
           } else if (state is CashFreePaymentStatusSuccess) {
             EasyLoading.dismiss();
+            CleverTapLogger.logEvent(CleverTapEventsName.CASHEFREE_PAYMENT_DONE, isSuccess: true);
             // openSnackBar(
             //   context,
             //   state.cashFreePaymentResponseModel.message!,
@@ -169,6 +178,7 @@ class _PaymentOptionScreen extends State<PaymentOptionScreen> {
             context.push(AppRouterName.paymentStatusPage);
           } else if (state is CashFreePaymentStatusFailed) {
             EasyLoading.dismiss();
+            CleverTapLogger.logEvent(CleverTapEventsName.CASHEFREE_PAYMENT_DONE, isSuccess: false);
             openSnackBar(
               context,
               state.cashFreePaymentResponseModel.message ?? "UnExpected Error",

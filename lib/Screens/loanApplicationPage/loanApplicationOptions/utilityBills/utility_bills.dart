@@ -21,6 +21,8 @@ import '../../../../Cubit/dashboard_cubit/DashboardCubit.dart';
 import '../../../../Model/GetUtilityDocTypeModel.dart';
 import '../../../../Model/SendPhpOTPModel.dart' hide Data;
 import '../../../../Model/VerifyOTPModel.dart' hide Data;
+import '../../../../Utils/CleverTapEventsName.dart';
+import '../../../../Utils/CleverTapLogger.dart';
 import '../../../../Utils/Debugprint.dart';
 import '../../../../Utils/MysharePrefenceClass.dart';
 import '../../../../Utils/snackbarMassage.dart';
@@ -218,6 +220,7 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
 
           else if (state is UploadUtilityDocSuccess) {
             EasyLoading.dismiss();
+            CleverTapLogger.logEvent(CleverTapEventsName.DOCUMENTATION, isSuccess: true);
             DebugPrint.prt("Final Result On utility Success ${state.uploadUtilityDocTypeModel.data?.finalResult}");
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (context.mounted) {
@@ -236,6 +239,7 @@ class _UtilityBillScreen extends State<UtilityBillScreen>{
 
           else if (state is UploadUtilityDocError) {
             EasyLoading.dismiss();
+            CleverTapLogger.logEvent(CleverTapEventsName.DOCUMENTATION, isSuccess: false);
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (context.mounted) {
                 openSnackBar(context, state.errorMessage ?? "");

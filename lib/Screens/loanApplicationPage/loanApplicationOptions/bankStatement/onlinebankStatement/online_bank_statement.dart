@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -18,8 +17,9 @@ import 'package:loan112_app/Utils/snackbarMassage.dart';
 import 'package:loan112_app/Widget/app_bar.dart';
 import 'package:loan112_app/Widget/bottom_dashline.dart';
 import 'package:loan112_app/Widget/common_button.dart';
-
 import '../../../../../Model/VerifyOTPModel.dart';
+import '../../../../../Utils/CleverTapEventsName.dart';
+import '../../../../../Utils/CleverTapLogger.dart';
 import '../../../../../Utils/MysharePrefenceClass.dart';
 
 class OnlineBankingOption extends StatefulWidget{
@@ -58,6 +58,7 @@ class _OnlineBankingOption extends State<OnlineBankingOption>{
           EasyLoading.show(status: "Please wait...");
         } else if (state is OnlineAccountAggregatorSuccess) {
           EasyLoading.dismiss();
+          CleverTapLogger.logEvent(CleverTapEventsName.ACCOUNT_AGGREGATOR_INIT, isSuccess: true);
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!context.mounted) return;
             context.push(AppRouterName.customerKYCWebview, extra: state.uploadOnlineBankStatementModel.data?.url).then((val) async{
@@ -72,15 +73,22 @@ class _OnlineBankingOption extends State<OnlineBankingOption>{
           });
         } else if (state is OnlineAccountAggregatorFailed) {
           EasyLoading.dismiss();
+          CleverTapLogger.logEvent(CleverTapEventsName.ACCOUNT_AGGREGATOR_INIT, isSuccess: false);
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!context.mounted) return;
             openSnackBar(context, state.uploadOnlineBankStatementModel.message ?? "Unknown Error");
           });
         }else if(state is CheckBankStatementStatusSuccess){
           EasyLoading.dismiss();
+          if(state.checkBankStatementStatusModel.data?.aaConsentStatus == 1){
+            CleverTapLogger.logEvent(CleverTapEventsName.ACCOUNT_AGGREGATOR_VERIFY, isSuccess: true);
+          }else{
+            CleverTapLogger.logEvent(CleverTapEventsName.ACCOUNT_AGGREGATOR_VERIFY, isSuccess: false);
+          }
           context.replace(AppRouterName.onlineBankStatementMessage,extra: state.checkBankStatementStatusModel);
         }else if(state is CheckBankStatementStatusFailed){
           EasyLoading.dismiss();
+          CleverTapLogger.logEvent(CleverTapEventsName.ACCOUNT_AGGREGATOR_VERIFY, isSuccess: false);
           DebugPrint.prt("Online Bank Statement fetching failed ${state.checkBankStatementStatusModel.message}");
           //context.replace(AppRouterName.onlineBankStatementMessage,extra: state.checkBankStatementStatusModel);
           openSnackBar(context, state.checkBankStatementStatusModel.message ?? "Unknown Error");

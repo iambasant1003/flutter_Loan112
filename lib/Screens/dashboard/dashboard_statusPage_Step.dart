@@ -8,8 +8,11 @@ import 'package:loan112_app/Constant/FontConstant/FontConstant.dart';
 import 'package:loan112_app/Constant/ImageConstant/ImageConstants.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationCubit.dart';
 import 'package:loan112_app/Cubit/loan_application_cubit/LoanApplicationState.dart';
+import 'package:loan112_app/Utils/Debugprint.dart';
 import '../../Model/GetCustomerDetailsModel.dart';
 import '../../Model/SendPhpOTPModel.dart';
+import '../../Utils/CleverTapEventsName.dart';
+import '../../Utils/CleverTapLogger.dart';
 import '../../Utils/MysharePrefenceClass.dart';
 
 class DashboardStatusPageStep extends StatefulWidget {
@@ -169,8 +172,11 @@ class _DashboardStatusPageStep extends State<DashboardStatusPageStep> {
             EasyLoading.show(status: "Please Wait...");
           }else if(state is GetCustomerDetailsSuccess){
             EasyLoading.dismiss();
+            DebugPrint.prt("Inside Check Status GetCustomerDetails Success");
+            CleverTapLogger.logEvent(CleverTapEventsName.STATUS_CHECK, isSuccess: true);
           }else if(state is GetCustomerDetailsError){
             EasyLoading.dismiss();
+            CleverTapLogger.logEvent(CleverTapEventsName.STATUS_CHECK, isSuccess: false);
           }
         }
     );

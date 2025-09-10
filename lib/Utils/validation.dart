@@ -31,7 +31,7 @@ String? validateDateOfBirth(String? value){
 
 String? validateSalaryDate(String? value){
   if (value == null || value.isEmpty) {
-    return 'Please enter your date of birth';
+    return 'Please enter your next salary date';
   }
   return null;
 }

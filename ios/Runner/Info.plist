@@ -9,7 +9,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Loan112 App</string>
+	<string>Loan112</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -46,6 +46,16 @@
 	<string>This app needs photo library access to save photos and videos.</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>This app uses tracking to provide a better user experience and personalized content.</string>
+
+    <key>CleverTapAccountID</key>
+    <string>RZK-947-W57Z</string>
+
+    <key>CleverTapToken</key>
+    <string>a4c-312</string>
+
+    <key>CleverTapRegion</key>
+    <string>in1</string> <!-- Replace with your actual data center region -->
+
 
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>

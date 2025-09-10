@@ -23,6 +23,8 @@ import '../../../../../Constant/ImageConstant/ImageConstants.dart';
 import '../../../../../Cubit/UploadBankStatementStatusCubit.dart';
 import '../../../../../Model/VerifyOTPModel.dart';
 import '../../../../../Routes/app_router_name.dart';
+import '../../../../../Utils/CleverTapEventsName.dart';
+import '../../../../../Utils/CleverTapLogger.dart';
 import '../../../../../Utils/MysharePrefenceClass.dart';
 import '../../../../../Widget/app_bar.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
@@ -140,6 +142,7 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
             EasyLoading.show(status: "Please wait...");
           } else if (state is UploadBankStatementSuccess) {
             EasyLoading.dismiss();
+            CleverTapLogger.logEvent(CleverTapEventsName.DOCUMENTATION_BANK_STATEMENT, isSuccess: true);
             context.read<UploadBankStatementStatusCubit>().showSuccess();
             Future.delayed(const Duration(seconds: 1), () {
               context.replace(
@@ -149,6 +152,7 @@ class _FetchOfflineBankStatement extends State<FetchOfflineBankStatement>{
             });
           } else if (state is UploadBankStatementFailed) {
             EasyLoading.dismiss();
+            CleverTapLogger.logEvent(CleverTapEventsName.DOCUMENTATION_BANK_STATEMENT, isSuccess: false);
             DebugPrint.prt("Upload Bank Statement Failed");
             openSnackBar(context, state.uploadBankStatementModel.message ?? "Failed");
           }

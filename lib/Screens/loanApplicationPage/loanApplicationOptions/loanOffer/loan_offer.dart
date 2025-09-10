@@ -20,6 +20,8 @@ import '../../../../Cubit/dashboard_cubit/DashboardCubit.dart';
 import '../../../../Model/SendPhpOTPModel.dart';
 import '../../../../Model/VerifyOTPModel.dart';
 import '../../../../ParamModel/LoanAcceptanceParamModel.dart';
+import '../../../../Utils/CleverTapEventsName.dart';
+import '../../../../Utils/CleverTapLogger.dart';
 import '../../../../Utils/MysharePrefenceClass.dart';
 import '../../../../Utils/validation.dart';
 import '../../../../Widget/app_bar.dart';
@@ -99,6 +101,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
 
    */
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,6 +116,9 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
         backgroundColor: Color(0xffE7F3FF),
       ),
       body: BlocListener<LoanApplicationCubit,LoanApplicationState>(
+        listenWhen: (prev,next){
+          return prev != next;
+        },
         listener: (context, state) {
           if (!_isActive) return;
 
@@ -172,28 +178,28 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
 
           else if (state is LoanAcceptanceSuccess) {
             EasyLoading.dismiss();
-
-            // WidgetsBinding.instance.addPostFrameCallback((_) async {
-            //   await Future.delayed(Duration(milliseconds: 300));
-            //
-            //   if (!mounted) return; // check again after async call
-            //   await checkConditionCalculateDistanceApiCall();
-            //   if (!mounted) return; // double-check before starting
-            //    context.pop();
-            // });
-
+            DebugPrint.prt("Loan Accepted");
+            if(isEnhance){
+              DebugPrint.prt("Loan Accepted Enhance");
+              CleverTapLogger.logEvent(CleverTapEventsName.LOAN_QUOTE_ENHANCE, isSuccess: true);
+            }else{
+              DebugPrint.prt("Loan Accepted not Enhance");
+              CleverTapLogger.logEvent(CleverTapEventsName.LOAN_QUOTE_ACCEPT, isSuccess: true);
+            }
+            
             Future(() async {
               if (!_isActive) return;
               if(!isEnhance){
+                DebugPrint.prt("Loan Accepted not Enhance 2");
                 await checkConditionCalculateDistanceApiCall();
               }
               else{
                 //await getCustomerDetailsApiCall();
               }
               if (!_isActive) return;
+              DebugPrint.prt("Loan Accepted Enhance back Called");
               context.pop();
             });
-
           }
 
           else if (state is LoanAcceptanceError) {
@@ -204,6 +210,13 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
                 if(state.loanAcceptanceModel.statusCode == 403){
                   context.pop();
                   //getCustomerDetailsApiCall();
+                  CleverTapLogger.logEvent(CleverTapEventsName.LOAN_QUOTE_REJECT, isSuccess: true);
+                }else{
+                  if(isEnhance){
+                    CleverTapLogger.logEvent(CleverTapEventsName.LOAN_QUOTE_ENHANCE, isSuccess: false);
+                  }else{
+                    CleverTapLogger.logEvent(CleverTapEventsName.LOAN_QUOTE_ACCEPT, isSuccess: false);
+                  }
                 }
               }
             });
@@ -952,7 +965,6 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
     context.read<LoanApplicationCubit>().calculateDistanceApiCall(dataObj);
     Future.delayed(Duration(milliseconds: 300));
   }
-
 
   void showRejectConfirmationDialog(BuildContext context) {
     showDialog(

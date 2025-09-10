@@ -113,6 +113,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.4"
+  clevertap_plugin:
+    dependency: "direct main"
+    description:
+      name: clevertap_plugin
+      sha256: "452db7ddba3672991aede20c62657a0f6b4af13e073564f8572573a8e5f707c3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.9.1"
   cli_util:
     dependency: transitive
     description:

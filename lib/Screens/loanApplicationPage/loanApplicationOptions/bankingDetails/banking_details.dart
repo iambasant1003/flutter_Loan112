@@ -22,6 +22,8 @@ import '../../../../Model/BankAccountTypeModel.dart';
 import '../../../../Model/SendPhpOTPModel.dart';
 import '../../../../Model/VerifyOTPModel.dart';
 import '../../../../ParamModel/VerifyIfscParamModel.dart';
+import '../../../../Utils/CleverTapEventsName.dart';
+import '../../../../Utils/CleverTapLogger.dart';
 import '../../../../Utils/MysharePrefenceClass.dart';
 import '../../../../Utils/UpperCaseTextFormatter.dart';
 import '../../../../Utils/validation.dart';
@@ -114,6 +116,7 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
 
          else if (state is UpdateBankDetailsSuccess) {
            EasyLoading.dismiss();
+           CleverTapLogger.logEvent(CleverTapEventsName.BANK_DETAILS, isSuccess: true);
            WidgetsBinding.instance.addPostFrameCallback((_) {
              if (context.mounted && (state.updateBankAccountModel.success ?? false)) {
                context.pop();
@@ -124,6 +127,7 @@ class _BankingDetailScreen extends State<BankingDetailScreen>{
 
          else if (state is UpdateBankDetailsFailed) {
            EasyLoading.dismiss();
+           CleverTapLogger.logEvent(CleverTapEventsName.BANK_DETAILS, isSuccess: false);
            WidgetsBinding.instance.addPostFrameCallback((_) {
              if (context.mounted) {
                context.pop();

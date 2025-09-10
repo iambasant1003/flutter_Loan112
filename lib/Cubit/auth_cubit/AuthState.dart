@@ -1,3 +1,4 @@
+import 'package:loan112_app/Model/AppVersionResponseModel.dart';
 import 'package:loan112_app/Model/SendOTPModel.dart';
 import 'package:loan112_app/Model/SendPhpOTPModel.dart';
 import 'package:loan112_app/Model/VerifyPHPOTPModel.dart';
@@ -42,4 +43,14 @@ class AuthError extends AuthState {
 class PermissionCheckboxState extends AuthState {
   final bool isChecked;
   PermissionCheckboxState({required this.isChecked});
+}
+
+class CheckAppVersionSuccess extends AuthState{
+   final AppVersionResponseModel appVersionResponseModel;
+   CheckAppVersionSuccess(this.appVersionResponseModel);
+}
+
+class CheckAppVersionFailed extends AuthState{
+  final AppVersionResponseModel appVersionResponseModel;
+  CheckAppVersionFailed(this.appVersionResponseModel);
 }

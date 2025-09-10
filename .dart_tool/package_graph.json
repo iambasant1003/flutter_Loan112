@@ -9,6 +9,7 @@
       "dependencies": [
         "appsflyer_sdk",
         "camera",
+        "clevertap_plugin",
         "cupertino_icons",
         "device_info_plus",
         "dio",
@@ -112,6 +113,13 @@
         "test_api",
         "vector_math",
         "vm_service"
+      ]
+    },
+    {
+      "name": "clevertap_plugin",
+      "version": "1.9.1",
+      "dependencies": [
+        "flutter"
       ]
     },
     {

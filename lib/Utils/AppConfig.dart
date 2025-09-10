@@ -1,8 +1,14 @@
 
+
+// const val Uat= 1
+// const val PreProd = 1
+// const val Prod = 9
+
 class AppConfig {
   static late String baseUrlNode;
   static late String baseUrlPhp;
   static late String authPhpToken;
+  static late var appVersion;
 
   static init(String env) {
     switch (env) {
@@ -10,11 +16,13 @@ class AppConfig {
         baseUrlNode = "https://uat-node.loan112fintech.com/journey-service/api/v1/";
         baseUrlPhp = "https://uat-api.loan112fintech.com/";
         authPhpToken = "NWZmYzU2NDVkN2Y3ODIwNDJjZDFhZmViYjA3MTExZDM=";
+        appVersion = 1;
         break;
       case 'prod':
-        baseUrlNode = 'https://api.example.node.com';
-        baseUrlPhp = 'https://api.example.php.com';
-        authPhpToken = 'NWZmYzU2NDVkN2Y3ODIwNDJjZDFhZmViYjA3MTExZDM=';
+        baseUrlNode = "https://node-api.loan112fintech.com/journey-service/api/v1/";
+        baseUrlPhp = "https://api.loan112fintech.com/";
+        authPhpToken = "NWZmYzU2NDVkN2Y3ODIwNDJjZDFhZmViYjA3MTExZDM=";
+        appVersion = 9;
         break;
     }
   }

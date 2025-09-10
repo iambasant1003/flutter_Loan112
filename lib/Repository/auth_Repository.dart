@@ -8,6 +8,7 @@ import 'package:loan112_app/Model/VerifyPHPOTPModel.dart';
 import 'package:loan112_app/Services/ApiResponseStatus.dart';
 import 'package:loan112_app/Services/http_client_php.dart';
 import '../Constant/ConstText/ConstText.dart';
+import '../Model/AppVersionResponseModel.dart';
 import '../Model/SendOTPModel.dart';
 import '../Model/error_model.dart';
 import '../Services/http_client.dart';
@@ -17,7 +18,6 @@ class AuthRepository {
   final ApiClass apiClass;
   final ApiClassPhp apiClassPhp;
   AuthRepository(this.apiClass,this.apiClassPhp);
-
 
   ApiResponseStatus mapApiResponseStatus(dynamic responseBody) {
     final Map<String, dynamic> decoded = responseBody;
@@ -31,7 +31,6 @@ class AuthRepository {
 
     return mapStatusCode(logicalStatusCode);
   }
-
 
   ApiResponseStatus mapApiResponseStatusPhp(dynamic responseBody) {
     final Map<String, dynamic> decoded = responseBody;
@@ -66,7 +65,6 @@ class AuthRepository {
     }
   }
 
-
   Future<ApiResponse<SendPhpOTPModel>> sendOTPhpApiCallFunction(Map<String, dynamic> data) async {
     try {
       final response = await apiClassPhp.post(sendOTPhp, data, isHeader: true);
@@ -84,8 +82,6 @@ class AuthRepository {
       throw ConstText.exceptionError;
     }
   }
-
-
 
   Future<ApiResponse<VerifyOTPModel>> verifyOTPNodeApiCallFunction(Map<String, dynamic> data) async {
     try {
@@ -125,7 +121,22 @@ class AuthRepository {
     }
   }
 
-
-
-
+  Future<ApiResponse<AppVersionResponseModel>> verifyAppVersionApiCallFunction(Map<String, dynamic> data) async {
+    try {
+      final response = await apiClassPhp.post(appVersionCheck, data, isHeader: false);
+      DebugPrint.prt("API Response Check App Version Data ${response.data},${response.statusCode}");
+      final ApiResponseStatus status = mapApiResponseStatusPhp(response.data);
+      final Map<String, dynamic> responseData = response.data;
+      if (status == ApiResponseStatus.success) {
+        final data = AppVersionResponseModel.fromJson(responseData);
+        DebugPrint.prt("ResponseData In success $responseData");
+        return ApiResponse.success(data);
+      } else {
+        final error = AppVersionResponseModel.fromJson(responseData);
+        return ApiResponse.error(status, error: error);
+      }
+    } catch (e) {
+      throw ConstText.exceptionError;
+    }
+  }
 }

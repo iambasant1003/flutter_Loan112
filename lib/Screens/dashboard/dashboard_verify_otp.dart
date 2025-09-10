@@ -10,6 +10,8 @@ import '../../Constant/ColorConst/ColorConstant.dart';
 import '../../Constant/FontConstant/FontConstant.dart';
 import '../../Constant/ImageConstant/ImageConstants.dart';
 import '../../Routes/app_router_name.dart';
+import '../../Utils/CleverTapEventsName.dart';
+import '../../Utils/CleverTapLogger.dart';
 import '../../Utils/MysharePrefenceClass.dart';
 import '../../Utils/snackbarMassage.dart';
 import '../../Widget/app_bar.dart';
@@ -58,6 +60,7 @@ class _DashboardVerifyOTP extends State<DashboardVerifyOTP>{
 
 
   void _resendOtp() {
+    CleverTapLogger.logEvent(CleverTapEventsName.DELETE_ACCOUNT_OTP_RESENT, isSuccess: true);
     context.read<DashboardCubit>().callDeleteCustomerProfileApi();
   }
 
@@ -84,13 +87,15 @@ class _DashboardVerifyOTP extends State<DashboardVerifyOTP>{
                   if(state is DashBoardLoading){
                     EasyLoading.show(status: "Please wait...");
                   }else if(state is DeleteOTPVerified){
-                    openSnackBar(context, state.deleteProfileOTPVerifyModel.message??"",backGroundColor: ColorConstant.blackTextColor);
+                    CleverTapLogger.logEvent(CleverTapEventsName.DELETE_ACCOUNT_OTP_VERIFY, isSuccess: true);
+                    //openSnackBar(context, state.deleteProfileOTPVerifyModel.message??"",backGroundColor: ColorConstant.blackTextColor);
                     EasyLoading.dismiss();
                     MySharedPreferences.logOutFunctionData();
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       context.go(AppRouterName.login);
                     });
                   }else if(state is DeleteOTPFailed){
+                    CleverTapLogger.logEvent(CleverTapEventsName.DELETE_ACCOUNT_OTP_VERIFY, isSuccess: false);
                     EasyLoading.dismiss();
                     openSnackBar(context, state.deleteProfileOTPVerifyModel.message ?? "Unexpected Error");
                   }

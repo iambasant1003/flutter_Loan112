@@ -86,6 +86,12 @@
       "languageVersion": "3.8"
     },
     {
+      "name": "clevertap_plugin",
+      "rootUri": "file:///Users/sachinkumar/.pub-cache/hosted/pub.dev/clevertap_plugin-1.9.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "cli_util",
       "rootUri": "file:///Users/sachinkumar/.pub-cache/hosted/pub.dev/cli_util-0.4.2",
       "packageUri": "lib/",

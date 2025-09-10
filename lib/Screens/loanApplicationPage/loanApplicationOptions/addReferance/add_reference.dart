@@ -23,6 +23,8 @@ import '../../../../Constant/FontConstant/FontConstant.dart';
 import '../../../../Cubit/dashboard_cubit/DashboardCubit.dart';
 import '../../../../Model/SendPhpOTPModel.dart';
 import '../../../../Model/VerifyOTPModel.dart';
+import '../../../../Utils/CleverTapEventsName.dart';
+import '../../../../Utils/CleverTapLogger.dart';
 import '../../../../Utils/MysharePrefenceClass.dart';
 import '../../../../Utils/validation.dart';
 import '../../../../Widget/app_bar.dart';
@@ -105,6 +107,7 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
 
           else if (state is AddReferenceSuccess) {
             EasyLoading.dismiss();
+            CleverTapLogger.logEvent(CleverTapEventsName.ADD_REFERENCE, isSuccess: true);
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (context.mounted) {
                 context.replace(AppRouterName.bankDetailsScreen);
@@ -114,6 +117,7 @@ class _AddReferenceScreen extends State<AddReferenceScreen>{
 
           else if (state is AddReferenceFailed) {
             EasyLoading.dismiss();
+            CleverTapLogger.logEvent(CleverTapEventsName.ADD_REFERENCE, isSuccess: false);
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (context.mounted) {
                 openSnackBar(context, state.addReferenceModel.message ?? "Unknown Error");

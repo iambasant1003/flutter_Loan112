@@ -19,6 +19,8 @@ import '../../../../Cubit/dashboard_cubit/DashboardCubit.dart';
 import '../../../../Cubit/loan_application_cubit/LoanApplicationState.dart';
 import '../../../../Model/SendPhpOTPModel.dart';
 import '../../../../Model/VerifyOTPModel.dart';
+import '../../../../Utils/CleverTapEventsName.dart';
+import '../../../../Utils/CleverTapLogger.dart';
 import '../../../../Utils/MysharePrefenceClass.dart';
 import '../../../../Widget/app_bar.dart';
 import 'package:image/image.dart' as img;
@@ -79,6 +81,7 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
             EasyLoading.show(status: "Please Wait...");
           } else if (state is UploadSelfieSuccess) {
             EasyLoading.dismiss();
+            CleverTapLogger.logEvent(CleverTapEventsName.SELFIE_UPLOAD, isSuccess: true);
 
             Future(() async{
               if (!_isActive) return;
@@ -102,6 +105,7 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
                 context.pop();
                 context.push(AppRouterName.loanOfferPage,extra: int.parse(enhanceKey));
               }else{
+                CleverTapLogger.logEvent(CleverTapEventsName.CHECK_ELIGIBILITY_SYSTEM, isSuccess: true);
                 context.replace(
                   AppRouterName.eligibilityStatus,
                   extra: state.uploadSelfieModel,
@@ -111,6 +115,7 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
 
           } else if (state is UploadSelfieError) {
             EasyLoading.dismiss();
+            CleverTapLogger.logEvent(CleverTapEventsName.SELFIE_UPLOAD, isSuccess: false);
 
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!_isActive) return;
