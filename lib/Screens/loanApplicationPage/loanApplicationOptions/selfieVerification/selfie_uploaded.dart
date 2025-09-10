@@ -134,12 +134,13 @@ class _SelfieUploadedPage extends State<SelfieUploadedPage> {
                 openSnackBar(context, state.uploadSelfieModel.message ?? "Already done");
               }
               else {
+                DebugPrint.prt("");
+                context.replace(
+                  AppRouterName.selfieScreenPath,
+                );
                 openSnackBar(
                   context,
                   state.uploadSelfieModel.message ?? "Unknown Error",
-                );
-                context.replace(
-                  AppRouterName.selfieScreenPath,
                 );
               }
             });
