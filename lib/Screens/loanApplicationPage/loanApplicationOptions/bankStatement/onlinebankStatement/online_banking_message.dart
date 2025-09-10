@@ -31,9 +31,8 @@ class _OnlineBankingMessageScreen extends State<OnlineBankingMessageScreen>{
     return Loan112VerifyStatusPage(
         onBackPress: (){
           context.pop();
-          context.pop();
           if(widget.checkBankStatementStatusModel.data?.aaConsentStatus == 1){
-            context.push(AppRouterName.loanOfferPage,extra: 1).then((val){});
+            context.replace(AppRouterName.loanOfferPage,extra: 1);
           }
         },
         isSuccess: widget.checkBankStatementStatusModel.data?.aaConsentStatus == 1,
@@ -43,7 +42,6 @@ class _OnlineBankingMessageScreen extends State<OnlineBankingMessageScreen>{
         iconTypePath: ImageConstants.oneMoneyIcon,
         loan112button: Loan112Button(
           onPressed: () {
-            context.pop();
             context.pop();
             if(widget.checkBankStatementStatusModel.data?.aaConsentStatus == 1){
               context.replace(AppRouterName.loanOfferPage,extra: 1);

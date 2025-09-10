@@ -113,6 +113,7 @@ class _OnlineBankingOption extends State<OnlineBankingOption>{
                   ),
                   centerTitle: true,
                   title: Image.asset(ImageConstants.oneMoneyIcon, width: 100, height: 100),
+                  /*
                   actions: [
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 15),
@@ -132,6 +133,8 @@ class _OnlineBankingOption extends State<OnlineBankingOption>{
                       ),
                     )
                   ],
+
+                   */
                 ),
 
                 /// 🔹 Scrollable Content
