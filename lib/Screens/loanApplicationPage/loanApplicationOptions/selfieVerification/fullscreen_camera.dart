@@ -62,45 +62,50 @@ class _FullScreenCameraPageState extends State<FullScreenCameraPage> {
     img.Image? originalImage = img.decodeImage(bytes);
 
     if (originalImage != null) {
-      // 📌 Only bake orientation for rear camera
-      // Front camera already appears correctly in preview
+      // 📌 Fix orientation for rear camera
       if (_controller!.description.lensDirection != CameraLensDirection.front) {
         originalImage = img.bakeOrientation(originalImage);
       }
 
-      // 🔄 Flip front camera horizontally to match preview
+      // 🔄 Flip front camera horizontally
       if (_controller!.description.lensDirection == CameraLensDirection.front) {
         originalImage = img.flipHorizontal(originalImage);
       }
 
-      // 🖼 Save final image
-      await File(filePath).writeAsBytes(img.encodeJpg(originalImage, quality: 100));
+      // 🖼 Save corrected image temporarily
+      await File(filePath).writeAsBytes(
+        img.encodeJpg(originalImage, quality: 100),
+      );
     }
 
-    // 📏 Compress if needed
-    File finalFile = File(filePath);
-    final size = await finalFile.length();
-    if (size > 5 * 1024 * 1024) {
-      final compressedPath = path.join(
-        directory.path,
-        '${DateTime.now().millisecondsSinceEpoch}_compressed.jpg',
-      );
-      final compressed = await FlutterImageCompress.compressAndGetFile(
-        finalFile.path,
-        compressedPath,
-        quality: 80,
-        autoCorrectionAngle: true,
-      );
-      if (compressed != null) {
-        finalFile = File(compressed.path);
-      }
-    }
+    // 📏 Always compress after capture
+    final compressedPath = path.join(
+      directory.path,
+      '${DateTime.now().millisecondsSinceEpoch}_compressed.jpg',
+    );
+
+    final compressed = await FlutterImageCompress.compressAndGetFile(
+      filePath,
+      compressedPath,
+      quality: 70, // adjust quality as needed
+      autoCorrectionAngle: true,
+      format: CompressFormat.jpeg,
+    );
+
+    File finalFile = File(compressed?.path ?? filePath);
+
+    // 📌 Get file size (in KB)
+    final fileSizeKB = (await finalFile.length()) / 1024;
+    debugPrint("📸 Compressed Image Path: ${finalFile.path}");
+    debugPrint("📏 Compressed Image Size: ${fileSizeKB.toStringAsFixed(2)} KB");
 
     EasyLoading.dismiss();
 
     if (!mounted) return;
     Navigator.pop(context, finalFile.path);
   }
+
+
 
 
   @override

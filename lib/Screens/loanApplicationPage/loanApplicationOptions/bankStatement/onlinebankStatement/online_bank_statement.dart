@@ -80,7 +80,7 @@ class _OnlineBankingOption extends State<OnlineBankingOption>{
           });
         }else if(state is CheckBankStatementStatusSuccess){
           EasyLoading.dismiss();
-          if(state.checkBankStatementStatusModel.data?.aaConsentStatus == 1){
+          if(state.checkBankStatementStatusModel.data?.aaConsentStatus == 2){
             CleverTapLogger.logEvent(CleverTapEventsName.ACCOUNT_AGGREGATOR_VERIFY, isSuccess: true);
           }else{
             CleverTapLogger.logEvent(CleverTapEventsName.ACCOUNT_AGGREGATOR_VERIFY, isSuccess: false);

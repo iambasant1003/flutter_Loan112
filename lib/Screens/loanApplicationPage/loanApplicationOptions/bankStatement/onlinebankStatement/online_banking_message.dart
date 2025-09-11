@@ -31,19 +31,19 @@ class _OnlineBankingMessageScreen extends State<OnlineBankingMessageScreen>{
     return Loan112VerifyStatusPage(
         onBackPress: (){
           context.pop();
-          if(widget.checkBankStatementStatusModel.data?.aaConsentStatus == 1){
+          if(widget.checkBankStatementStatusModel.data?.aaConsentStatus == 2){
             context.replace(AppRouterName.loanOfferPage,extra: 1);
           }
         },
-        isSuccess: widget.checkBankStatementStatusModel.data?.aaConsentStatus == 1,
-        statusType: (widget.checkBankStatementStatusModel.data?.aaConsentStatus == 1 && (widget.checkBankStatementStatusModel.success ?? false))?
+        isSuccess: widget.checkBankStatementStatusModel.data?.aaConsentStatus == 2,
+        statusType: (widget.checkBankStatementStatusModel.data?.aaConsentStatus == 2 && (widget.checkBankStatementStatusModel.success ?? false))?
         "Congratulations!":"Failed",
         statusMessage: widget.checkBankStatementStatusModel.data?.message ?? "",
         iconTypePath: ImageConstants.oneMoneyIcon,
         loan112button: Loan112Button(
           onPressed: () {
             context.pop();
-            if(widget.checkBankStatementStatusModel.data?.aaConsentStatus == 1){
+            if(widget.checkBankStatementStatusModel.data?.aaConsentStatus == 2){
               context.replace(AppRouterName.loanOfferPage,extra: 1);
             }
           },
