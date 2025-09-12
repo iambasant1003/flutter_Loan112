@@ -117,10 +117,9 @@
     },
     {
       "name": "clevertap_plugin",
-      "version": "3.5.2",
+      "version": "1.9.1",
       "dependencies": [
-        "flutter",
-        "flutter_web_plugins"
+        "flutter"
       ]
     },
     {
@@ -781,18 +780,6 @@
       ]
     },
     {
-      "name": "flutter_web_plugins",
-      "version": "0.0.0",
-      "dependencies": [
-        "characters",
-        "collection",
-        "flutter",
-        "material_color_utilities",
-        "meta",
-        "vector_math"
-      ]
-    },
-    {
       "name": "http",
       "version": "1.4.0",
       "dependencies": [
@@ -893,6 +880,18 @@
         "flutter",
         "meta",
         "plugin_platform_interface"
+      ]
+    },
+    {
+      "name": "flutter_web_plugins",
+      "version": "0.0.0",
+      "dependencies": [
+        "characters",
+        "collection",
+        "flutter",
+        "material_color_utilities",
+        "meta",
+        "vector_math"
       ]
     },
     {

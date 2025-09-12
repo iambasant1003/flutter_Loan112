@@ -334,7 +334,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
                         ),
                         child: Center(
                           child: Text(
-                            "REJECT",
+                            "Reject",
                             style: TextStyle(
                               fontSize: FontConstants.f14,
                               fontFamily: FontConstants.fontFamily,
