@@ -191,7 +191,7 @@ class _PermissionPage extends State<PermissionPage> {
                       openSnackBar(context, "Please accept our Terms & Conditions and Privacy Policy.");
                     }
                   },
-                  text: "Allow",
+                  text: "Continue",
                 ),
               ),
             );
@@ -213,9 +213,7 @@ class _PermissionPage extends State<PermissionPage> {
 
     if (cameraPermission.isGranted &&
         microPhonePermission.isGranted &&
-        locationPermission.isGranted &&
-        !(await Permission.notification.isDenied ||
-            await Permission.notification.isPermanentlyDenied)
+        locationPermission.isGranted
     ) {
       MySharedPreferences.setPermissionStatus(true);
       context.go(AppRouterName.login);
@@ -338,11 +336,18 @@ class _PermissionPage extends State<PermissionPage> {
                 imagePath: ImageConstants.permissionScreenLocation,
               ),
               SizedBox(height: 12),
+              // permissionTypeWidget(
+              //   context,
+              //   title: 'Device',
+              //   subtitle:
+              //   'To call Company customer care executive directly through the application, allow us to make and manage phone calls. With this permission, the customer is able to call (Phone) Company customer care executive directly through the application.',
+              //   imagePath: ImageConstants.permissionScreenDevice,
+              // ),
               permissionTypeWidget(
                 context,
                 title: 'Device',
                 subtitle:
-                'To call Company customer care executive directly through the application, allow us to make and manage phone/video calls. With this permission, the customer is able to call (Phone/Video) Company customer care executive directly through the application.',
+                'We collect your device identifier to ensure that only one loan application can be submitted from a single device. This helps us prevent fraud and provide a secure service.',
                 imagePath: ImageConstants.permissionScreenDevice,
               ),
               SizedBox(height: 12),

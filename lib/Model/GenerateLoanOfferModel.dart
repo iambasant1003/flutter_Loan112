@@ -32,7 +32,7 @@ class Data {
   int? minLoanAmount;
   int? maxLoanTenure;
   int? minLoanTenure;
-  int? interestRate;
+  var interestRate;
   int? processingFee;
   String? minLoanTenureText;
   String? maxLoanTenureText;

@@ -44,7 +44,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
   double maxTenure = 40;
   bool initialized = false;
   String? purPoseOfLoan;
-  int interestRate = 0;
+  var interestRate = 0.0;
   String interestAmount = "";
   String totalPayableAmount = "";
   String purposeOfLoanId = "";
@@ -137,7 +137,7 @@ class _LoanOfferScreen extends State<LoanOfferScreen>{
             currentValue = double.parse((generateLoanOfferModel?.data?.maxLoanAmount ?? 0).toString());
             minValue = double.parse((generateLoanOfferModel?.data?.minLoanAmount ?? 0).toString());
             maxValue = double.parse((generateLoanOfferModel?.data?.maxLoanAmount ?? 0).toString());
-            interestRate = generateLoanOfferModel?.data?.interestRate ?? 0;
+            interestRate = generateLoanOfferModel?.data?.interestRate ?? 0.0;
             DebugPrint.prt("Minimum Loan Amount $minTenure");
             DebugPrint.prt("Maximum Loan Amount $maxTenure");
             DebugPrint.prt("Model data $generateLoanOfferModel, $getPurposeOfLoanModel");

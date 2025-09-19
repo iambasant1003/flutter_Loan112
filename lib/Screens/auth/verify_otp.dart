@@ -58,7 +58,6 @@ class _VerifyOTP extends State<VerifyOTP>{
   @override
   void dispose() {
     _timer?.cancel();
-    otpController.dispose();
     super.dispose();
   }
 
